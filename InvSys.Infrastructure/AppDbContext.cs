@@ -1,0 +1,27 @@
+﻿using InvSys.Domain.Models.Account;
+using Microsoft.EntityFrameworkCore;
+using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+
+namespace InvSys.Infrastructure
+{
+    public class AppDbContext:DbContext
+    {
+
+        public DbSet<UserAccount> UserAccounts { get; set; }
+
+        public string DbPath { get; }
+
+        public AppDbContext()
+        {
+            var folder = Environment.SpecialFolder.LocalApplicationData;
+            var path = Environment.GetFolderPath(folder);
+            DbPath = System.IO.Path.Join(path, "account.db");
+        }
+        protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+
+    }
+}
