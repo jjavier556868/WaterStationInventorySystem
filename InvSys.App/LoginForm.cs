@@ -72,7 +72,7 @@ namespace InvSys.App
 
             using (var context = new AppDbContext())
             {
-                // Query by Username OR Email
+                // Query by Username or Email
                 var user = context.UserAccounts
                     .FirstOrDefault(u => u.Username == loginInput || u.Email == loginInput);
 
