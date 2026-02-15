@@ -31,6 +31,7 @@
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             label4 = new Label();
             panel1 = new Syncfusion.Windows.Forms.Tools.GradientPanelExt();
+            txtBoxUserEmail = new TextBox();
             linkLabelRegister = new LinkLabel();
             panel4 = new Panel();
             panel3 = new Panel();
@@ -42,7 +43,6 @@
             txtBoxPassword = new TextBox();
             label3 = new Label();
             label2 = new Label();
-            txtBoxUserEmail = new TextBox();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panel1).BeginInit();
@@ -102,6 +102,16 @@
             panel1.Name = "panel1";
             panel1.Size = new Size(572, 562);
             panel1.TabIndex = 0;
+            // 
+            // txtBoxUserEmail
+            // 
+            txtBoxUserEmail.Font = new Font("Segoe UI", 14.25F);
+            txtBoxUserEmail.Location = new Point(45, 181);
+            txtBoxUserEmail.Name = "txtBoxUserEmail";
+            txtBoxUserEmail.PlaceholderText = "Username/email";
+            txtBoxUserEmail.Size = new Size(484, 33);
+            txtBoxUserEmail.TabIndex = 14;
+            txtBoxUserEmail.KeyDown += txtBoxUserEmail_KeyDown;
             // 
             // linkLabelRegister
             // 
@@ -208,6 +218,7 @@
             txtBoxPassword.PlaceholderText = "Password";
             txtBoxPassword.Size = new Size(484, 33);
             txtBoxPassword.TabIndex = 6;
+            txtBoxPassword.KeyDown += txtBoxPassword_KeyDown;
             // 
             // label3
             // 
@@ -230,15 +241,6 @@
             label2.Size = new Size(158, 25);
             label2.TabIndex = 1;
             label2.Text = "Username/Email:";
-            // 
-            // txtBoxUserEmail
-            // 
-            txtBoxUserEmail.Font = new Font("Segoe UI", 14.25F);
-            txtBoxUserEmail.Location = new Point(45, 181);
-            txtBoxUserEmail.Name = "txtBoxUserEmail";
-            txtBoxUserEmail.PlaceholderText = "Username/email";
-            txtBoxUserEmail.Size = new Size(484, 33);
-            txtBoxUserEmail.TabIndex = 14;
             // 
             // LoginForm
             // 

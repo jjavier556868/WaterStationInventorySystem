@@ -10,9 +10,9 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 namespace InvSys.Infrastructure.Migrations
 {
-    [DbContext(typeof(AppDbContext))]
-    [Migration("20260214090158_initialDB")]
-    partial class initialDB
+    [DbContext(typeof(AccountsDbContext))]
+    [Migration("20260215040736_initialAccountDB")]
+    partial class initialAccountDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)

@@ -1,9 +1,10 @@
-﻿using InvSys.Domain.Models.Account;
+﻿using BCrypt.Net;  // Add this for BCrypt
+using InvSys.Domain.Models.Account;
 using InvSys.Infrastructure;
-using BCrypt.Net;  // Add this for BCrypt
 using System;
 using System.Linq;
 using System.Windows.Forms;
+using static System.Windows.Forms.DataFormats;
 
 namespace InvSys.App
 {
@@ -19,7 +20,18 @@ namespace InvSys.App
             SyncfusionLicensing();
             InitializeComponent();
             TxtBoxShowPasswordChar(false);
+            InitializeDatabases();
         }
+
+        private void InitializeDatabases()
+        {
+            using var invContext = new InventoryDbContext();
+            invContext.Database.EnsureCreated();  
+
+            using var accContext = new AccountsDbContext();
+            accContext.Database.EnsureCreated();  
+        }
+
 
         private void TxtBoxShowPasswordChar(bool _bool)
         {
@@ -43,7 +55,7 @@ namespace InvSys.App
                 PasswordHash = passwordHash
             };
 
-            using (var context = new AppDbContext())
+            using (var context = new AccountsDbContext())
             {
                 // Check if user already exists
                 if (context.UserAccounts.Any(u => u.Username == username))
@@ -70,7 +82,7 @@ namespace InvSys.App
                 return;
             }
 
-            using (var context = new AppDbContext())
+            using (var context = new AccountsDbContext())
             {
                 // Query by Username or Email
                 var user = context.UserAccounts
@@ -78,15 +90,12 @@ namespace InvSys.App
 
                 if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 {
-                    MessageBox.Show("Login successful!", "Welcome");
-                    if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-                    {
                         string greeting = $"Welcome back, {user.Username}!";
                         MessageBox.Show(greeting, "Login Successful");
                         this.Hide();
-                        MainInventory mainForm = new MainInventory();
-                        mainForm.Show();
-                    }
+                        var mainInv = new MainInventory(user.Username);
+                        mainInv.Closed += (s, args) => this.Close();
+                        mainInv.Show();
 
                 }
                 else
@@ -96,6 +105,28 @@ namespace InvSys.App
                     txtBoxUserEmail.Focus();
                 }
             }
+        }
+
+        private void txtBoxUserEmail_KeyDown(object sender, KeyEventArgs e)
+        {
+
+            if (e.KeyCode == Keys.Enter)
+            {
+                txtBoxPassword.Focus();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+        }
+
+        private void txtBoxPassword_KeyDown(object sender, KeyEventArgs e)
+        {
+            if (e.KeyCode == Keys.Enter)
+            {
+                btnLogin.PerformClick();
+                e.Handled = true;
+                e.SuppressKeyPress = true;
+            }
+
         }
     }
 }

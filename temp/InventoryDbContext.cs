@@ -1,4 +1,5 @@
 ﻿using InvSys.Domain.Models.Account;
+using InvSys.Domain.Models.InventoryItems;
 using Microsoft.EntityFrameworkCore;
 using System;
 using System.Collections.Generic;
@@ -8,20 +9,20 @@ using System.Threading.Tasks;
 
 namespace InvSys.Infrastructure
 {
-    public class AppDbContext:DbContext
+    public class InventoryDbContext:DbContext
     {
-
-        public DbSet<UserAccount> UserAccounts { get; set; }
+        public DbSet<Product> Products { get; set; }
+        public DbSet<Supplier> Suppliers { get; set; }
+        public DbSet<Sales> Sale { get; set; }
 
         public string DbPath { get; }
 
-        public AppDbContext()
+        public InventoryDbContext()
         {
             var folder = Environment.SpecialFolder.LocalApplicationData;
             var path = Environment.GetFolderPath(folder);
-            DbPath = System.IO.Path.Join(path, "account.db");
+            DbPath = System.IO.Path.Join(path, "inventory.db");
         }
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder) => optionsBuilder.UseSqlite($"Data Source={DbPath}");
-
     }
 }

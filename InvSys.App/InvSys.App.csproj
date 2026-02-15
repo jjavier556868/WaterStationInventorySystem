@@ -16,6 +16,7 @@
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
     <PackageReference Include="Syncfusion.Licensing" Version="32.2.4" />
+    <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="32.2.4" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="32.2.4" />
   </ItemGroup>
 
