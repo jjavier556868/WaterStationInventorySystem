@@ -130,18 +130,15 @@ namespace InvSys.App
 
         private void btnDeleteSupplier_Click(object sender, EventArgs e)
         {
-            // Handle no selection
             if (SupplierTable.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Please select a supplier to delete.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            // Count selected rows
+    
             int rowCount = SupplierTable.SelectedRows.Count;
-
-            // Confirmation dialog
+            
             string message = rowCount == 1
                 ? "Are you sure you want to delete the selected supplier?"
                 : $"Are you sure you want to delete {rowCount} selected suppliers?";
@@ -157,13 +154,12 @@ namespace InvSys.App
                 using var service = new InventoryService();
                 int deletedCount = 0;
 
-                // Delete from last to first to avoid index shifting
                 for (int i = SupplierTable.SelectedRows.Count - 1; i >= 0; i--)
                 {
                     var row = SupplierTable.SelectedRows[i];
                     if (row.DataBoundItem is Supplier supplier)
                     {
-                        service.DeleteSupplier(supplier.Id);  // You'll need this method
+                        service.DeleteSupplier(supplier.Id);  
                         deletedCount++;
                     }
                 }
