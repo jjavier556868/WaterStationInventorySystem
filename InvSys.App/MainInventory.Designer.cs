@@ -59,13 +59,21 @@
             isActive = new DataGridViewCheckBoxColumn();
             panel7 = new Panel();
             panel8 = new Panel();
-            textBox1 = new TextBox();
+            txtBoxSupplierSearch = new TextBox();
             label3 = new Label();
             btnDeleteSupplier = new Button();
             btnUpdateSupplier = new Button();
             btnAddSupplier = new Button();
             tabPage4 = new TabPage();
+            ProductTable = new DataGridView();
+            dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            panel9 = new Panel();
+            panel10 = new Panel();
+            textBox2 = new TextBox();
             label4 = new Label();
+            btnDeleteProduct = new Button();
+            btnUpdateProduct = new Button();
+            btnAddProduct = new Button();
             tabPage5 = new TabPage();
             panel6 = new Panel();
             button2 = new Button();
@@ -88,6 +96,9 @@
             panel7.SuspendLayout();
             panel8.SuspendLayout();
             tabPage4.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ProductTable).BeginInit();
+            panel9.SuspendLayout();
+            panel10.SuspendLayout();
             tabPage5.SuspendLayout();
             panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)sfDataGrid1).BeginInit();
@@ -285,7 +296,7 @@
             PanelControl.Multiline = true;
             PanelControl.Name = "PanelControl";
             PanelControl.SelectedIndex = 0;
-            PanelControl.Size = new Size(974, 662);
+            PanelControl.Size = new Size(977, 662);
             PanelControl.SizeMode = TabSizeMode.Fixed;
             PanelControl.TabIndex = 0;
             // 
@@ -295,7 +306,7 @@
             tabPage1.Location = new Point(4, 4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(916, 654);
+            tabPage1.Size = new Size(919, 654);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -308,7 +319,7 @@
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
-            panel2.Size = new Size(910, 648);
+            panel2.Size = new Size(913, 648);
             panel2.TabIndex = 2;
             // 
             // label1
@@ -327,7 +338,7 @@
             tabPage2.Location = new Point(4, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(916, 654);
+            tabPage2.Size = new Size(919, 654);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -349,7 +360,7 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(916, 654);
+            tabPage3.Size = new Size(919, 654);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -363,7 +374,7 @@
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
             SupplierTable.ReadOnly = true;
-            SupplierTable.Size = new Size(910, 585);
+            SupplierTable.Size = new Size(913, 585);
             SupplierTable.TabIndex = 1;
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             // 
@@ -411,6 +422,7 @@
             Products.HeaderText = "Products";
             Products.Name = "Products";
             Products.ReadOnly = true;
+            Products.Visible = false;
             // 
             // CreatedDate
             // 
@@ -437,27 +449,28 @@
             panel7.Dock = DockStyle.Top;
             panel7.Location = new Point(3, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(910, 63);
+            panel7.Size = new Size(913, 63);
             panel7.TabIndex = 0;
             // 
             // panel8
             // 
             panel8.Anchor = AnchorStyles.Left;
-            panel8.Controls.Add(textBox1);
+            panel8.Controls.Add(txtBoxSupplierSearch);
             panel8.Controls.Add(label3);
             panel8.Location = new Point(494, -9);
             panel8.Name = "panel8";
             panel8.Size = new Size(469, 80);
             panel8.TabIndex = 7;
             // 
-            // textBox1
+            // txtBoxSupplierSearch
             // 
-            textBox1.Anchor = AnchorStyles.Left;
-            textBox1.Location = new Point(78, 32);
-            textBox1.MaxLength = 0;
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(383, 23);
-            textBox1.TabIndex = 6;
+            txtBoxSupplierSearch.Anchor = AnchorStyles.Left;
+            txtBoxSupplierSearch.Location = new Point(78, 32);
+            txtBoxSupplierSearch.MaxLength = 0;
+            txtBoxSupplierSearch.Name = "txtBoxSupplierSearch";
+            txtBoxSupplierSearch.Size = new Size(383, 23);
+            txtBoxSupplierSearch.TabIndex = 6;
+            txtBoxSupplierSearch.TextChanged += txtBoxSupplierSearch_TextChanged;
             // 
             // label3
             // 
@@ -489,6 +502,7 @@
             btnUpdateSupplier.TabIndex = 3;
             btnUpdateSupplier.Text = "Update Supplier";
             btnUpdateSupplier.UseVisualStyleBackColor = true;
+            btnUpdateSupplier.Click += btnUpdateSupplier_Click;
             // 
             // btnAddSupplier
             // 
@@ -503,24 +517,109 @@
             // 
             // tabPage4
             // 
-            tabPage4.Controls.Add(label4);
+            tabPage4.Controls.Add(ProductTable);
+            tabPage4.Controls.Add(panel9);
             tabPage4.Location = new Point(4, 4);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(916, 654);
+            tabPage4.Size = new Size(919, 654);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
             // 
+            // ProductTable
+            // 
+            ProductTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
+            ProductTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            ProductTable.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1 });
+            ProductTable.Dock = DockStyle.Fill;
+            ProductTable.Location = new Point(3, 66);
+            ProductTable.Name = "ProductTable";
+            ProductTable.ReadOnly = true;
+            ProductTable.Size = new Size(913, 585);
+            ProductTable.TabIndex = 2;
+            // 
+            // dataGridViewTextBoxColumn1
+            // 
+            dataGridViewTextBoxColumn1.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
+            dataGridViewTextBoxColumn1.DataPropertyName = "Id";
+            dataGridViewTextBoxColumn1.HeaderText = "ID";
+            dataGridViewTextBoxColumn1.Name = "dataGridViewTextBoxColumn1";
+            dataGridViewTextBoxColumn1.ReadOnly = true;
+            dataGridViewTextBoxColumn1.Width = 108;
+            // 
+            // panel9
+            // 
+            panel9.Controls.Add(panel10);
+            panel9.Controls.Add(btnDeleteProduct);
+            panel9.Controls.Add(btnUpdateProduct);
+            panel9.Controls.Add(btnAddProduct);
+            panel9.Dock = DockStyle.Top;
+            panel9.Location = new Point(3, 3);
+            panel9.Name = "panel9";
+            panel9.Size = new Size(913, 63);
+            panel9.TabIndex = 1;
+            // 
+            // panel10
+            // 
+            panel10.Anchor = AnchorStyles.Left;
+            panel10.Controls.Add(textBox2);
+            panel10.Controls.Add(label4);
+            panel10.Location = new Point(494, 3);
+            panel10.Name = "panel10";
+            panel10.Size = new Size(469, 57);
+            panel10.TabIndex = 7;
+            // 
+            // textBox2
+            // 
+            textBox2.Anchor = AnchorStyles.Left;
+            textBox2.Location = new Point(78, 18);
+            textBox2.MaxLength = 0;
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(383, 23);
+            textBox2.TabIndex = 6;
+            // 
             // label4
             // 
             label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label4.Location = new Point(360, 297);
+            label4.Font = new Font("Yu Gothic UI", 11.25F);
+            label4.Location = new Point(16, 21);
             label4.Name = "label4";
-            label4.Size = new Size(106, 25);
-            label4.TabIndex = 3;
-            label4.Text = "PRODUCTS";
+            label4.Size = new Size(56, 20);
+            label4.TabIndex = 5;
+            label4.Text = "Search:";
+            // 
+            // btnDeleteProduct
+            // 
+            btnDeleteProduct.Font = new Font("Yu Gothic UI", 11.25F);
+            btnDeleteProduct.Location = new Point(327, 9);
+            btnDeleteProduct.Name = "btnDeleteProduct";
+            btnDeleteProduct.Size = new Size(156, 48);
+            btnDeleteProduct.TabIndex = 4;
+            btnDeleteProduct.Text = "Delete Product";
+            btnDeleteProduct.UseVisualStyleBackColor = true;
+            btnDeleteProduct.Click += btnDeleteProduct_Click;
+            // 
+            // btnUpdateProduct
+            // 
+            btnUpdateProduct.Font = new Font("Yu Gothic UI", 11.25F);
+            btnUpdateProduct.Location = new Point(165, 9);
+            btnUpdateProduct.Name = "btnUpdateProduct";
+            btnUpdateProduct.Size = new Size(156, 48);
+            btnUpdateProduct.TabIndex = 3;
+            btnUpdateProduct.Text = "Update Product";
+            btnUpdateProduct.UseVisualStyleBackColor = true;
+            // 
+            // btnAddProduct
+            // 
+            btnAddProduct.Font = new Font("Yu Gothic UI", 11.25F);
+            btnAddProduct.Location = new Point(3, 9);
+            btnAddProduct.Name = "btnAddProduct";
+            btnAddProduct.Size = new Size(156, 48);
+            btnAddProduct.TabIndex = 2;
+            btnAddProduct.Text = "Add Product";
+            btnAddProduct.UseVisualStyleBackColor = true;
+            btnAddProduct.Click += btnAddProduct_Click;
             // 
             // tabPage5
             // 
@@ -529,7 +628,7 @@
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(916, 654);
+            tabPage5.Size = new Size(919, 654);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             tabPage5.UseVisualStyleBackColor = true;
@@ -541,7 +640,7 @@
             panel6.Dock = DockStyle.Top;
             panel6.Location = new Point(3, 3);
             panel6.Name = "panel6";
-            panel6.Size = new Size(910, 71);
+            panel6.Size = new Size(913, 71);
             panel6.TabIndex = 1;
             // 
             // button2
@@ -568,7 +667,7 @@
             sfDataGrid1.Dock = DockStyle.Fill;
             sfDataGrid1.Location = new Point(3, 3);
             sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(910, 648);
+            sfDataGrid1.Size = new Size(913, 648);
             sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -586,7 +685,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(916, 654);
+            tabPage6.Size = new Size(919, 654);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -608,14 +707,14 @@
             panel5.Dock = DockStyle.Top;
             panel5.Location = new Point(223, 0);
             panel5.Name = "panel5";
-            panel5.Size = new Size(974, 93);
+            panel5.Size = new Size(977, 93);
             panel5.TabIndex = 8;
             // 
             // MainInventory
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1197, 755);
+            ClientSize = new Size(1200, 755);
             Controls.Add(PanelControl);
             Controls.Add(panel5);
             Controls.Add(panel1);
@@ -640,7 +739,10 @@
             panel8.ResumeLayout(false);
             panel8.PerformLayout();
             tabPage4.ResumeLayout(false);
-            tabPage4.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)ProductTable).EndInit();
+            panel9.ResumeLayout(false);
+            panel10.ResumeLayout(false);
+            panel10.PerformLayout();
             tabPage5.ResumeLayout(false);
             panel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)sfDataGrid1).EndInit();
@@ -667,7 +769,6 @@
         private Button btnStock;
         private Label label2;
         private TabPage tabPage4;
-        private Label label4;
         private TabPage tabPage5;
         private TabPage tabPage6;
         private Label label6;
@@ -677,7 +778,7 @@
         private Panel panel3;
         private Label label7;
         private Panel panel8;
-        private TextBox textBox1;
+        private TextBox txtBoxSupplierSearch;
         private Label label3;
         private Panel panel7;
         private Button btnDeleteSupplier;
@@ -690,6 +791,15 @@
         private Label lblWelcome;
         private Panel panel5;
         private DataGridView SupplierTable;
+        private DataGridView ProductTable;
+        private Panel panel9;
+        private Panel panel10;
+        private TextBox textBox2;
+        private Label label4;
+        private Button btnDeleteProduct;
+        private Button btnUpdateProduct;
+        private Button btnAddProduct;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn Id;
         private DataGridViewTextBoxColumn SupplierName;
         private DataGridViewTextBoxColumn Email;

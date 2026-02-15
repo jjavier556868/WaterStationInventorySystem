@@ -26,10 +26,10 @@ namespace InvSys.App
         private void InitializeDatabases()
         {
             using var invContext = new InventoryDbContext();
-            invContext.Database.EnsureCreated();  
+            invContext.Database.EnsureCreated();
 
             using var accContext = new AccountsDbContext();
-            accContext.Database.EnsureCreated();  
+            accContext.Database.EnsureCreated();
         }
 
 
@@ -45,7 +45,7 @@ namespace InvSys.App
 
         private void AddUserToDatabase(string username, string email, string password)
         {
-            // Generate BCrypt hash (work factor 12 is secure default)
+            
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             var userAccount = new UserAccount
@@ -57,7 +57,6 @@ namespace InvSys.App
 
             using (var context = new AccountsDbContext())
             {
-                // Check if user already exists
                 if (context.UserAccounts.Any(u => u.Username == username))
                 {
                     MessageBox.Show("Username already exists!", "Error",
@@ -84,18 +83,18 @@ namespace InvSys.App
 
             using (var context = new AccountsDbContext())
             {
-                // Query by Username or Email
+               
                 var user = context.UserAccounts
                     .FirstOrDefault(u => u.Username == loginInput || u.Email == loginInput);
 
                 if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 {
-                        string greeting = $"Welcome back, {user.Username}!";
-                        MessageBox.Show(greeting, "Login Successful");
-                        this.Hide();
-                        var mainInv = new MainInventory(user.Username);
-                        mainInv.Closed += (s, args) => this.Close();
-                        mainInv.Show();
+                    string greeting = $"Welcome back, {user.Username}!";
+                    MessageBox.Show(greeting, "Login Successful");
+                    this.Hide();
+                    var mainInv = new MainInventory(user.Username);
+                    mainInv.Closed += (s, args) => this.Close();
+                    mainInv.Show();
 
                 }
                 else
@@ -127,6 +126,11 @@ namespace InvSys.App
                 e.SuppressKeyPress = true;
             }
 
+        }
+
+        private void btnExit_Click(object sender, EventArgs e)
+        {
+            this.Close();
         }
     }
 }

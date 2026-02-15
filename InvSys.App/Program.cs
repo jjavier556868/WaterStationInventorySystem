@@ -1,3 +1,5 @@
+using InvSys.App.CRUDForms;
+
 namespace InvSys.App
 {
     internal static class Program

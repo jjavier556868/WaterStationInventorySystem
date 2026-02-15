@@ -1,8 +1,9 @@
-﻿using System;
+﻿using InvSys.Domain.Models.InventoryItems;
+using InvSys.Infrastructure;
+using Microsoft.EntityFrameworkCore;
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using InvSys.Infrastructure;
-using InvSys.Domain.Models.InventoryItems;
 
 namespace InvSys.Infrastructure
 {
@@ -22,7 +23,7 @@ namespace InvSys.Infrastructure
                 Name = name,
                 Email = email,
                 Location = location,
-                ContactNo = contact,  
+                ContactNo = contact,
                 isActive = isActive,
                 CreatedDate = DateTime.Now
             };
@@ -32,9 +33,7 @@ namespace InvSys.Infrastructure
 
         public List<Supplier> GetAllSuppliers()
         {
-            return _context.Suppliers
-                .Where(s => s.isActive)
-                .ToList(); 
+            return _context.Suppliers.ToList();
         }
 
         public void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive)
@@ -47,19 +46,81 @@ namespace InvSys.Infrastructure
                 supplier.Location = location;
                 supplier.ContactNo = contact;
                 supplier.isActive = isActive;
-               
-
                 _context.SaveChanges();
             }
         }
+
         public void DeleteSupplier(int id)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
             if (supplier != null)
             {
+                var productCount = _context.Products.Count(p => p.SupplierId == id);
+                if (productCount > 0)
+                {
+                    throw new InvalidOperationException($"Cannot delete supplier with {productCount} product(s). Reassign or delete products first.");
+                }
+
                 _context.Suppliers.Remove(supplier);
                 _context.SaveChanges();
             }
+        }
+
+        // FIXED: Simple projection with SupplierName string
+        public List<object> GetAllProducts()
+        {
+            return _context.Products
+                .Select(p => new
+                {
+                    p.Id,
+                    p.Name,
+                    p.Price,
+                    p.QuantityInStock,
+                    SupplierName = _context.Suppliers
+                        .Where(s => s.Id == p.SupplierId)
+                        .Select(s => s.Name)
+                        .FirstOrDefault() ?? "No Supplier"
+                })
+                .OrderBy(p => p.Id)
+                .ToList<object>();
+        }
+
+        
+
+        public void UpdateProduct(int id, string name, decimal price, decimal quantity, int supplierId)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product != null)
+            {
+                product.Name = name;
+                product.Price = price;
+                product.QuantityInStock = quantity;
+                product.SupplierId = supplierId;
+                _context.SaveChanges();
+            }
+        }
+
+        public void DeleteProduct(int id)
+        {
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            if (product != null)
+            {
+                _context.Products.Remove(product);
+                _context.SaveChanges();
+            }
+        }
+
+        public void AddProduct(string name, decimal price, decimal quantity, int supplierId)
+        {
+            var product = new Product
+            {
+                Name = name,
+                Price = price,
+                QuantityInStock = quantity,
+                SupplierId = supplierId
+            };
+            _context.Products.Add(product);
+            _context.SaveChanges();
         }
 
         public void Dispose()

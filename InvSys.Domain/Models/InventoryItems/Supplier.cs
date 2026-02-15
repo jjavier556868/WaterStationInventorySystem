@@ -22,5 +22,6 @@ namespace InvSys.Domain.Models.InventoryItems
         public string ContactNo { get; set; } = string.Empty;
 
         public virtual ICollection<Product> Products { get; set; } = new List<Product>();
+
     }
 }

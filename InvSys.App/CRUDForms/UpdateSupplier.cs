@@ -61,7 +61,6 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            // Check duplicate email (exclude current supplier)
             using var service = new InventoryService();
             if (service.GetAllSuppliers().Any(s => s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
             {
@@ -78,7 +77,7 @@ namespace InvSys.App.CRUDForms
                     txtBoxSupplier.Text.Trim(),
                     txtBoxEmail.Text.Trim(),
                     txtBoxLocation.Text.Trim(),
-                    txtBoxContact.Text.Trim(),  // ✅ Maps to ContactNo
+                    txtBoxContact.Text.Trim(), 
                     chkBoxActive.Checked
                 );
 
