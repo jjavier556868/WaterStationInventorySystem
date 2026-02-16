@@ -69,7 +69,7 @@ namespace InvSys.Infrastructure
         // FIXED: Simple projection with SupplierName string
         public List<object> GetAllProducts()
         {
-            return _context.Products
+            return _context.Products.ToList()
                 .Select(p => new
                 {
                     p.Id,

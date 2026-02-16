@@ -67,6 +67,9 @@
             tabPage4 = new TabPage();
             ProductTable = new DataGridView();
             dataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            Names = new DataGridViewTextBoxColumn();
+            Prices = new DataGridViewTextBoxColumn();
+            Quantities = new DataGridViewTextBoxColumn();
             panel9 = new Panel();
             panel10 = new Panel();
             textBox2 = new TextBox();
@@ -112,7 +115,7 @@
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(223, 755);
+            panel1.Size = new Size(223, 749);
             panel1.TabIndex = 1;
             // 
             // gradientPanel1
@@ -123,7 +126,7 @@
             gradientPanel1.Dock = DockStyle.Fill;
             gradientPanel1.Location = new Point(0, 0);
             gradientPanel1.Name = "gradientPanel1";
-            gradientPanel1.Size = new Size(223, 755);
+            gradientPanel1.Size = new Size(223, 749);
             gradientPanel1.TabIndex = 0;
             // 
             // panel4
@@ -140,7 +143,7 @@
             panel4.Dock = DockStyle.Fill;
             panel4.Location = new Point(0, 0);
             panel4.Name = "panel4";
-            panel4.Size = new Size(223, 755);
+            panel4.Size = new Size(223, 749);
             panel4.TabIndex = 2;
             // 
             // btnLogout
@@ -150,7 +153,7 @@
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Segoe UI", 14.25F);
             btnLogout.ForeColor = SystemColors.ButtonFace;
-            btnLogout.Location = new Point(-2, 662);
+            btnLogout.Location = new Point(-2, 656);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(226, 70);
             btnLogout.TabIndex = 8;
@@ -290,13 +293,13 @@
             PanelControl.Controls.Add(tabPage5);
             PanelControl.Controls.Add(tabPage6);
             PanelControl.Dock = DockStyle.Fill;
-            PanelControl.ItemSize = new Size(50, 50);
+            PanelControl.ItemSize = new Size(0, 1);
             PanelControl.Location = new Point(223, 93);
             PanelControl.Margin = new Padding(0);
             PanelControl.Multiline = true;
             PanelControl.Name = "PanelControl";
             PanelControl.SelectedIndex = 0;
-            PanelControl.Size = new Size(977, 662);
+            PanelControl.Size = new Size(977, 656);
             PanelControl.SizeMode = TabSizeMode.Fixed;
             PanelControl.TabIndex = 0;
             // 
@@ -306,7 +309,7 @@
             tabPage1.Location = new Point(4, 4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(919, 654);
+            tabPage1.Size = new Size(968, 648);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -319,7 +322,7 @@
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
-            panel2.Size = new Size(913, 648);
+            panel2.Size = new Size(962, 642);
             panel2.TabIndex = 2;
             // 
             // label1
@@ -338,7 +341,7 @@
             tabPage2.Location = new Point(4, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(919, 654);
+            tabPage2.Size = new Size(946, 648);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -360,7 +363,7 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(919, 654);
+            tabPage3.Size = new Size(946, 648);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -374,7 +377,7 @@
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
             SupplierTable.ReadOnly = true;
-            SupplierTable.Size = new Size(913, 585);
+            SupplierTable.Size = new Size(940, 579);
             SupplierTable.TabIndex = 1;
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             // 
@@ -449,7 +452,7 @@
             panel7.Dock = DockStyle.Top;
             panel7.Location = new Point(3, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(913, 63);
+            panel7.Size = new Size(940, 63);
             panel7.TabIndex = 0;
             // 
             // panel8
@@ -522,7 +525,7 @@
             tabPage4.Location = new Point(4, 4);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(919, 654);
+            tabPage4.Size = new Size(946, 648);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -531,12 +534,12 @@
             // 
             ProductTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
             ProductTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ProductTable.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1 });
+            ProductTable.Columns.AddRange(new DataGridViewColumn[] { dataGridViewTextBoxColumn1, Names, Prices, Quantities });
             ProductTable.Dock = DockStyle.Fill;
             ProductTable.Location = new Point(3, 66);
             ProductTable.Name = "ProductTable";
             ProductTable.ReadOnly = true;
-            ProductTable.Size = new Size(913, 585);
+            ProductTable.Size = new Size(940, 579);
             ProductTable.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn1
@@ -548,6 +551,27 @@
             dataGridViewTextBoxColumn1.ReadOnly = true;
             dataGridViewTextBoxColumn1.Width = 108;
             // 
+            // Names
+            // 
+            Names.DataPropertyName = "Name";
+            Names.HeaderText = "Name";
+            Names.Name = "Names";
+            Names.ReadOnly = true;
+            // 
+            // Prices
+            // 
+            Prices.DataPropertyName = "Price";
+            Prices.HeaderText = "Price";
+            Prices.Name = "Prices";
+            Prices.ReadOnly = true;
+            // 
+            // Quantities
+            // 
+            Quantities.DataPropertyName = "QuantityInStock";
+            Quantities.HeaderText = "Quantity";
+            Quantities.Name = "Quantities";
+            Quantities.ReadOnly = true;
+            // 
             // panel9
             // 
             panel9.Controls.Add(panel10);
@@ -557,7 +581,7 @@
             panel9.Dock = DockStyle.Top;
             panel9.Location = new Point(3, 3);
             panel9.Name = "panel9";
-            panel9.Size = new Size(913, 63);
+            panel9.Size = new Size(940, 63);
             panel9.TabIndex = 1;
             // 
             // panel10
@@ -628,7 +652,7 @@
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(919, 654);
+            tabPage5.Size = new Size(946, 648);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             tabPage5.UseVisualStyleBackColor = true;
@@ -640,7 +664,7 @@
             panel6.Dock = DockStyle.Top;
             panel6.Location = new Point(3, 3);
             panel6.Name = "panel6";
-            panel6.Size = new Size(913, 71);
+            panel6.Size = new Size(940, 71);
             panel6.TabIndex = 1;
             // 
             // button2
@@ -667,7 +691,7 @@
             sfDataGrid1.Dock = DockStyle.Fill;
             sfDataGrid1.Location = new Point(3, 3);
             sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(913, 648);
+            sfDataGrid1.Size = new Size(940, 642);
             sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -685,7 +709,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(919, 654);
+            tabPage6.Size = new Size(946, 648);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -714,7 +738,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1200, 755);
+            ClientSize = new Size(1200, 749);
             Controls.Add(PanelControl);
             Controls.Add(panel5);
             Controls.Add(panel1);
@@ -799,7 +823,6 @@
         private Button btnDeleteProduct;
         private Button btnUpdateProduct;
         private Button btnAddProduct;
-        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
         private DataGridViewTextBoxColumn Id;
         private DataGridViewTextBoxColumn SupplierName;
         private DataGridViewTextBoxColumn Email;
@@ -808,5 +831,9 @@
         private DataGridViewTextBoxColumn Products;
         private DataGridViewTextBoxColumn CreatedDate;
         private DataGridViewCheckBoxColumn isActive;
+        private DataGridViewTextBoxColumn dataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn Names;
+        private DataGridViewTextBoxColumn Prices;
+        private DataGridViewTextBoxColumn Quantities;
     }
 }
