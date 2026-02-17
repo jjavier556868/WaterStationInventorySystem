@@ -48,7 +48,7 @@ namespace InvSys.App.CRUDForms
             }
 
             
-            if (!decimal.TryParse(txtBoxQuantity.Text, out decimal quantity) || quantity < 0)
+            if (!int.TryParse(txtBoxQuantity.Text, out int quantity) || quantity < 0)
             {
                 MessageBox.Show("Valid quantity required (e.g. 50)!", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -56,7 +56,7 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            // Validate Supplier
+           
             if (comboBoxSupplier.SelectedValue == null)
             {
                 MessageBox.Show("Please select a supplier!", "Validation Error",

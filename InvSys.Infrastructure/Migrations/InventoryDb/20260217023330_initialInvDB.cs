@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore.Migrations;
 namespace InvSys.Infrastructure.Migrations.InventoryDb
 {
     /// <inheritdoc />
-    public partial class initialInventoryDB : Migration
+    public partial class initialInvDB : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
@@ -38,7 +38,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     Name = table.Column<string>(type: "TEXT", maxLength: 100, nullable: false),
                     Price = table.Column<decimal>(type: "REAL", nullable: false),
                     SupplierId = table.Column<int>(type: "INTEGER", nullable: false),
-                    QuantityInStock = table.Column<decimal>(type: "REAL", nullable: false),
+                    QuantityInStock = table.Column<int>(type: "REAL", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     isActive = table.Column<bool>(type: "INTEGER", nullable: false)
                 },

@@ -1,5 +1,6 @@
 ﻿using InvSys.App.CRUDForms;
 using InvSys.Domain.Models.InventoryItems;
+using InvSys.Domain.Models.Account;
 using InvSys.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -15,6 +16,9 @@ namespace InvSys.App
 {
     public partial class MainInventory : Form
     {
+        private string _currentUsername;
+        private UserRole _currentUserRole;
+
         public MainInventory()
         {
             InitializeComponent();
@@ -23,8 +27,43 @@ namespace InvSys.App
 
             SupplierTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             SupplierTable.AutoGenerateColumns = false;
+
             ProductTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ProductTable.AutoGenerateColumns = false;
+        }
+
+        public MainInventory(string username, UserRole userRole) : this()
+        {
+            _currentUsername = username;
+            _currentUserRole = userRole;
+            lblWelcome.Text = $"Welcome, {username}!";
+            UpdateUIForRole();
+        }
+
+        public MainInventory(string username) : this()
+        {
+            _currentUsername = username;
+            _currentUserRole = UserRole.User;
+            lblWelcome.Text = $"Welcome, {username}!";
+            UpdateUIForRole();
+        }
+
+        private void UpdateUIForRole()
+        {
+            bool isAdmin = _currentUserRole == UserRole.Admin;
+
+            btnAddSupplier.Enabled = isAdmin;
+            btnUpdateSupplier.Enabled = isAdmin;
+            btnDeleteSupplier.Enabled = isAdmin;
+            btnAddProduct.Enabled = isAdmin;
+            btnUpdateProduct.Enabled = isAdmin;
+            btnDeleteProduct.Enabled = isAdmin;
+            btnAccounts.Enabled = isAdmin;
+
+            if (!isAdmin && _currentUsername != null)
+            {
+                lblWelcome.Text += " (Read-Only Mode)";
+            }
         }
 
         public void RefreshSupplierTable()
@@ -45,24 +84,12 @@ namespace InvSys.App
             ProductTable.Refresh();
         }
 
-
-
-        private string _currentUsername;
-
-        public MainInventory(string username) : this()
-        {
-            _currentUsername = username;
-            lblWelcome.Text = $"Welcome, {username}!";
-        }
-
         private void MainInventory_Load(object sender, EventArgs e)
         {
-
         }
 
         private void sfButton1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
@@ -95,6 +122,12 @@ namespace InvSys.App
 
         private void btnAccounts_Click(object sender, EventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             PanelControl.SelectedIndex = 5;
         }
 
@@ -105,21 +138,24 @@ namespace InvSys.App
 
         private void sfDataGrid2_Click(object sender, EventArgs e)
         {
-
         }
 
         private void tabPage1_Click(object sender, EventArgs e)
         {
-
         }
 
         private void userNameLabel_Click(object sender, EventArgs e)
         {
-
         }
 
         private void btnAddSupplier_Click(object sender, EventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var addForm = new AddSupplier(this);
             addForm.ShowDialog();
             if (addForm.DialogResult == DialogResult.OK)
@@ -130,11 +166,16 @@ namespace InvSys.App
 
         private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
         {
-
         }
 
         private void SupplierTable_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required to edit.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
             {
                 var selectedRow = SupplierTable.Rows[e.RowIndex];
@@ -154,6 +195,12 @@ namespace InvSys.App
 
         private void btnDeleteSupplier_Click(object sender, EventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (SupplierTable.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Please select a supplier to delete.", "No Selection",
@@ -162,7 +209,6 @@ namespace InvSys.App
             }
 
             int rowCount = SupplierTable.SelectedRows.Count;
-
             string message = rowCount == 1
                 ? "Are you sure you want to delete the selected supplier?"
                 : $"Are you sure you want to delete {rowCount} selected suppliers?";
@@ -202,6 +248,12 @@ namespace InvSys.App
 
         private void btnUpdateSupplier_Click(object sender, EventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (SupplierTable.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Please select a supplier to update.", "No Selection",
@@ -223,9 +275,14 @@ namespace InvSys.App
             }
         }
 
-        // Product CRUD Methods (same pattern as Supplier)
         private void btnAddProduct_Click(object sender, EventArgs e)
         {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             var addForm = new AddProduct();
             addForm.ShowDialog();
             if (addForm.DialogResult == DialogResult.OK)
@@ -234,33 +291,14 @@ namespace InvSys.App
             }
         }
 
-        private void btnUpdateProduct_Click(object sender, EventArgs e)
+        private void btnDeleteProduct_Click(object sender, EventArgs e)
         {
-            /*
-            if (ProductTable.SelectedRows.Count == 0)
+            if (_currentUserRole != UserRole.Admin)
             {
-                MessageBox.Show("Please select a product to update.", "No Selection",
+                MessageBox.Show("Admin access required.", "Access Denied",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            var selectedRow = ProductTable.SelectedRows[0];
-            if (selectedRow.DataBoundItem is Product product)
-            {
-                var updateForm = new UpdateProduct(this);
-                updateForm.LoadSelectedProduct(selectedRow);
-                updateForm.ShowDialog();
-
-                if (updateForm.DialogResult == DialogResult.OK)
-                {
-                    RefreshProductTable();
-                }
-            }
-            */
-        }
-
-        private void btnDeleteProduct_Click(object sender, EventArgs e)
-        {
             if (ProductTable.SelectedRows.Count == 0)
             {
                 MessageBox.Show("Please select a product to delete.", "No Selection",
@@ -269,7 +307,6 @@ namespace InvSys.App
             }
 
             int rowCount = ProductTable.SelectedRows.Count;
-
             string message = rowCount == 1
                 ? "Are you sure you want to delete the selected product?"
                 : $"Are you sure you want to delete {rowCount} selected products?";
@@ -288,7 +325,7 @@ namespace InvSys.App
                 for (int i = ProductTable.SelectedRows.Count - 1; i >= 0; i--)
                 {
                     var row = ProductTable.SelectedRows[i];
-                    // Get ID from the first cell (Id column) - works with anonymous objects
+
                     if (row.Cells[0].Value != null)
                     {
                         int productId = Convert.ToInt32(row.Cells[0].Value);
@@ -311,22 +348,116 @@ namespace InvSys.App
 
         private void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
         {
-            string searchText = txtBoxSupplierSearch.Text.Trim().ToLower();
+            string searchText = txtBoxSupplierSearch.Text.Trim();
 
-            foreach (DataGridViewRow row in SupplierTable.Rows)
+            if (string.IsNullOrEmpty(searchText))
             {
-                bool found = false;
+                RefreshSupplierTable();
+                return;
+            }
 
-                foreach (DataGridViewCell cell in row.Cells)
+            using var service = new InventoryService();
+            var allSuppliers = service.GetAllSuppliers();
+            var filteredSuppliers = allSuppliers
+                .Where(s => s.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           s.Email.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           s.Location.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           s.ContactNo.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(s => s.Name)
+                .ToList();
+
+            SupplierTable.DataSource = null;
+            SupplierTable.DataSource = filteredSuppliers;
+
+            if (SupplierTable.Rows.Count > 0)
+            {
+                SupplierTable.ClearSelection();
+                SupplierTable.Rows[0].Selected = true;
+                SupplierTable.CurrentCell = SupplierTable.Rows[0].Cells[0];
+                SupplierTable.FirstDisplayedScrollingRowIndex = 0;
+            }
+        }
+
+        private void ProductTable_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required to edit.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
+            {
+                var selectedRow = ProductTable.Rows[e.RowIndex];
+                if (selectedRow.DataBoundItem != null)
                 {
-                    if (cell.Value != null && cell.Value.ToString().ToLower().Contains(searchText))
+                    var updateForm = new UpdateProduct(this);
+                    updateForm.LoadSelectedProduct(selectedRow);
+                    updateForm.ShowDialog();
+
+                    if (updateForm.DialogResult == DialogResult.OK)
                     {
-                        found = true;
-                        break;
+                        RefreshProductTable();
                     }
                 }
+            }
+        }
 
-                row.Visible = string.IsNullOrEmpty(searchText) || found;
+        private void btnUpdateProduct_Click(object sender, EventArgs e)
+        {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (ProductTable.SelectedRows.Count == 0)
+            {
+                MessageBox.Show("Please select a product to update.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var selectedRow = ProductTable.SelectedRows[0];
+            if (selectedRow.DataBoundItem != null)
+            {
+                var updateForm = new UpdateProduct(this);
+                updateForm.LoadSelectedProduct(selectedRow);
+                updateForm.ShowDialog();
+                if (updateForm.DialogResult == DialogResult.OK)
+                {
+                    RefreshProductTable();
+                }
+            }
+        }
+
+        private void textBox2_TextChanged(object sender, EventArgs e)
+        {
+            string searchText = textBox2.Text.Trim();
+
+            if (string.IsNullOrEmpty(searchText))
+            {
+                RefreshProductTable();
+                return;
+            }
+
+            using var service = new InventoryService();
+            var allProducts = service.GetAllProducts().Cast<dynamic>()
+                .Where(p => p.Name.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           p.Price.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           p.SupplierName.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                           p.QuantityInStock.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(p => p.Name)
+                .ToList<object>();
+
+            ProductTable.DataSource = null;
+            ProductTable.DataSource = allProducts;
+
+            if (ProductTable.Rows.Count > 0)
+            {
+                ProductTable.ClearSelection();
+                ProductTable.Rows[0].Selected = true;
+                ProductTable.CurrentCell = ProductTable.Rows[0].Cells[0];
+                ProductTable.FirstDisplayedScrollingRowIndex = 0;
             }
         }
     }

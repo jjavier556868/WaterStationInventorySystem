@@ -49,7 +49,6 @@ namespace InvSys.Infrastructure
                 _context.SaveChanges();
             }
         }
-
         public void DeleteSupplier(int id)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
@@ -66,7 +65,6 @@ namespace InvSys.Infrastructure
             }
         }
 
-        // FIXED: Simple projection with SupplierName string
         public List<object> GetAllProducts()
         {
             return _context.Products
@@ -79,7 +77,8 @@ namespace InvSys.Infrastructure
                     SupplierName = _context.Suppliers
                         .Where(s => s.Id == p.SupplierId)
                         .Select(s => s.Name)
-                        .FirstOrDefault() ?? "No Supplier"
+                        .FirstOrDefault() ?? "No Supplier",
+                    p.CreatedDate
                 })
                 .OrderBy(p => p.Id)
                 .ToList<object>();
@@ -87,7 +86,7 @@ namespace InvSys.Infrastructure
 
         
 
-        public void UpdateProduct(int id, string name, decimal price, decimal quantity, int supplierId)
+        public void UpdateProduct(int id, string name, decimal price, int quantity, int supplierId)
         {
             var product = _context.Products.FirstOrDefault(p => p.Id == id);
             if (product != null)
@@ -110,14 +109,15 @@ namespace InvSys.Infrastructure
             }
         }
 
-        public void AddProduct(string name, decimal price, decimal quantity, int supplierId)
+        public void AddProduct(string name, decimal price, int quantity, int supplierId)
         {
             var product = new Product
             {
                 Name = name,
                 Price = price,
                 QuantityInStock = quantity,
-                SupplierId = supplierId
+                SupplierId = supplierId,
+                CreatedDate = DateTime.Now
             };
             _context.Products.Add(product);
             _context.SaveChanges();

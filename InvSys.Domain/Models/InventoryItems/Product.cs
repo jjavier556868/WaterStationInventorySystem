@@ -21,9 +21,7 @@ namespace InvSys.Domain.Models.InventoryItems
         public Supplier Supplier { get; set; } = null!;
 
         [Column(TypeName = "REAL")]
-        public decimal QuantityInStock { get; set; } = 0;
-        public bool IsInStock => QuantityInStock > 0;
-        public bool IsLowStock => QuantityInStock < 10;
+        public int QuantityInStock { get; set; } = 0;
 
         public virtual ICollection<Sales> Sale { get; set; } = new List<Sales>();
     }

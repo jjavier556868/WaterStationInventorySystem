@@ -15,7 +15,7 @@ namespace InvSys.App.CRUDForms
         {
             InitializeComponent();
             _parentForm = parentForm;
-            txtBoxID.Enabled = false;  // Disable ID textbox
+            txtBoxID.Enabled = false;  
             chkBoxActive.Checked = true;
             this.AcceptButton = btnUpdate;
             this.CancelButton = btnCancel;
@@ -30,10 +30,12 @@ namespace InvSys.App.CRUDForms
                 txtBoxSupplier.Text = _selectedSupplier.Name ?? "";
                 txtBoxEmail.Text = _selectedSupplier.Email ?? "";
                 txtBoxLocation.Text = _selectedSupplier.Location ?? "";
-                txtBoxContact.Text = _selectedSupplier.ContactNo ?? "";  // ✅ ContactNo from model
+                txtBoxContact.Text = _selectedSupplier.ContactNo ?? ""; 
                 chkBoxActive.Checked = _selectedSupplier.isActive;
             }
         }
+
+        
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {

@@ -34,7 +34,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.Property<decimal>("Price")
                         .HasColumnType("REAL");
 
-                    b.Property<decimal>("QuantityInStock")
+                    b.Property<int>("QuantityInStock")
                         .HasColumnType("REAL");
 
                     b.Property<int>("SupplierId")

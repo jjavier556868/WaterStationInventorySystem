@@ -191,7 +191,9 @@
             Controls.Add(label2);
             Controls.Add(txtBoxSupplier);
             Controls.Add(label1);
+            MaximizeBox = false;
             Name = "UpdateSupplier";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "UpdateSupplier";
             ResumeLayout(false);
             PerformLayout();

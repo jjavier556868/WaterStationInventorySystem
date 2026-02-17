@@ -11,8 +11,8 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvSys.Infrastructure.Migrations.InventoryDb
 {
     [DbContext(typeof(InventoryDbContext))]
-    [Migration("20260215041213_initialInventoryDB")]
-    partial class initialInventoryDB
+    [Migration("20260217023330_initialInvDB")]
+    partial class initialInvDB
     {
         /// <inheritdoc />
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -37,7 +37,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.Property<decimal>("Price")
                         .HasColumnType("REAL");
 
-                    b.Property<decimal>("QuantityInStock")
+                    b.Property<int>("QuantityInStock")
                         .HasColumnType("REAL");
 
                     b.Property<int>("SupplierId")

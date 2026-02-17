@@ -25,6 +25,8 @@ namespace InvSys.Domain.Models.Account
         [StringLength(500, MinimumLength = 6, ErrorMessage = "Password must be 6-500 characters")]
         public string PasswordHash { get; set; } = string.Empty;
 
+        public UserRole Role { get; set; }
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }
