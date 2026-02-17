@@ -798,11 +798,11 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 2, 17, 22, 54, 55, 156);
+            clock1.CustomTime = new DateTime(2026, 2, 17, 23, 1, 6, 793);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
-            clock1.Location = new Point(786, 3);
+            clock1.Location = new Point(787, 3);
             clock1.MinimumSize = new Size(75, 75);
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
