@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InvSys.Domain.Models.Enums;
+using System;
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
 
@@ -14,7 +15,7 @@ namespace InvSys.Domain.Models.InventoryItems
         public int Quantity { get; set; }  // Positive for IN, negative for OUT
 
         [Required, MaxLength(50)]
-        public string TransactionType { get; set; } = string.Empty;  // "RECEIVED", "SOLD", "ADJUSTMENT"
+        public TransactionType Transaction { get; set; } = 0;  // "RECEIVED", "SOLD", "ADJUSTMENT"
 
         public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
     }
