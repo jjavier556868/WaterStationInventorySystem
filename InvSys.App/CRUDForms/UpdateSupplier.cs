@@ -31,7 +31,7 @@ namespace InvSys.App.CRUDForms
                 txtBoxEmail.Text = _selectedSupplier.Email ?? "";
                 txtBoxLocation.Text = _selectedSupplier.Location ?? "";
                 txtBoxContact.Text = _selectedSupplier.ContactNo ?? ""; 
-                chkBoxActive.Checked = _selectedSupplier.isActive;
+                chkBoxActive.Checked = _selectedSupplier.IsActive;
             }
         }
 

@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace InvSys.Domain.Models.InventoryItems
 {
-    public class Supplier:BaseEntity
+    public class Supplier : BaseEntity
     {
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;

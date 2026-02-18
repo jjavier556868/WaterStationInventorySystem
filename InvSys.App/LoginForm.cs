@@ -1,5 +1,6 @@
 ﻿using BCrypt.Net;  
 using InvSys.Domain.Models.Account;
+using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
 using Microsoft.VisualBasic.ApplicationServices;
 using System;

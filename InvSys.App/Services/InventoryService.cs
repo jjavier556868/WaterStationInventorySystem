@@ -24,7 +24,7 @@ namespace InvSys.Infrastructure
                 Email = email,
                 Location = location,
                 ContactNo = contact,
-                isActive = isActive,
+                IsActive = isActive,
                 CreatedDate = DateTime.Now
             };
             _context.Suppliers.Add(supplier);
@@ -45,7 +45,7 @@ namespace InvSys.Infrastructure
                 supplier.Email = email;
                 supplier.Location = location;
                 supplier.ContactNo = contact;
-                supplier.isActive = isActive;
+                supplier.IsActive = isActive;
                 _context.SaveChanges();
             }
         }

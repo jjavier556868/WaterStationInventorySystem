@@ -1,4 +1,5 @@
-﻿using System;
+﻿using InvSys.Domain.Models.Enums;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
 using System.Linq;
@@ -26,7 +27,6 @@ namespace InvSys.Domain.Models.Account
         public string PasswordHash { get; set; } = string.Empty;
 
         public UserRole Role { get; set; }
-
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
     }
 }

@@ -15,6 +15,7 @@ namespace InvSys.Domain.Models.InventoryItems
         public int Id { get; set; }
 
         public DateTime CreatedDate { get; set; }
-        public bool isActive { get; set; } = true;
+        public bool IsActive { get; set; } = true;
+
     }
 }

@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer1 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer1 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer2 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer2 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -302,7 +302,7 @@
             PanelControl.Controls.Add(tabPage5);
             PanelControl.Controls.Add(tabPage6);
             PanelControl.Dock = DockStyle.Fill;
-            PanelControl.ItemSize = new Size(50, 50);
+            PanelControl.ItemSize = new Size(0, 1);
             PanelControl.Location = new Point(223, 93);
             PanelControl.Margin = new Padding(0);
             PanelControl.Multiline = true;
@@ -751,7 +751,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(919, 654);
+            tabPage6.Size = new Size(968, 654);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -799,7 +799,7 @@
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
             clock1.CustomTime = new DateTime(2026, 2, 17, 23, 1, 6, 793);
-            clock1.DigitalRenderer = digitalClockRenderer1;
+            clock1.DigitalRenderer = digitalClockRenderer2;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(787, 3);
@@ -807,7 +807,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer1;
+            clock1.Renderer = clockRenderer2;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;

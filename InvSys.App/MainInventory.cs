@@ -1,6 +1,5 @@
 ﻿using InvSys.App.CRUDForms;
 using InvSys.Domain.Models.InventoryItems;
-using InvSys.Domain.Models.Account;
 using InvSys.Infrastructure;
 using System;
 using System.Collections.Generic;
@@ -11,6 +10,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using InvSys.Domain.Models.Enums;
 
 namespace InvSys.App
 {
