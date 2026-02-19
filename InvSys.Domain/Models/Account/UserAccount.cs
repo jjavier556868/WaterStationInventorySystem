@@ -1,10 +1,6 @@
 ﻿using InvSys.Domain.Models.Enums;
 using System;
-using System.Collections.Generic;
 using System.ComponentModel.DataAnnotations;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InvSys.Domain.Models.Account
 {
@@ -13,20 +9,22 @@ namespace InvSys.Domain.Models.Account
         [Key]
         public int Id { get; set; }
 
-        [Required(ErrorMessage = "Username is required")]
-        [StringLength(256, ErrorMessage = "Username cannot exceed 256 characters")]
+        [Required, StringLength(256)]
         public string Username { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Email is required")]
-        [EmailAddress(ErrorMessage = "Invalid email format")]
-        [StringLength(256, ErrorMessage = "Email cannot exceed 256 characters")]
+        [Required, EmailAddress, StringLength(256)]
         public string Email { get; set; } = string.Empty;
 
-        [Required(ErrorMessage = "Password is required")]
-        [StringLength(500, MinimumLength = 6, ErrorMessage = "Password must be 6-500 characters")]
+        [Required, MaxLength(500)]
         public string PasswordHash { get; set; } = string.Empty;
-
         public UserRole Role { get; set; }
+        public bool IsActive { get; set; } = true;
+
         public DateTime CreatedAt { get; set; } = DateTime.UtcNow;
+        public string? CreatedBy { get; set; }
+        public DateTime? UpdatedAt { get; set; }
+        public string? UpdatedBy { get; set; }
+        public DateTime? DeletedAt { get; set; }
+        public string? DeletedBy { get; set; }
     }
 }

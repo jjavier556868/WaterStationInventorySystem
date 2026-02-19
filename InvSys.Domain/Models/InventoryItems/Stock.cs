@@ -16,7 +16,6 @@ namespace InvSys.Domain.Models.InventoryItems
 
         [Required, MaxLength(50)]
         public TransactionType Transaction { get; set; } = 0;  // "RECEIVED", "SOLD", "ADJUSTMENT"
-
         public DateTime TransactionDate { get; set; } = DateTime.UtcNow;
     }
 }
