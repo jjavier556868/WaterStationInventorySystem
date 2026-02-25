@@ -8,7 +8,7 @@ namespace InvSys.Domain.Models.Enums
 {
     public enum UserRole
     {
-        User,
-        Admin
+        User = 0,
+        Admin = 1
     }
 }

@@ -1,12 +1,15 @@
-﻿using BCrypt.Net;  
+﻿using BCrypt.Net;
 using InvSys.Domain.Models.Account;
 using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
+using Microsoft.EntityFrameworkCore; 
 using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Linq;
 using System.Windows.Forms;
 using static System.Windows.Forms.DataFormats;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace InvSys.App
 {
@@ -31,10 +34,8 @@ namespace InvSys.App
             invContext.Database.EnsureCreated();
 
             using var accContext = new AccountsDbContext();
-            accContext.Database.EnsureCreated(); 
+            accContext.Database.EnsureCreated();
         }
-
-
 
         private void TxtBoxShowPasswordChar(bool _bool)
         {
@@ -48,7 +49,7 @@ namespace InvSys.App
 
         private void AddUserToDatabase(string username, string email, string password)
         {
-            
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             var userAccount = new UserAccount
@@ -76,7 +77,6 @@ namespace InvSys.App
 
         private void AddAdminToDatabase(string username, string email, string password)
         {
-
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             var userAccount = new UserAccount
@@ -84,7 +84,8 @@ namespace InvSys.App
                 Username = username,
                 Email = email,
                 PasswordHash = passwordHash,
-                Role = UserRole.Admin
+                Role = UserRole.Admin,
+                CreatedBy = "System" // <--- Added this to satisfy your updated model!
             };
 
             using (var context = new AccountsDbContext())
@@ -130,7 +131,7 @@ namespace InvSys.App
                     }
 
                     this.Hide();
-                    var mainInv = new MainInventory(user.Username, user.Role); 
+                    var mainInv = new MainInventory(user.Username, user.Role);
                     mainInv.Closed += (s, args) => this.Close();
                     mainInv.Show();
                 }

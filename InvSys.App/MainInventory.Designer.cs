@@ -28,8 +28,8 @@
         /// </summary>
         private void InitializeComponent()
         {
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer2 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer2 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer1 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer1 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -139,7 +139,7 @@
             // 
             // panel4
             // 
-            panel4.BackColor = Color.Transparent;
+            panel4.BackColor = Color.FromArgb(21, 45, 123);
             panel4.Controls.Add(btnLogout);
             panel4.Controls.Add(panel3);
             panel4.Controls.Add(btnStock);
@@ -190,11 +190,12 @@
             // 
             // btnStock
             // 
-            btnStock.BackColor = Color.PaleTurquoise;
+            btnStock.BackColor = Color.FromArgb(49, 52, 113);
             btnStock.FlatAppearance.BorderColor = Color.White;
             btnStock.FlatAppearance.BorderSize = 0;
             btnStock.FlatStyle = FlatStyle.Flat;
-            btnStock.Font = new Font("Yu Gothic UI", 14.25F);
+            btnStock.Font = new Font("Yu Gothic UI", 21.75F);
+            btnStock.ForeColor = SystemColors.ButtonFace;
             btnStock.Location = new Point(0, 178);
             btnStock.Name = "btnStock";
             btnStock.Size = new Size(226, 79);
@@ -205,11 +206,12 @@
             // 
             // btnDashboard
             // 
-            btnDashboard.BackColor = Color.PaleTurquoise;
+            btnDashboard.BackColor = Color.FromArgb(108, 117, 219);
             btnDashboard.FlatAppearance.BorderColor = Color.White;
             btnDashboard.FlatAppearance.BorderSize = 0;
             btnDashboard.FlatStyle = FlatStyle.Flat;
-            btnDashboard.Font = new Font("Yu Gothic UI", 14.25F);
+            btnDashboard.Font = new Font("Yu Gothic UI", 21.75F);
+            btnDashboard.ForeColor = SystemColors.ButtonFace;
             btnDashboard.Location = new Point(-2, 93);
             btnDashboard.Name = "btnDashboard";
             btnDashboard.Size = new Size(226, 79);
@@ -220,11 +222,12 @@
             // 
             // btnAccounts
             // 
-            btnAccounts.BackColor = Color.PaleTurquoise;
+            btnAccounts.BackColor = Color.FromArgb(49, 52, 113);
             btnAccounts.FlatAppearance.BorderColor = Color.White;
             btnAccounts.FlatAppearance.BorderSize = 0;
             btnAccounts.FlatStyle = FlatStyle.Flat;
-            btnAccounts.Font = new Font("Yu Gothic UI", 14.25F);
+            btnAccounts.Font = new Font("Yu Gothic UI", 21.75F);
+            btnAccounts.ForeColor = SystemColors.ButtonFace;
             btnAccounts.Location = new Point(-2, 518);
             btnAccounts.Name = "btnAccounts";
             btnAccounts.Size = new Size(226, 79);
@@ -235,11 +238,12 @@
             // 
             // btnSupplier
             // 
-            btnSupplier.BackColor = Color.PaleTurquoise;
+            btnSupplier.BackColor = Color.FromArgb(49, 52, 113);
             btnSupplier.FlatAppearance.BorderColor = Color.White;
             btnSupplier.FlatAppearance.BorderSize = 0;
             btnSupplier.FlatStyle = FlatStyle.Flat;
-            btnSupplier.Font = new Font("Yu Gothic UI", 14.25F);
+            btnSupplier.Font = new Font("Yu Gothic UI", 21.75F);
+            btnSupplier.ForeColor = SystemColors.ButtonFace;
             btnSupplier.Location = new Point(-2, 263);
             btnSupplier.Name = "btnSupplier";
             btnSupplier.Size = new Size(226, 79);
@@ -250,11 +254,12 @@
             // 
             // btnSales
             // 
-            btnSales.BackColor = Color.PaleTurquoise;
+            btnSales.BackColor = Color.FromArgb(49, 52, 113);
             btnSales.FlatAppearance.BorderColor = Color.White;
             btnSales.FlatAppearance.BorderSize = 0;
             btnSales.FlatStyle = FlatStyle.Flat;
-            btnSales.Font = new Font("Yu Gothic UI", 14.25F);
+            btnSales.Font = new Font("Yu Gothic UI", 21.75F);
+            btnSales.ForeColor = SystemColors.ButtonFace;
             btnSales.Location = new Point(-1, 433);
             btnSales.Name = "btnSales";
             btnSales.Size = new Size(225, 79);
@@ -265,11 +270,12 @@
             // 
             // btnProducts
             // 
-            btnProducts.BackColor = Color.PaleTurquoise;
+            btnProducts.BackColor = Color.FromArgb(49, 52, 113);
             btnProducts.FlatAppearance.BorderColor = Color.White;
             btnProducts.FlatAppearance.BorderSize = 0;
             btnProducts.FlatStyle = FlatStyle.Flat;
-            btnProducts.Font = new Font("Yu Gothic UI", 14.25F);
+            btnProducts.Font = new Font("Yu Gothic UI", 21.75F);
+            btnProducts.ForeColor = SystemColors.ButtonFace;
             btnProducts.Location = new Point(-2, 348);
             btnProducts.Name = "btnProducts";
             btnProducts.Size = new Size(226, 79);
@@ -302,7 +308,7 @@
             PanelControl.Controls.Add(tabPage5);
             PanelControl.Controls.Add(tabPage6);
             PanelControl.Dock = DockStyle.Fill;
-            PanelControl.ItemSize = new Size(0, 1);
+            PanelControl.ItemSize = new Size(50, 50);
             PanelControl.Location = new Point(223, 93);
             PanelControl.Margin = new Padding(0);
             PanelControl.Multiline = true;
@@ -354,6 +360,7 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
+            tabPage2.Click += tabPage2_Click;
             // 
             // label2
             // 
@@ -751,7 +758,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(968, 654);
+            tabPage6.Size = new Size(919, 654);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -798,8 +805,8 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 2, 17, 23, 1, 6, 793);
-            clock1.DigitalRenderer = digitalClockRenderer2;
+            clock1.CustomTime = new DateTime(2026, 2, 25, 21, 4, 51, 995);
+            clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(787, 3);
@@ -807,7 +814,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer2;
+            clock1.Renderer = clockRenderer1;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;

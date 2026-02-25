@@ -48,6 +48,21 @@ namespace InvSys.App
             UpdateUIForRole();
         }
 
+        private void HighlightActiveButton(Button activeButton)
+        {
+            Color inactiveColor = Color.FromArgb(49, 52, 113);
+            Color activeColor = Color.FromArgb(108, 117, 219);
+            btnDashboard.BackColor = inactiveColor;
+            btnStock.BackColor = inactiveColor;
+            btnSales.BackColor = inactiveColor;
+            btnAccounts.BackColor = inactiveColor;
+            btnProducts.BackColor = inactiveColor;
+            btnSupplier.BackColor = inactiveColor;
+
+            activeButton.BackColor = activeColor;
+        }
+
+
         private void UpdateUIForRole()
         {
             bool isAdmin = _currentUserRole == UserRole.Admin;
@@ -103,21 +118,25 @@ namespace InvSys.App
         private void btnDashboard_Click(object sender, EventArgs e)
         {
             PanelControl.SelectedIndex = 0;
+            HighlightActiveButton((Button)sender);
         }
 
         private void btnStock_Click(object sender, EventArgs e)
         {
             PanelControl.SelectedIndex = 1;
+            HighlightActiveButton((Button)sender);
         }
 
         private void btnProducts_Click(object sender, EventArgs e)
         {
             PanelControl.SelectedIndex = 3;
+            HighlightActiveButton((Button)sender);
         }
 
         private void btnSupplier_Click(object sender, EventArgs e)
         {
             PanelControl.SelectedIndex = 2;
+            HighlightActiveButton((Button)sender);
         }
 
         private void btnAccounts_Click(object sender, EventArgs e)
@@ -129,11 +148,13 @@ namespace InvSys.App
                 return;
             }
             PanelControl.SelectedIndex = 5;
+            HighlightActiveButton((Button)sender);
         }
 
         private void btnSales_Click(object sender, EventArgs e)
         {
             PanelControl.SelectedIndex = 4;
+            HighlightActiveButton((Button)sender);
         }
 
         private void sfDataGrid2_Click(object sender, EventArgs e)
@@ -459,6 +480,11 @@ namespace InvSys.App
                 ProductTable.CurrentCell = ProductTable.Rows[0].Cells[0];
                 ProductTable.FirstDisplayedScrollingRowIndex = 0;
             }
+        }
+
+        private void tabPage2_Click(object sender, EventArgs e)
+        {
+
         }
     }
 }
