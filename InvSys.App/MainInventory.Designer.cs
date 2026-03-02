@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -44,7 +45,14 @@
             PanelControl = new TabControl();
             tabPage1 = new TabPage();
             panel2 = new Panel();
-            label1 = new Label();
+            groupBox4 = new GroupBox();
+            groupBox3 = new GroupBox();
+            groupBox2 = new GroupBox();
+            dataGridView2 = new DataGridView();
+            productBindingSource = new BindingSource(components);
+            groupBox1 = new GroupBox();
+            dataGridView1 = new DataGridView();
+            supplierBindingSource = new BindingSource(components);
             tabPage2 = new TabPage();
             label2 = new Label();
             tabPage3 = new TabPage();
@@ -85,6 +93,14 @@
             tabPage6 = new TabPage();
             label6 = new Label();
             panel5 = new Panel();
+            nameDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            contactNoDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            productsDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            isActiveDataGridViewCheckBoxColumn = new DataGridViewCheckBoxColumn();
+            nameDataGridViewTextBoxColumn1 = new DataGridViewTextBoxColumn();
+            priceDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            quantityInStockDataGridViewTextBoxColumn = new DataGridViewTextBoxColumn();
+            isActiveDataGridViewCheckBoxColumn1 = new DataGridViewCheckBoxColumn();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -93,6 +109,12 @@
             PanelControl.SuspendLayout();
             tabPage1.SuspendLayout();
             panel2.SuspendLayout();
+            groupBox2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)productBindingSource).BeginInit();
+            groupBox1.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)supplierBindingSource).BeginInit();
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SupplierTable).BeginInit();
@@ -318,22 +340,89 @@
             // panel2
             // 
             panel2.BackColor = SystemColors.GradientActiveCaption;
-            panel2.Controls.Add(label1);
+            panel2.Controls.Add(groupBox4);
+            panel2.Controls.Add(groupBox3);
+            panel2.Controls.Add(groupBox2);
+            panel2.Controls.Add(groupBox1);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
             panel2.Size = new Size(962, 642);
             panel2.TabIndex = 2;
             // 
-            // label1
+            // groupBox4
             // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 48F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(257, 193);
-            label1.Name = "label1";
-            label1.Size = new Size(424, 86);
-            label1.TabIndex = 1;
-            label1.Text = "Coming Soon";
+            groupBox4.Location = new Point(497, 314);
+            groupBox4.Name = "groupBox4";
+            groupBox4.Size = new Size(441, 200);
+            groupBox4.TabIndex = 1;
+            groupBox4.TabStop = false;
+            groupBox4.Text = "Sales";
+            // 
+            // groupBox3
+            // 
+            groupBox3.Location = new Point(24, 314);
+            groupBox3.Name = "groupBox3";
+            groupBox3.Size = new Size(444, 200);
+            groupBox3.TabIndex = 1;
+            groupBox3.TabStop = false;
+            groupBox3.Text = "Stock Tracker";
+            // 
+            // groupBox2
+            // 
+            groupBox2.Controls.Add(dataGridView2);
+            groupBox2.Location = new Point(497, 59);
+            groupBox2.Name = "groupBox2";
+            groupBox2.Size = new Size(450, 200);
+            groupBox2.TabIndex = 1;
+            groupBox2.TabStop = false;
+            groupBox2.Text = "Products";
+            // 
+            // dataGridView2
+            // 
+            dataGridView2.AutoGenerateColumns = false;
+            dataGridView2.BackgroundColor = SystemColors.ActiveCaption;
+            dataGridView2.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView2.Columns.AddRange(new DataGridViewColumn[] { nameDataGridViewTextBoxColumn1, priceDataGridViewTextBoxColumn, quantityInStockDataGridViewTextBoxColumn, isActiveDataGridViewCheckBoxColumn1 });
+            dataGridView2.DataSource = productBindingSource;
+            dataGridView2.Dock = DockStyle.Bottom;
+            dataGridView2.GridColor = SystemColors.InactiveCaption;
+            dataGridView2.Location = new Point(3, 47);
+            dataGridView2.Name = "dataGridView2";
+            dataGridView2.Size = new Size(444, 150);
+            dataGridView2.TabIndex = 0;
+            // 
+            // productBindingSource
+            // 
+            productBindingSource.DataSource = typeof(Domain.Models.InventoryItems.Product);
+            // 
+            // groupBox1
+            // 
+            groupBox1.Controls.Add(dataGridView1);
+            groupBox1.Location = new Point(18, 59);
+            groupBox1.Name = "groupBox1";
+            groupBox1.Size = new Size(450, 200);
+            groupBox1.TabIndex = 0;
+            groupBox1.TabStop = false;
+            groupBox1.Text = "Supplier";
+            // 
+            // dataGridView1
+            // 
+            dataGridView1.AutoGenerateColumns = false;
+            dataGridView1.BackgroundColor = SystemColors.ActiveCaption;
+            dataGridView1.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
+            dataGridView1.Columns.AddRange(new DataGridViewColumn[] { nameDataGridViewTextBoxColumn, contactNoDataGridViewTextBoxColumn, productsDataGridViewTextBoxColumn, isActiveDataGridViewCheckBoxColumn });
+            dataGridView1.DataSource = supplierBindingSource;
+            dataGridView1.Dock = DockStyle.Bottom;
+            dataGridView1.GridColor = SystemColors.InactiveCaption;
+            dataGridView1.Location = new Point(3, 47);
+            dataGridView1.Name = "dataGridView1";
+            dataGridView1.Size = new Size(444, 150);
+            dataGridView1.TabIndex = 0;
+            // 
+            // supplierBindingSource
+            // 
+            supplierBindingSource.DataSource = typeof(Domain.Models.InventoryItems.Supplier);
             // 
             // tabPage2
             // 
@@ -341,7 +430,7 @@
             tabPage2.Location = new Point(4, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(946, 648);
+            tabPage2.Size = new Size(968, 648);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -363,7 +452,7 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(946, 648);
+            tabPage3.Size = new Size(968, 648);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -377,7 +466,7 @@
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
             SupplierTable.ReadOnly = true;
-            SupplierTable.Size = new Size(940, 579);
+            SupplierTable.Size = new Size(962, 579);
             SupplierTable.TabIndex = 1;
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             // 
@@ -452,7 +541,7 @@
             panel7.Dock = DockStyle.Top;
             panel7.Location = new Point(3, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(940, 63);
+            panel7.Size = new Size(962, 63);
             panel7.TabIndex = 0;
             // 
             // panel8
@@ -525,7 +614,7 @@
             tabPage4.Location = new Point(4, 4);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(946, 648);
+            tabPage4.Size = new Size(968, 648);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -539,7 +628,7 @@
             ProductTable.Location = new Point(3, 66);
             ProductTable.Name = "ProductTable";
             ProductTable.ReadOnly = true;
-            ProductTable.Size = new Size(940, 579);
+            ProductTable.Size = new Size(962, 579);
             ProductTable.TabIndex = 2;
             // 
             // dataGridViewTextBoxColumn1
@@ -581,7 +670,7 @@
             panel9.Dock = DockStyle.Top;
             panel9.Location = new Point(3, 3);
             panel9.Name = "panel9";
-            panel9.Size = new Size(940, 63);
+            panel9.Size = new Size(962, 63);
             panel9.TabIndex = 1;
             // 
             // panel10
@@ -652,7 +741,7 @@
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(946, 648);
+            tabPage5.Size = new Size(968, 648);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             tabPage5.UseVisualStyleBackColor = true;
@@ -664,7 +753,7 @@
             panel6.Dock = DockStyle.Top;
             panel6.Location = new Point(3, 3);
             panel6.Name = "panel6";
-            panel6.Size = new Size(940, 71);
+            panel6.Size = new Size(962, 71);
             panel6.TabIndex = 1;
             // 
             // button2
@@ -691,7 +780,7 @@
             sfDataGrid1.Dock = DockStyle.Fill;
             sfDataGrid1.Location = new Point(3, 3);
             sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(940, 642);
+            sfDataGrid1.Size = new Size(962, 642);
             sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -709,7 +798,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(946, 648);
+            tabPage6.Size = new Size(968, 648);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -734,6 +823,62 @@
             panel5.Size = new Size(977, 93);
             panel5.TabIndex = 8;
             // 
+            // nameDataGridViewTextBoxColumn
+            // 
+            nameDataGridViewTextBoxColumn.DataPropertyName = "Name";
+            nameDataGridViewTextBoxColumn.HeaderText = "Name";
+            nameDataGridViewTextBoxColumn.Name = "nameDataGridViewTextBoxColumn";
+            nameDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // contactNoDataGridViewTextBoxColumn
+            // 
+            contactNoDataGridViewTextBoxColumn.DataPropertyName = "ContactNo";
+            contactNoDataGridViewTextBoxColumn.HeaderText = "Contact";
+            contactNoDataGridViewTextBoxColumn.Name = "contactNoDataGridViewTextBoxColumn";
+            contactNoDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // productsDataGridViewTextBoxColumn
+            // 
+            productsDataGridViewTextBoxColumn.DataPropertyName = "Products";
+            productsDataGridViewTextBoxColumn.HeaderText = "Products";
+            productsDataGridViewTextBoxColumn.Name = "productsDataGridViewTextBoxColumn";
+            productsDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // isActiveDataGridViewCheckBoxColumn
+            // 
+            isActiveDataGridViewCheckBoxColumn.DataPropertyName = "isActive";
+            isActiveDataGridViewCheckBoxColumn.HeaderText = "Active?";
+            isActiveDataGridViewCheckBoxColumn.Name = "isActiveDataGridViewCheckBoxColumn";
+            isActiveDataGridViewCheckBoxColumn.ReadOnly = true;
+            // 
+            // nameDataGridViewTextBoxColumn1
+            // 
+            nameDataGridViewTextBoxColumn1.DataPropertyName = "Name";
+            nameDataGridViewTextBoxColumn1.HeaderText = "Name";
+            nameDataGridViewTextBoxColumn1.Name = "nameDataGridViewTextBoxColumn1";
+            nameDataGridViewTextBoxColumn1.ReadOnly = true;
+            // 
+            // priceDataGridViewTextBoxColumn
+            // 
+            priceDataGridViewTextBoxColumn.DataPropertyName = "Price";
+            priceDataGridViewTextBoxColumn.HeaderText = "Price";
+            priceDataGridViewTextBoxColumn.Name = "priceDataGridViewTextBoxColumn";
+            priceDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // quantityInStockDataGridViewTextBoxColumn
+            // 
+            quantityInStockDataGridViewTextBoxColumn.DataPropertyName = "QuantityInStock";
+            quantityInStockDataGridViewTextBoxColumn.HeaderText = "Quantity";
+            quantityInStockDataGridViewTextBoxColumn.Name = "quantityInStockDataGridViewTextBoxColumn";
+            quantityInStockDataGridViewTextBoxColumn.ReadOnly = true;
+            // 
+            // isActiveDataGridViewCheckBoxColumn1
+            // 
+            isActiveDataGridViewCheckBoxColumn1.DataPropertyName = "isActive";
+            isActiveDataGridViewCheckBoxColumn1.HeaderText = "Active?";
+            isActiveDataGridViewCheckBoxColumn1.Name = "isActiveDataGridViewCheckBoxColumn1";
+            isActiveDataGridViewCheckBoxColumn1.ReadOnly = true;
+            // 
             // MainInventory
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -754,7 +899,12 @@
             PanelControl.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             panel2.ResumeLayout(false);
-            panel2.PerformLayout();
+            groupBox2.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridView2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)productBindingSource).EndInit();
+            groupBox1.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)dataGridView1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)supplierBindingSource).EndInit();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
             tabPage3.ResumeLayout(false);
@@ -796,8 +946,6 @@
         private TabPage tabPage5;
         private TabPage tabPage6;
         private Label label6;
-        private Panel panel2;
-        private Label label1;
         private Panel panel4;
         private Panel panel3;
         private Label label7;
@@ -835,5 +983,22 @@
         private DataGridViewTextBoxColumn Names;
         private DataGridViewTextBoxColumn Prices;
         private DataGridViewTextBoxColumn Quantities;
+        private Panel panel2;
+        private GroupBox groupBox4;
+        private GroupBox groupBox3;
+        private GroupBox groupBox2;
+        private GroupBox groupBox1;
+        private DataGridView dataGridView1;
+        private BindingSource supplierBindingSource;
+        private DataGridView dataGridView2;
+        private BindingSource productBindingSource;
+        private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn1;
+        private DataGridViewTextBoxColumn priceDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn quantityInStockDataGridViewTextBoxColumn;
+        private DataGridViewCheckBoxColumn isActiveDataGridViewCheckBoxColumn1;
+        private DataGridViewTextBoxColumn nameDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn contactNoDataGridViewTextBoxColumn;
+        private DataGridViewTextBoxColumn productsDataGridViewTextBoxColumn;
+        private DataGridViewCheckBoxColumn isActiveDataGridViewCheckBoxColumn;
     }
 }
