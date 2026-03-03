@@ -1,6 +1,10 @@
 ﻿using InvSys.App.CRUDForms;
+using InvSys.Domain.Models.Account;
+using InvSys.Domain.Models.Enums;
 using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
+using Syncfusion.WinForms.DataGrid;
+using Syncfusion.WinForms.DataGrid.Enums;
 using System;
 using System.Collections.Generic;
 using System.ComponentModel;
@@ -8,9 +12,9 @@ using System.Data;
 using System.Drawing;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 using System.Threading.Tasks;
 using System.Windows.Forms;
-using InvSys.Domain.Models.Enums;
 
 namespace InvSys.App
 {
@@ -24,13 +28,23 @@ namespace InvSys.App
             InitializeComponent();
             RefreshSupplierTable();
             RefreshProductTable();
+            RefreshAccountTable();
+            SetupAccountsTable();
 
             SupplierTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             SupplierTable.AutoGenerateColumns = false;
 
             ProductTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
             ProductTable.AutoGenerateColumns = false;
+
         }
+
+        public void SetupAccountsTable()
+        {
+            var accountTable = new AccountsDbContext();
+            AccountsTable.DataSource = accountTable.UserAccounts.ToList();
+        }
+
 
         public MainInventory(string username, UserRole userRole) : this()
         {
@@ -97,6 +111,12 @@ namespace InvSys.App
             ProductTable.DataSource = null;
             ProductTable.DataSource = products;
             ProductTable.Refresh();
+        }
+
+        public void RefreshAccountTable() {
+            using var accountService = new AccountsDbContext();
+            var accounts = accountService.UserAccounts.ToList();
+            AccountsTable.DataSource = accounts;
         }
 
         private void MainInventory_Load(object sender, EventArgs e)

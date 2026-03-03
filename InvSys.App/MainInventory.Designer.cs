@@ -87,7 +87,7 @@
             button1 = new Button();
             sfDataGrid1 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             tabPage6 = new TabPage();
-            label6 = new Label();
+            AccountsTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel5 = new Panel();
             gradientPanel2 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
@@ -112,6 +112,7 @@
             panel6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)sfDataGrid1).BeginInit();
             tabPage6.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)AccountsTable).BeginInit();
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
@@ -123,7 +124,7 @@
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(223, 755);
+            panel1.Size = new Size(223, 749);
             panel1.TabIndex = 1;
             // 
             // gradientPanel1
@@ -134,7 +135,7 @@
             gradientPanel1.Dock = DockStyle.Fill;
             gradientPanel1.Location = new Point(0, 0);
             gradientPanel1.Name = "gradientPanel1";
-            gradientPanel1.Size = new Size(223, 755);
+            gradientPanel1.Size = new Size(223, 749);
             gradientPanel1.TabIndex = 0;
             // 
             // panel4
@@ -151,7 +152,7 @@
             panel4.Dock = DockStyle.Fill;
             panel4.Location = new Point(0, 0);
             panel4.Name = "panel4";
-            panel4.Size = new Size(223, 755);
+            panel4.Size = new Size(223, 749);
             panel4.TabIndex = 2;
             // 
             // btnLogout
@@ -161,7 +162,7 @@
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Segoe UI", 14.25F);
             btnLogout.ForeColor = SystemColors.ButtonFace;
-            btnLogout.Location = new Point(-2, 662);
+            btnLogout.Location = new Point(-2, 656);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(226, 70);
             btnLogout.TabIndex = 8;
@@ -314,7 +315,7 @@
             PanelControl.Multiline = true;
             PanelControl.Name = "PanelControl";
             PanelControl.SelectedIndex = 0;
-            PanelControl.Size = new Size(977, 662);
+            PanelControl.Size = new Size(977, 656);
             PanelControl.SizeMode = TabSizeMode.Fixed;
             PanelControl.TabIndex = 0;
             // 
@@ -324,7 +325,7 @@
             tabPage1.Location = new Point(4, 4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(919, 654);
+            tabPage1.Size = new Size(919, 648);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
@@ -337,7 +338,7 @@
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
-            panel2.Size = new Size(913, 648);
+            panel2.Size = new Size(913, 642);
             panel2.TabIndex = 2;
             // 
             // label1
@@ -356,7 +357,7 @@
             tabPage2.Location = new Point(4, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(919, 654);
+            tabPage2.Size = new Size(919, 648);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -379,7 +380,7 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(919, 654);
+            tabPage3.Size = new Size(919, 648);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -393,7 +394,7 @@
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
             SupplierTable.ReadOnly = true;
-            SupplierTable.Size = new Size(913, 585);
+            SupplierTable.Size = new Size(913, 579);
             SupplierTable.TabIndex = 1;
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             // 
@@ -549,7 +550,7 @@
             tabPage4.Location = new Point(4, 4);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(919, 654);
+            tabPage4.Size = new Size(919, 648);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -563,7 +564,7 @@
             ProductTable.Location = new Point(3, 66);
             ProductTable.Name = "ProductTable";
             ProductTable.ReadOnly = true;
-            ProductTable.Size = new Size(913, 585);
+            ProductTable.Size = new Size(913, 579);
             ProductTable.TabIndex = 2;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
             // 
@@ -701,7 +702,7 @@
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(919, 654);
+            tabPage5.Size = new Size(919, 648);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             tabPage5.UseVisualStyleBackColor = true;
@@ -740,7 +741,7 @@
             sfDataGrid1.Dock = DockStyle.Fill;
             sfDataGrid1.Location = new Point(3, 3);
             sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(913, 648);
+            sfDataGrid1.Size = new Size(913, 642);
             sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -754,24 +755,37 @@
             // 
             // tabPage6
             // 
-            tabPage6.Controls.Add(label6);
+            tabPage6.Controls.Add(AccountsTable);
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(919, 654);
+            tabPage6.Size = new Size(919, 648);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
             // 
-            // label6
+            // AccountsTable
             // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label6.Location = new Point(344, 292);
-            label6.Name = "label6";
-            label6.Size = new Size(107, 25);
-            label6.TabIndex = 3;
-            label6.Text = "ACCOUNTS";
+            AccountsTable.AccessibleName = "Table";
+            AccountsTable.AllowEditing = false;
+            AccountsTable.AllowFiltering = true;
+            AccountsTable.AllowResizingColumns = true;
+            AccountsTable.AllowStandardTab = true;
+            AccountsTable.AllowTriStateSorting = true;
+            AccountsTable.Dock = DockStyle.Fill;
+            AccountsTable.Location = new Point(3, 3);
+            AccountsTable.Name = "AccountsTable";
+            AccountsTable.Size = new Size(913, 642);
+            AccountsTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            AccountsTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            AccountsTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            AccountsTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            AccountsTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            AccountsTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            AccountsTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            AccountsTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            AccountsTable.TabIndex = 0;
+            AccountsTable.Text = "sfDataGrid2";
             // 
             // panel5
             // 
@@ -805,7 +819,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 2, 25, 21, 4, 51, 995);
+            clock1.CustomTime = new DateTime(2026, 3, 3, 8, 48, 37, 127);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -827,7 +841,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1200, 755);
+            ClientSize = new Size(1200, 749);
             Controls.Add(PanelControl);
             Controls.Add(panel5);
             Controls.Add(panel1);
@@ -862,7 +876,7 @@
             panel6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)sfDataGrid1).EndInit();
             tabPage6.ResumeLayout(false);
-            tabPage6.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)AccountsTable).EndInit();
             panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
@@ -882,13 +896,11 @@
         private Button btnSales;
         private Button btnProducts;
         private Button btnSupplier;
-        private Button btnAccounts;
         private Button btnStock;
         private Label label2;
         private TabPage tabPage4;
         private TabPage tabPage5;
         private TabPage tabPage6;
-        private Label label6;
         private Panel panel2;
         private Label label1;
         private Panel panel4;
@@ -932,5 +944,7 @@
         private DataGridViewTextBoxColumn QuantityColumn;
         private DataGridViewTextBoxColumn NameOfSupplierColumn;
         private DataGridViewTextBoxColumn CreationDateColumn;
+        private Button btnAccounts;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid AccountsTable;
     }
 }

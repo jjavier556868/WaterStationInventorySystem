@@ -64,14 +64,14 @@ namespace InvSys.App
             {
                 if (context.UserAccounts.Any(u => u.Username == username))
                 {
-                    MessageBox.Show("Username already exists!", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    //MessageBox.Show("Username already exists!", "Error",
+                        //MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
 
                 context.UserAccounts.Add(userAccount);
                 context.SaveChanges();
-                MessageBox.Show("User created successfully!", "Success");
+                //MessageBox.Show("User created successfully!", "Success");
             }
         }
 
@@ -85,7 +85,7 @@ namespace InvSys.App
                 Email = email,
                 PasswordHash = passwordHash,
                 Role = UserRole.Admin,
-                CreatedBy = "System" // <--- Added this to satisfy your updated model!
+                CreatedBy = "System" 
             };
 
             using (var context = new AccountsDbContext())
