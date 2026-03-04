@@ -1,16 +1,15 @@
 ﻿using InvSys.App.CRUDForms;
+using InvSys.Domain.Models.Enums;
 using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
+using Syncfusion.WinForms.DataGrid;
+using Syncfusion.WinForms.DataGrid.Enums;
+using Syncfusion.WinForms.DataGrid.Events;
 using System;
 using System.Collections.Generic;
-using System.ComponentModel;
-using System.Data;
 using System.Drawing;
 using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows.Forms;
-using InvSys.Domain.Models.Enums;
 
 namespace InvSys.App
 {
@@ -22,14 +21,93 @@ namespace InvSys.App
         public MainInventory()
         {
             InitializeComponent();
+            SetupSfDataGridColumns();
+            InitializeSfDataGrids();
             RefreshSupplierTable();
             RefreshProductTable();
+        }
 
-            SupplierTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+        private void SetupSfDataGridColumns()
+        {
+            SupplierTable.Columns.Clear();
+            SupplierTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            ProductTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+
+            SupplierTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Id",
+                HeaderText = "ID"
+            });
+            SupplierTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Name",
+                HeaderText = "Supplier Name"
+            });
+            SupplierTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Email",
+                HeaderText = "Email"
+            });
+            SupplierTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Location",
+                HeaderText = "Location"
+            });
+            SupplierTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "ContactNo",
+                HeaderText = "Contact"
+            });
+            SupplierTable.Columns.Add(new GridCheckBoxColumn
+            {
+                MappingName = "IsActive",
+                HeaderText = "Active"
+            });
+
+            ProductTable.Columns.Clear();
+            ProductTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Id",
+                HeaderText = "ID"
+            });
+            ProductTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Name",
+                HeaderText = "Product Name"
+            });
+            ProductTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "Price",
+                HeaderText = "Price",
+                Format = "C2"
+            });
+            ProductTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "QuantityInStock",
+                HeaderText = "Stock"
+            });
+            ProductTable.Columns.Add(new GridTextColumn
+            {
+                MappingName = "SupplierName",
+                HeaderText = "Supplier"
+            });
+        }
+
+        private void InitializeSfDataGrids()
+        {
+            SupplierTable.SelectionMode = GridSelectionMode.Single;
             SupplierTable.AutoGenerateColumns = false;
+            SupplierTable.AllowEditing = false;
+            SupplierTable.AllowGrouping = false;
+            SupplierTable.AllowFiltering = true;
+            SupplierTable.AllowSorting = true;
 
-            ProductTable.SelectionMode = DataGridViewSelectionMode.FullRowSelect;
+            ProductTable.SelectionMode = GridSelectionMode.Single;
             ProductTable.AutoGenerateColumns = false;
+            ProductTable.AllowEditing = false;
+            ProductTable.AllowGrouping = false;
+            ProductTable.AllowFiltering = true;
+            ProductTable.AllowSorting = true;
         }
 
         public MainInventory(string username, UserRole userRole) : this()
@@ -62,7 +140,6 @@ namespace InvSys.App
             activeButton.BackColor = activeColor;
         }
 
-
         private void UpdateUIForRole()
         {
             bool isAdmin = _currentUserRole == UserRole.Admin;
@@ -85,26 +162,14 @@ namespace InvSys.App
         {
             using var service = new InventoryService();
             var suppliers = service.GetAllSuppliers().OrderBy(s => s.Id).ToList();
-            SupplierTable.DataSource = null;
             SupplierTable.DataSource = suppliers;
-            SupplierTable.Refresh();
         }
 
         public void RefreshProductTable()
         {
             using var service = new InventoryService();
             var products = service.GetAllProducts();
-            ProductTable.DataSource = null;
             ProductTable.DataSource = products;
-            ProductTable.Refresh();
-        }
-
-        private void MainInventory_Load(object sender, EventArgs e)
-        {
-        }
-
-        private void sfButton1_Click(object sender, EventArgs e)
-        {
         }
 
         private void btnLogout_Click(object sender, EventArgs e)
@@ -157,18 +222,6 @@ namespace InvSys.App
             HighlightActiveButton((Button)sender);
         }
 
-        private void sfDataGrid2_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void tabPage1_Click(object sender, EventArgs e)
-        {
-        }
-
-        private void userNameLabel_Click(object sender, EventArgs e)
-        {
-        }
-
         private void btnAddSupplier_Click(object sender, EventArgs e)
         {
             if (_currentUserRole != UserRole.Admin)
@@ -185,11 +238,7 @@ namespace InvSys.App
             }
         }
 
-        private void dataGridView1_CellContentClick(object sender, DataGridViewCellEventArgs e)
-        {
-        }
-
-        private void SupplierTable_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void SupplierTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (_currentUserRole != UserRole.Admin)
             {
@@ -197,19 +246,16 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                var selectedRow = SupplierTable.Rows[e.RowIndex];
-                if (selectedRow.DataBoundItem != null)
-                {
-                    var updateForm = new UpdateSupplier(this);
-                    updateForm.LoadSelectedSupplier(selectedRow);
-                    updateForm.ShowDialog();
 
-                    if (updateForm.DialogResult == DialogResult.OK)
-                    {
-                        RefreshSupplierTable();
-                    }
+            if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData is Supplier supplier)
+            {
+                var updateForm = new UpdateSupplier(this);
+                updateForm.LoadSelectedSupplier(supplier);
+                updateForm.ShowDialog();
+
+                if (updateForm.DialogResult == DialogResult.OK)
+                {
+                    RefreshSupplierTable();
                 }
             }
         }
@@ -222,14 +268,16 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (SupplierTable.SelectedRows.Count == 0)
+
+            var selectedItems = SupplierTable.SelectedItems;
+            if (selectedItems == null || selectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a supplier to delete.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int rowCount = SupplierTable.SelectedRows.Count;
+            int rowCount = selectedItems.Count;
             string message = rowCount == 1
                 ? "Are you sure you want to delete the selected supplier?"
                 : $"Are you sure you want to delete {rowCount} selected suppliers?";
@@ -244,15 +292,12 @@ namespace InvSys.App
             {
                 using var service = new InventoryService();
                 int deletedCount = 0;
+                var suppliersToDelete = selectedItems.Cast<Supplier>().ToList();
 
-                for (int i = SupplierTable.SelectedRows.Count - 1; i >= 0; i--)
+                foreach (var supplier in suppliersToDelete)
                 {
-                    var row = SupplierTable.SelectedRows[i];
-                    if (row.DataBoundItem is Supplier supplier)
-                    {
-                        service.DeleteSupplier(supplier.Id);
-                        deletedCount++;
-                    }
+                    service.DeleteSupplier(supplier.Id);
+                    deletedCount++;
                 }
 
                 MessageBox.Show($"{deletedCount} supplier(s) deleted successfully!", "Success",
@@ -275,18 +320,18 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (SupplierTable.SelectedRows.Count == 0)
+
+            if (SupplierTable.SelectedItem == null)
             {
                 MessageBox.Show("Please select a supplier to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            var selectedRow = SupplierTable.SelectedRows[0];
-            if (selectedRow.DataBoundItem is Supplier supplier)
+            if (SupplierTable.SelectedItem is Supplier supplier)
             {
                 var updateForm = new UpdateSupplier(this);
-                updateForm.LoadSelectedSupplier(selectedRow);
+                updateForm.LoadSelectedSupplier(supplier);
                 updateForm.ShowDialog();
 
                 if (updateForm.DialogResult == DialogResult.OK)
@@ -320,14 +365,16 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (ProductTable.SelectedRows.Count == 0)
+
+            var selectedItems = ProductTable.SelectedItems;
+            if (selectedItems == null || selectedItems.Count == 0)
             {
                 MessageBox.Show("Please select a product to delete.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            int rowCount = ProductTable.SelectedRows.Count;
+            int rowCount = selectedItems.Count;
             string message = rowCount == 1
                 ? "Are you sure you want to delete the selected product?"
                 : $"Are you sure you want to delete {rowCount} selected products?";
@@ -342,17 +389,13 @@ namespace InvSys.App
             {
                 using var service = new InventoryService();
                 int deletedCount = 0;
+                var productsToDelete = selectedItems.Cast<dynamic>().ToList();
 
-                for (int i = ProductTable.SelectedRows.Count - 1; i >= 0; i--)
+                foreach (var product in productsToDelete)
                 {
-                    var row = ProductTable.SelectedRows[i];
-
-                    if (row.Cells[0].Value != null)
-                    {
-                        int productId = Convert.ToInt32(row.Cells[0].Value);
-                        service.DeleteProduct(productId);
-                        deletedCount++;
-                    }
+                    int productId = product.Id;
+                    service.DeleteProduct(productId);
+                    deletedCount++;
                 }
 
                 MessageBox.Show($"{deletedCount} product(s) deleted successfully!", "Success",
@@ -387,19 +430,15 @@ namespace InvSys.App
                 .OrderBy(s => s.Name)
                 .ToList();
 
-            SupplierTable.DataSource = null;
             SupplierTable.DataSource = filteredSuppliers;
 
-            if (SupplierTable.Rows.Count > 0)
+            if (SupplierTable.View != null && SupplierTable.View.Records.Count > 0)
             {
-                SupplierTable.ClearSelection();
-                SupplierTable.Rows[0].Selected = true;
-                SupplierTable.CurrentCell = SupplierTable.Rows[0].Cells[0];
-                SupplierTable.FirstDisplayedScrollingRowIndex = 0;
+                SupplierTable.SelectedIndex = 0;
             }
         }
 
-        private void ProductTable_CellDoubleClick(object sender, DataGridViewCellEventArgs e)
+        private void ProductTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (_currentUserRole != UserRole.Admin)
             {
@@ -407,19 +446,17 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (e.RowIndex >= 0 && e.ColumnIndex >= 0)
-            {
-                var selectedRow = ProductTable.Rows[e.RowIndex];
-                if (selectedRow.DataBoundItem != null)
-                {
-                    var updateForm = new UpdateProduct(this);
-                    updateForm.LoadSelectedProduct(selectedRow);
-                    updateForm.ShowDialog();
 
-                    if (updateForm.DialogResult == DialogResult.OK)
-                    {
-                        RefreshProductTable();
-                    }
+            if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData != null)
+            {
+                var product = e.DataRow.RowData;
+                var updateForm = new UpdateProduct(this);
+                updateForm.LoadSelectedProduct(product);
+                updateForm.ShowDialog();
+
+                if (updateForm.DialogResult == DialogResult.OK)
+                {
+                    RefreshProductTable();
                 }
             }
         }
@@ -432,22 +469,22 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (ProductTable.SelectedRows.Count == 0)
+
+            if (ProductTable.SelectedItem == null)
             {
                 MessageBox.Show("Please select a product to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            var selectedRow = ProductTable.SelectedRows[0];
-            if (selectedRow.DataBoundItem != null)
+
+            var selectedProduct = ProductTable.SelectedItem;
+            var updateForm = new UpdateProduct(this);
+            updateForm.LoadSelectedProduct(selectedProduct);
+            updateForm.ShowDialog();
+
+            if (updateForm.DialogResult == DialogResult.OK)
             {
-                var updateForm = new UpdateProduct(this);
-                updateForm.LoadSelectedProduct(selectedRow);
-                updateForm.ShowDialog();
-                if (updateForm.DialogResult == DialogResult.OK)
-                {
-                    RefreshProductTable();
-                }
+                RefreshProductTable();
             }
         }
 
@@ -470,21 +507,12 @@ namespace InvSys.App
                 .OrderBy(p => p.Name)
                 .ToList<object>();
 
-            ProductTable.DataSource = null;
             ProductTable.DataSource = allProducts;
 
-            if (ProductTable.Rows.Count > 0)
+            if (ProductTable.View != null && ProductTable.View.Records.Count > 0)
             {
-                ProductTable.ClearSelection();
-                ProductTable.Rows[0].Selected = true;
-                ProductTable.CurrentCell = ProductTable.Rows[0].Cells[0];
-                ProductTable.FirstDisplayedScrollingRowIndex = 0;
+                ProductTable.SelectedIndex = 0;
             }
-        }
-
-        private void tabPage2_Click(object sender, EventArgs e)
-        {
-
         }
     }
 }

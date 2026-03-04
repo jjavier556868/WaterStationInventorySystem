@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            components = new System.ComponentModel.Container();
             Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer1 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
             Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer1 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
@@ -46,34 +47,18 @@
             PanelControl = new TabControl();
             tabPage1 = new TabPage();
             panel2 = new Panel();
-            label1 = new Label();
             tabPage2 = new TabPage();
             label2 = new Label();
             tabPage3 = new TabPage();
-            SupplierTable = new DataGridView();
-            Id = new DataGridViewTextBoxColumn();
-            SupplierName = new DataGridViewTextBoxColumn();
-            Email = new DataGridViewTextBoxColumn();
-            Location = new DataGridViewTextBoxColumn();
-            ContactNo = new DataGridViewTextBoxColumn();
-            Products = new DataGridViewTextBoxColumn();
-            CreatedDate = new DataGridViewTextBoxColumn();
-            isActive = new DataGridViewCheckBoxColumn();
+            SupplierTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel7 = new Panel();
-            panel8 = new Panel();
             txtBoxSupplierSearch = new TextBox();
             label3 = new Label();
             btnDeleteSupplier = new Button();
             btnUpdateSupplier = new Button();
             btnAddSupplier = new Button();
             tabPage4 = new TabPage();
-            ProductTable = new DataGridView();
-            IDColumn = new DataGridViewTextBoxColumn();
-            NameColumn = new DataGridViewTextBoxColumn();
-            PriceColumn = new DataGridViewTextBoxColumn();
-            QuantityColumn = new DataGridViewTextBoxColumn();
-            NameOfSupplierColumn = new DataGridViewTextBoxColumn();
-            CreationDateColumn = new DataGridViewTextBoxColumn();
+            ProductTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel9 = new Panel();
             panel10 = new Panel();
             textBox2 = new TextBox();
@@ -91,6 +76,7 @@
             panel5 = new Panel();
             gradientPanel2 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
+            gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -98,12 +84,10 @@
             panel3.SuspendLayout();
             PanelControl.SuspendLayout();
             tabPage1.SuspendLayout();
-            panel2.SuspendLayout();
             tabPage2.SuspendLayout();
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SupplierTable).BeginInit();
             panel7.SuspendLayout();
-            panel8.SuspendLayout();
             tabPage4.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)ProductTable).BeginInit();
             panel9.SuspendLayout();
@@ -115,6 +99,7 @@
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)gridLayout1).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -161,9 +146,9 @@
             btnLogout.FlatStyle = FlatStyle.Flat;
             btnLogout.Font = new Font("Segoe UI", 14.25F);
             btnLogout.ForeColor = SystemColors.ButtonFace;
-            btnLogout.Location = new Point(-2, 662);
+            btnLogout.Location = new Point(-2, 681);
             btnLogout.Name = "btnLogout";
-            btnLogout.Size = new Size(226, 70);
+            btnLogout.Size = new Size(226, 51);
             btnLogout.TabIndex = 8;
             btnLogout.Text = "Log Out";
             btnLogout.UseVisualStyleBackColor = false;
@@ -182,7 +167,7 @@
             label7.AutoSize = true;
             label7.Font = new Font("Segoe UI", 20.25F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label7.ForeColor = SystemColors.Control;
-            label7.Location = new Point(21, 29);
+            label7.Location = new Point(22, 30);
             label7.Name = "label7";
             label7.Size = new Size(180, 37);
             label7.TabIndex = 0;
@@ -194,13 +179,13 @@
             btnStock.FlatAppearance.BorderColor = Color.White;
             btnStock.FlatAppearance.BorderSize = 0;
             btnStock.FlatStyle = FlatStyle.Flat;
-            btnStock.Font = new Font("Yu Gothic UI", 21.75F);
+            btnStock.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnStock.ForeColor = SystemColors.ButtonFace;
-            btnStock.Location = new Point(0, 178);
+            btnStock.Location = new Point(0, 155);
             btnStock.Name = "btnStock";
-            btnStock.Size = new Size(226, 79);
+            btnStock.Size = new Size(226, 52);
             btnStock.TabIndex = 13;
-            btnStock.Text = "Stock Tracker";
+            btnStock.Text = "Stock";
             btnStock.UseVisualStyleBackColor = false;
             btnStock.Click += btnStock_Click;
             // 
@@ -210,11 +195,11 @@
             btnDashboard.FlatAppearance.BorderColor = Color.White;
             btnDashboard.FlatAppearance.BorderSize = 0;
             btnDashboard.FlatStyle = FlatStyle.Flat;
-            btnDashboard.Font = new Font("Yu Gothic UI", 21.75F);
+            btnDashboard.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnDashboard.ForeColor = SystemColors.ButtonFace;
-            btnDashboard.Location = new Point(-2, 93);
+            btnDashboard.Location = new Point(-2, 97);
             btnDashboard.Name = "btnDashboard";
-            btnDashboard.Size = new Size(226, 79);
+            btnDashboard.Size = new Size(226, 52);
             btnDashboard.TabIndex = 2;
             btnDashboard.Text = "Dashboard";
             btnDashboard.UseVisualStyleBackColor = false;
@@ -226,11 +211,11 @@
             btnAccounts.FlatAppearance.BorderColor = Color.White;
             btnAccounts.FlatAppearance.BorderSize = 0;
             btnAccounts.FlatStyle = FlatStyle.Flat;
-            btnAccounts.Font = new Font("Yu Gothic UI", 21.75F);
+            btnAccounts.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnAccounts.ForeColor = SystemColors.ButtonFace;
-            btnAccounts.Location = new Point(-2, 518);
+            btnAccounts.Location = new Point(-1, 387);
             btnAccounts.Name = "btnAccounts";
-            btnAccounts.Size = new Size(226, 79);
+            btnAccounts.Size = new Size(226, 52);
             btnAccounts.TabIndex = 12;
             btnAccounts.Text = "Accounts";
             btnAccounts.UseVisualStyleBackColor = false;
@@ -242,11 +227,11 @@
             btnSupplier.FlatAppearance.BorderColor = Color.White;
             btnSupplier.FlatAppearance.BorderSize = 0;
             btnSupplier.FlatStyle = FlatStyle.Flat;
-            btnSupplier.Font = new Font("Yu Gothic UI", 21.75F);
+            btnSupplier.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnSupplier.ForeColor = SystemColors.ButtonFace;
-            btnSupplier.Location = new Point(-2, 263);
+            btnSupplier.Location = new Point(-3, 213);
             btnSupplier.Name = "btnSupplier";
-            btnSupplier.Size = new Size(226, 79);
+            btnSupplier.Size = new Size(226, 52);
             btnSupplier.TabIndex = 9;
             btnSupplier.Text = "Supplier";
             btnSupplier.UseVisualStyleBackColor = false;
@@ -258,11 +243,11 @@
             btnSales.FlatAppearance.BorderColor = Color.White;
             btnSales.FlatAppearance.BorderSize = 0;
             btnSales.FlatStyle = FlatStyle.Flat;
-            btnSales.Font = new Font("Yu Gothic UI", 21.75F);
+            btnSales.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnSales.ForeColor = SystemColors.ButtonFace;
-            btnSales.Location = new Point(-1, 433);
+            btnSales.Location = new Point(0, 329);
             btnSales.Name = "btnSales";
-            btnSales.Size = new Size(225, 79);
+            btnSales.Size = new Size(225, 52);
             btnSales.TabIndex = 11;
             btnSales.Text = "Sales";
             btnSales.UseVisualStyleBackColor = false;
@@ -274,11 +259,11 @@
             btnProducts.FlatAppearance.BorderColor = Color.White;
             btnProducts.FlatAppearance.BorderSize = 0;
             btnProducts.FlatStyle = FlatStyle.Flat;
-            btnProducts.Font = new Font("Yu Gothic UI", 21.75F);
+            btnProducts.Font = new Font("Yu Gothic UI Semibold", 15.75F, FontStyle.Bold);
             btnProducts.ForeColor = SystemColors.ButtonFace;
-            btnProducts.Location = new Point(-2, 348);
+            btnProducts.Location = new Point(0, 271);
             btnProducts.Name = "btnProducts";
-            btnProducts.Size = new Size(226, 79);
+            btnProducts.Size = new Size(226, 52);
             btnProducts.TabIndex = 10;
             btnProducts.Text = "Products";
             btnProducts.UseVisualStyleBackColor = false;
@@ -290,12 +275,11 @@
             lblWelcome.BackColor = Color.Transparent;
             lblWelcome.Font = new Font("Segoe UI Light", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblWelcome.ForeColor = Color.White;
-            lblWelcome.Location = new Point(19, 25);
+            lblWelcome.Location = new Point(22, 25);
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(208, 40);
             lblWelcome.TabIndex = 15;
             lblWelcome.Text = "Welcome, User!";
-            lblWelcome.Click += userNameLabel_Click;
             // 
             // PanelControl
             // 
@@ -314,7 +298,7 @@
             PanelControl.Multiline = true;
             PanelControl.Name = "PanelControl";
             PanelControl.SelectedIndex = 0;
-            PanelControl.Size = new Size(977, 662);
+            PanelControl.Size = new Size(985, 662);
             PanelControl.SizeMode = TabSizeMode.Fixed;
             PanelControl.TabIndex = 0;
             // 
@@ -328,27 +312,15 @@
             tabPage1.TabIndex = 0;
             tabPage1.Text = "tabPage1";
             tabPage1.UseVisualStyleBackColor = true;
-            tabPage1.Click += tabPage1_Click;
             // 
             // panel2
             // 
             panel2.BackColor = SystemColors.GradientActiveCaption;
-            panel2.Controls.Add(label1);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
             panel2.Size = new Size(913, 648);
             panel2.TabIndex = 2;
-            // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Font = new Font("Segoe UI", 48F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label1.Location = new Point(257, 193);
-            label1.Name = "label1";
-            label1.Size = new Size(424, 86);
-            label1.TabIndex = 1;
-            label1.Text = "Coming Soon";
             // 
             // tabPage2
             // 
@@ -360,7 +332,6 @@
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
-            tabPage2.Click += tabPage2_Click;
             // 
             // label2
             // 
@@ -379,115 +350,52 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(919, 654);
+            tabPage3.Size = new Size(927, 654);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
             // 
             // SupplierTable
             // 
-            SupplierTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            SupplierTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            SupplierTable.Columns.AddRange(new DataGridViewColumn[] { Id, SupplierName, Email, Location, ContactNo, Products, CreatedDate, isActive });
+            SupplierTable.AccessibleName = "Table";
+            SupplierTable.AllowEditing = false;
+            SupplierTable.AutoSizeColumnsMode = Syncfusion.WinForms.DataGrid.Enums.AutoSizeColumnsMode.Fill;
             SupplierTable.Dock = DockStyle.Fill;
+            SupplierTable.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
-            SupplierTable.ReadOnly = true;
-            SupplierTable.Size = new Size(913, 585);
-            SupplierTable.TabIndex = 1;
-            SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
-            // 
-            // Id
-            // 
-            Id.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            Id.DataPropertyName = "Id";
-            Id.HeaderText = "ID";
-            Id.Name = "Id";
-            Id.ReadOnly = true;
-            Id.Width = 108;
-            // 
-            // SupplierName
-            // 
-            SupplierName.DataPropertyName = "Name";
-            SupplierName.HeaderText = "Name";
-            SupplierName.Name = "SupplierName";
-            SupplierName.ReadOnly = true;
-            SupplierName.SortMode = DataGridViewColumnSortMode.NotSortable;
-            // 
-            // Email
-            // 
-            Email.DataPropertyName = "Email";
-            Email.HeaderText = "Email";
-            Email.Name = "Email";
-            Email.ReadOnly = true;
-            // 
-            // Location
-            // 
-            Location.DataPropertyName = "Location";
-            Location.HeaderText = "Location";
-            Location.Name = "Location";
-            Location.ReadOnly = true;
-            // 
-            // ContactNo
-            // 
-            ContactNo.DataPropertyName = "ContactNo";
-            ContactNo.HeaderText = "Contact No.";
-            ContactNo.Name = "ContactNo";
-            ContactNo.ReadOnly = true;
-            // 
-            // Products
-            // 
-            Products.DataPropertyName = "Products";
-            Products.HeaderText = "Products";
-            Products.Name = "Products";
-            Products.ReadOnly = true;
-            Products.Visible = false;
-            // 
-            // CreatedDate
-            // 
-            CreatedDate.DataPropertyName = "CreatedDate";
-            CreatedDate.HeaderText = "Created Date";
-            CreatedDate.Name = "CreatedDate";
-            CreatedDate.ReadOnly = true;
-            // 
-            // isActive
-            // 
-            isActive.DataPropertyName = "isActive";
-            isActive.HeaderText = "Active Status";
-            isActive.Name = "isActive";
-            isActive.ReadOnly = true;
-            isActive.Resizable = DataGridViewTriState.True;
-            isActive.SortMode = DataGridViewColumnSortMode.Automatic;
+            SupplierTable.Size = new Size(921, 585);
+            SupplierTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            SupplierTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            SupplierTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            SupplierTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            SupplierTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            SupplierTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            SupplierTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            SupplierTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            SupplierTable.TabIndex = 7;
+            SupplierTable.Text = "sfDataGrid2";
             // 
             // panel7
             // 
-            panel7.Controls.Add(panel8);
+            panel7.Controls.Add(txtBoxSupplierSearch);
+            panel7.Controls.Add(label3);
             panel7.Controls.Add(btnDeleteSupplier);
             panel7.Controls.Add(btnUpdateSupplier);
             panel7.Controls.Add(btnAddSupplier);
             panel7.Dock = DockStyle.Top;
             panel7.Location = new Point(3, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(913, 63);
+            panel7.Size = new Size(921, 63);
             panel7.TabIndex = 0;
-            // 
-            // panel8
-            // 
-            panel8.Anchor = AnchorStyles.Left;
-            panel8.Controls.Add(txtBoxSupplierSearch);
-            panel8.Controls.Add(label3);
-            panel8.Location = new Point(494, -9);
-            panel8.Name = "panel8";
-            panel8.Size = new Size(469, 80);
-            panel8.TabIndex = 7;
             // 
             // txtBoxSupplierSearch
             // 
             txtBoxSupplierSearch.Anchor = AnchorStyles.Left;
-            txtBoxSupplierSearch.Location = new Point(78, 33);
+            txtBoxSupplierSearch.Location = new Point(80, 22);
             txtBoxSupplierSearch.MaxLength = 0;
             txtBoxSupplierSearch.Name = "txtBoxSupplierSearch";
-            txtBoxSupplierSearch.Size = new Size(383, 23);
+            txtBoxSupplierSearch.Size = new Size(287, 23);
             txtBoxSupplierSearch.TabIndex = 6;
             txtBoxSupplierSearch.TextChanged += txtBoxSupplierSearch_TextChanged;
             // 
@@ -495,7 +403,7 @@
             // 
             label3.AutoSize = true;
             label3.Font = new Font("Yu Gothic UI", 11.25F);
-            label3.Location = new Point(16, 31);
+            label3.Location = new Point(18, 21);
             label3.Name = "label3";
             label3.Size = new Size(56, 20);
             label3.TabIndex = 5;
@@ -503,11 +411,12 @@
             // 
             // btnDeleteSupplier
             // 
+            btnDeleteSupplier.Anchor = AnchorStyles.Right;
             btnDeleteSupplier.BackColor = Color.Firebrick;
             btnDeleteSupplier.FlatStyle = FlatStyle.Flat;
             btnDeleteSupplier.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeleteSupplier.ForeColor = SystemColors.ButtonHighlight;
-            btnDeleteSupplier.Location = new Point(327, 9);
+            btnDeleteSupplier.Location = new Point(754, 7);
             btnDeleteSupplier.Name = "btnDeleteSupplier";
             btnDeleteSupplier.Size = new Size(156, 48);
             btnDeleteSupplier.TabIndex = 4;
@@ -517,10 +426,11 @@
             // 
             // btnUpdateSupplier
             // 
+            btnUpdateSupplier.Anchor = AnchorStyles.Right;
             btnUpdateSupplier.BackColor = Color.GreenYellow;
             btnUpdateSupplier.FlatStyle = FlatStyle.Flat;
             btnUpdateSupplier.Font = new Font("Yu Gothic UI", 11.25F);
-            btnUpdateSupplier.Location = new Point(165, 9);
+            btnUpdateSupplier.Location = new Point(592, 7);
             btnUpdateSupplier.Name = "btnUpdateSupplier";
             btnUpdateSupplier.Size = new Size(156, 48);
             btnUpdateSupplier.TabIndex = 3;
@@ -530,11 +440,12 @@
             // 
             // btnAddSupplier
             // 
+            btnAddSupplier.Anchor = AnchorStyles.Right;
             btnAddSupplier.BackColor = Color.RoyalBlue;
             btnAddSupplier.FlatStyle = FlatStyle.Flat;
             btnAddSupplier.Font = new Font("Yu Gothic UI", 11.25F);
             btnAddSupplier.ForeColor = SystemColors.ButtonHighlight;
-            btnAddSupplier.Location = new Point(3, 9);
+            btnAddSupplier.Location = new Point(430, 7);
             btnAddSupplier.Name = "btnAddSupplier";
             btnAddSupplier.Size = new Size(156, 48);
             btnAddSupplier.TabIndex = 2;
@@ -556,60 +467,22 @@
             // 
             // ProductTable
             // 
-            ProductTable.AutoSizeColumnsMode = DataGridViewAutoSizeColumnsMode.Fill;
-            ProductTable.ColumnHeadersHeightSizeMode = DataGridViewColumnHeadersHeightSizeMode.AutoSize;
-            ProductTable.Columns.AddRange(new DataGridViewColumn[] { IDColumn, NameColumn, PriceColumn, QuantityColumn, NameOfSupplierColumn, CreationDateColumn });
+            ProductTable.AccessibleName = "Table";
             ProductTable.Dock = DockStyle.Fill;
+            ProductTable.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ProductTable.Location = new Point(3, 66);
             ProductTable.Name = "ProductTable";
-            ProductTable.ReadOnly = true;
             ProductTable.Size = new Size(913, 585);
-            ProductTable.TabIndex = 2;
-            ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
-            // 
-            // IDColumn
-            // 
-            IDColumn.AutoSizeMode = DataGridViewAutoSizeColumnMode.None;
-            IDColumn.DataPropertyName = "Id";
-            IDColumn.HeaderText = "ID";
-            IDColumn.Name = "IDColumn";
-            IDColumn.ReadOnly = true;
-            IDColumn.Width = 108;
-            // 
-            // NameColumn
-            // 
-            NameColumn.DataPropertyName = "Name";
-            NameColumn.HeaderText = "Name";
-            NameColumn.Name = "NameColumn";
-            NameColumn.ReadOnly = true;
-            // 
-            // PriceColumn
-            // 
-            PriceColumn.DataPropertyName = "Price";
-            PriceColumn.HeaderText = "Price";
-            PriceColumn.Name = "PriceColumn";
-            PriceColumn.ReadOnly = true;
-            // 
-            // QuantityColumn
-            // 
-            QuantityColumn.DataPropertyName = "QuantityInStock";
-            QuantityColumn.HeaderText = "Quantity";
-            QuantityColumn.Name = "QuantityColumn";
-            QuantityColumn.ReadOnly = true;
-            // 
-            // NameOfSupplierColumn
-            // 
-            NameOfSupplierColumn.DataPropertyName = "SupplierName";
-            NameOfSupplierColumn.HeaderText = "Name of Supplier";
-            NameOfSupplierColumn.Name = "NameOfSupplierColumn";
-            NameOfSupplierColumn.ReadOnly = true;
-            // 
-            // CreationDateColumn
-            // 
-            CreationDateColumn.DataPropertyName = "CreatedDate";
-            CreationDateColumn.HeaderText = "Date of Creation";
-            CreationDateColumn.Name = "CreationDateColumn";
-            CreationDateColumn.ReadOnly = true;
+            ProductTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            ProductTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            ProductTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            ProductTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            ProductTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            ProductTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            ProductTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            ProductTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            ProductTable.TabIndex = 8;
+            ProductTable.Text = "sfDataGrid2";
             // 
             // panel9
             // 
@@ -628,18 +501,18 @@
             panel10.Anchor = AnchorStyles.Left;
             panel10.Controls.Add(textBox2);
             panel10.Controls.Add(label4);
-            panel10.Location = new Point(494, 3);
+            panel10.Location = new Point(3, 3);
             panel10.Name = "panel10";
-            panel10.Size = new Size(469, 57);
+            panel10.Size = new Size(415, 57);
             panel10.TabIndex = 7;
             // 
             // textBox2
             // 
             textBox2.Anchor = AnchorStyles.Left;
-            textBox2.Location = new Point(78, 21);
+            textBox2.Location = new Point(78, 18);
             textBox2.MaxLength = 0;
             textBox2.Name = "textBox2";
-            textBox2.Size = new Size(383, 23);
+            textBox2.Size = new Size(324, 23);
             textBox2.TabIndex = 6;
             textBox2.TextChanged += textBox2_TextChanged;
             // 
@@ -647,7 +520,7 @@
             // 
             label4.AutoSize = true;
             label4.Font = new Font("Yu Gothic UI", 11.25F);
-            label4.Location = new Point(16, 19);
+            label4.Location = new Point(16, 16);
             label4.Name = "label4";
             label4.Size = new Size(56, 20);
             label4.TabIndex = 5;
@@ -659,7 +532,7 @@
             btnDeleteProduct.FlatStyle = FlatStyle.Flat;
             btnDeleteProduct.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeleteProduct.ForeColor = SystemColors.Control;
-            btnDeleteProduct.Location = new Point(327, 9);
+            btnDeleteProduct.Location = new Point(748, 7);
             btnDeleteProduct.Name = "btnDeleteProduct";
             btnDeleteProduct.Size = new Size(156, 48);
             btnDeleteProduct.TabIndex = 4;
@@ -672,7 +545,7 @@
             btnUpdateProduct.BackColor = Color.GreenYellow;
             btnUpdateProduct.FlatStyle = FlatStyle.Flat;
             btnUpdateProduct.Font = new Font("Yu Gothic UI", 11.25F);
-            btnUpdateProduct.Location = new Point(165, 9);
+            btnUpdateProduct.Location = new Point(586, 7);
             btnUpdateProduct.Name = "btnUpdateProduct";
             btnUpdateProduct.Size = new Size(156, 48);
             btnUpdateProduct.TabIndex = 3;
@@ -686,7 +559,7 @@
             btnAddProduct.FlatStyle = FlatStyle.Flat;
             btnAddProduct.Font = new Font("Yu Gothic UI", 11.25F);
             btnAddProduct.ForeColor = SystemColors.Control;
-            btnAddProduct.Location = new Point(3, 9);
+            btnAddProduct.Location = new Point(424, 7);
             btnAddProduct.Name = "btnAddProduct";
             btnAddProduct.Size = new Size(156, 48);
             btnAddProduct.TabIndex = 2;
@@ -780,7 +653,7 @@
             panel5.Dock = DockStyle.Top;
             panel5.Location = new Point(223, 0);
             panel5.Name = "panel5";
-            panel5.Size = new Size(977, 93);
+            panel5.Size = new Size(985, 93);
             panel5.TabIndex = 8;
             // 
             // gradientPanel2
@@ -791,7 +664,7 @@
             gradientPanel2.Dock = DockStyle.Fill;
             gradientPanel2.Location = new Point(0, 0);
             gradientPanel2.Name = "gradientPanel2";
-            gradientPanel2.Size = new Size(977, 93);
+            gradientPanel2.Size = new Size(985, 93);
             gradientPanel2.TabIndex = 16;
             // 
             // clock1
@@ -805,11 +678,11 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 2, 25, 21, 4, 51, 995);
+            clock1.CustomTime = new DateTime(2026, 3, 4, 20, 11, 3, 753);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
-            clock1.Location = new Point(787, 3);
+            clock1.Location = new Point(795, 3);
             clock1.MinimumSize = new Size(75, 75);
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
@@ -823,11 +696,16 @@
             clock1.TabIndex = 16;
             clock1.Text = "clock1";
             // 
+            // gridLayout1
+            // 
+            gridLayout1.Columns = 0;
+            gridLayout1.Rows = 1;
+            // 
             // MainInventory
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1200, 755);
+            ClientSize = new Size(1208, 755);
             Controls.Add(PanelControl);
             Controls.Add(panel5);
             Controls.Add(panel1);
@@ -835,7 +713,6 @@
             StartPosition = FormStartPosition.CenterScreen;
             Text = "Main Inventory";
             WindowState = FormWindowState.Maximized;
-            Load += MainInventory_Load;
             panel1.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).EndInit();
             gradientPanel1.ResumeLayout(false);
@@ -844,15 +721,12 @@
             panel3.PerformLayout();
             PanelControl.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
-            panel2.ResumeLayout(false);
-            panel2.PerformLayout();
             tabPage2.ResumeLayout(false);
             tabPage2.PerformLayout();
             tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SupplierTable).EndInit();
             panel7.ResumeLayout(false);
-            panel8.ResumeLayout(false);
-            panel8.PerformLayout();
+            panel7.PerformLayout();
             tabPage4.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)ProductTable).EndInit();
             panel9.ResumeLayout(false);
@@ -867,6 +741,7 @@
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
             gradientPanel2.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)gridLayout1).EndInit();
             ResumeLayout(false);
         }
 
@@ -890,11 +765,9 @@
         private TabPage tabPage6;
         private Label label6;
         private Panel panel2;
-        private Label label1;
         private Panel panel4;
         private Panel panel3;
         private Label label7;
-        private Panel panel8;
         private TextBox txtBoxSupplierSearch;
         private Label label3;
         private Panel panel7;
@@ -907,8 +780,6 @@
         private Syncfusion.WinForms.DataGrid.SfDataGrid sfDataGrid1;
         private Label lblWelcome;
         private Panel panel5;
-        private DataGridView SupplierTable;
-        private DataGridView ProductTable;
         private Panel panel9;
         private Panel panel10;
         private TextBox textBox2;
@@ -916,21 +787,10 @@
         private Button btnDeleteProduct;
         private Button btnUpdateProduct;
         private Button btnAddProduct;
-        private DataGridViewTextBoxColumn Id;
-        private DataGridViewTextBoxColumn SupplierName;
-        private DataGridViewTextBoxColumn Email;
-        private DataGridViewTextBoxColumn Location;
-        private DataGridViewTextBoxColumn ContactNo;
-        private DataGridViewTextBoxColumn Products;
-        private DataGridViewTextBoxColumn CreatedDate;
-        private DataGridViewCheckBoxColumn isActive;
         private Syncfusion.Windows.Forms.Tools.GradientPanel gradientPanel2;
         private Syncfusion.Windows.Forms.Tools.Clock clock1;
-        private DataGridViewTextBoxColumn IDColumn;
-        private DataGridViewTextBoxColumn NameColumn;
-        private DataGridViewTextBoxColumn PriceColumn;
-        private DataGridViewTextBoxColumn QuantityColumn;
-        private DataGridViewTextBoxColumn NameOfSupplierColumn;
-        private DataGridViewTextBoxColumn CreationDateColumn;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid SupplierTable;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid ProductTable;
+        private Syncfusion.Windows.Forms.Tools.GridLayout gridLayout1;
     }
 }

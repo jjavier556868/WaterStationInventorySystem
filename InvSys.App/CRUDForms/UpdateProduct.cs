@@ -27,18 +27,34 @@ namespace InvSys.App.CRUDForms
             comboBoxSupplier.ValueMember = "Id";
         }
 
-        public void LoadSelectedProduct(DataGridViewRow selectedRow)
+        // Updated for SfDataGrid - accepts object directly instead of DataGridViewRow
+        public void LoadSelectedProduct(object selectedProduct)
         {
-            if (selectedRow.DataBoundItem != null)
+            if (selectedProduct != null)
             {
-                dynamic product = selectedRow.DataBoundItem;
+                dynamic product = selectedProduct;
                 _productId = (int)product.Id;
 
                 txtBoxID.Text = product.Id.ToString();
                 txtBoxProductName.Text = product.Name ?? "";
                 txtBoxPrice.Text = product.Price?.ToString() ?? "0";
                 txtBoxQuantity.Text = product.QuantityInStock?.ToString() ?? "0";
-                comboBoxSupplier.Text = product.SupplierName ?? "No Supplier";
+
+                // Set the supplier dropdown by name
+                string supplierName = product.SupplierName ?? "No Supplier";
+
+                // Find and select the supplier in the dropdown
+                var supplier = comboBoxSupplier.Items.Cast<dynamic>()
+                    .FirstOrDefault(s => s.Name == supplierName);
+
+                if (supplier != null)
+                {
+                    comboBoxSupplier.SelectedItem = supplier;
+                }
+                else
+                {
+                    comboBoxSupplier.Text = supplierName;
+                }
             }
         }
 
@@ -97,5 +113,11 @@ namespace InvSys.App.CRUDForms
             }
         }
 
+        // Clean up the service when form closes
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+            _service?.Dispose();
+        }
     }
 }
