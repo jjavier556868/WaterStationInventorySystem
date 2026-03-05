@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace InvSys.Infrastructure.Migrations
 {
     [DbContext(typeof(AccountsDbContext))]
-    [Migration("20260215040736_initialAccountDB")]
+    [Migration("20260217141023_initialAccountDB")]
     partial class initialAccountDB
     {
         /// <inheritdoc />
@@ -38,6 +38,9 @@ namespace InvSys.Infrastructure.Migrations
                         .IsRequired()
                         .HasMaxLength(500)
                         .HasColumnType("TEXT");
+
+                    b.Property<int>("Role")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Username")
                         .IsRequired()

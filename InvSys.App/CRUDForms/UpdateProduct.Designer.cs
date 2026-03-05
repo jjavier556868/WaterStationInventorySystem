@@ -31,17 +31,16 @@
             txtBoxID = new TextBox();
             label5 = new Label();
             btnCancel = new Button();
-            chkBoxActive = new CheckBox();
             label6 = new Label();
             btnUpdate = new Button();
-            txtBoxContact = new TextBox();
-            label4 = new Label();
-            txtBoxLocation = new TextBox();
+            txtBoxQuantity = new TextBox();
             label3 = new Label();
-            txtBoxEmail = new TextBox();
+            txtBoxPrice = new TextBox();
             label2 = new Label();
-            txtBoxSupplier = new TextBox();
+            txtBoxProductName = new TextBox();
             label1 = new Label();
+            label4 = new Label();
+            comboBoxSupplier = new ComboBox();
             SuspendLayout();
             // 
             // txtBoxID
@@ -65,23 +64,12 @@
             // btnCancel
             // 
             btnCancel.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnCancel.Location = new Point(202, 381);
+            btnCancel.Location = new Point(202, 344);
             btnCancel.Name = "btnCancel";
             btnCancel.Size = new Size(158, 47);
             btnCancel.TabIndex = 39;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
-            // 
-            // chkBoxActive
-            // 
-            chkBoxActive.AutoSize = true;
-            chkBoxActive.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            chkBoxActive.Location = new Point(34, 331);
-            chkBoxActive.Name = "chkBoxActive";
-            chkBoxActive.Size = new Size(71, 25);
-            chkBoxActive.TabIndex = 38;
-            chkBoxActive.Text = "Active";
-            chkBoxActive.UseVisualStyleBackColor = true;
             // 
             // label6
             // 
@@ -96,36 +84,20 @@
             // btnUpdate
             // 
             btnUpdate.Font = new Font("Segoe UI", 14.25F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            btnUpdate.Location = new Point(33, 381);
+            btnUpdate.Location = new Point(33, 344);
             btnUpdate.Name = "btnUpdate";
             btnUpdate.Size = new Size(163, 47);
             btnUpdate.TabIndex = 36;
             btnUpdate.Text = "Update";
             btnUpdate.UseVisualStyleBackColor = true;
+            btnUpdate.Click += btnUpdate_Click;
             // 
-            // txtBoxContact
+            // txtBoxQuantity
             // 
-            txtBoxContact.Location = new Point(33, 293);
-            txtBoxContact.Name = "txtBoxContact";
-            txtBoxContact.Size = new Size(327, 23);
-            txtBoxContact.TabIndex = 35;
-            // 
-            // label4
-            // 
-            label4.AutoSize = true;
-            label4.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label4.Location = new Point(33, 269);
-            label4.Name = "label4";
-            label4.Size = new Size(91, 21);
-            label4.TabIndex = 34;
-            label4.Text = "Contact No.";
-            // 
-            // txtBoxLocation
-            // 
-            txtBoxLocation.Location = new Point(33, 243);
-            txtBoxLocation.Name = "txtBoxLocation";
-            txtBoxLocation.Size = new Size(327, 23);
-            txtBoxLocation.TabIndex = 33;
+            txtBoxQuantity.Location = new Point(33, 243);
+            txtBoxQuantity.Name = "txtBoxQuantity";
+            txtBoxQuantity.Size = new Size(327, 23);
+            txtBoxQuantity.TabIndex = 33;
             // 
             // label3
             // 
@@ -133,16 +105,16 @@
             label3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label3.Location = new Point(33, 219);
             label3.Name = "label3";
-            label3.Size = new Size(72, 21);
+            label3.Size = new Size(73, 21);
             label3.TabIndex = 32;
-            label3.Text = "Location:";
+            label3.Text = "Quantity:";
             // 
-            // txtBoxEmail
+            // txtBoxPrice
             // 
-            txtBoxEmail.Location = new Point(33, 193);
-            txtBoxEmail.Name = "txtBoxEmail";
-            txtBoxEmail.Size = new Size(327, 23);
-            txtBoxEmail.TabIndex = 31;
+            txtBoxPrice.Location = new Point(33, 193);
+            txtBoxPrice.Name = "txtBoxPrice";
+            txtBoxPrice.Size = new Size(327, 23);
+            txtBoxPrice.TabIndex = 31;
             // 
             // label2
             // 
@@ -150,16 +122,16 @@
             label2.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label2.Location = new Point(33, 169);
             label2.Name = "label2";
-            label2.Size = new Size(51, 21);
+            label2.Size = new Size(47, 21);
             label2.TabIndex = 30;
-            label2.Text = "Email:";
+            label2.Text = "Price:";
             // 
-            // txtBoxSupplier
+            // txtBoxProductName
             // 
-            txtBoxSupplier.Location = new Point(33, 143);
-            txtBoxSupplier.Name = "txtBoxSupplier";
-            txtBoxSupplier.Size = new Size(327, 23);
-            txtBoxSupplier.TabIndex = 29;
+            txtBoxProductName.Location = new Point(33, 143);
+            txtBoxProductName.Name = "txtBoxProductName";
+            txtBoxProductName.Size = new Size(327, 23);
+            txtBoxProductName.TabIndex = 29;
             // 
             // label1
             // 
@@ -171,26 +143,45 @@
             label1.TabIndex = 28;
             label1.Text = "Product Name:";
             // 
+            // label4
+            // 
+            label4.AutoSize = true;
+            label4.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label4.Location = new Point(33, 269);
+            label4.Name = "label4";
+            label4.Size = new Size(71, 21);
+            label4.TabIndex = 34;
+            label4.Text = "Supplier:";
+            // 
+            // comboBoxSupplier
+            // 
+            comboBoxSupplier.FormattingEnabled = true;
+            comboBoxSupplier.Location = new Point(33, 293);
+            comboBoxSupplier.Name = "comboBoxSupplier";
+            comboBoxSupplier.Size = new Size(327, 23);
+            comboBoxSupplier.TabIndex = 42;
+            // 
             // UpdateProduct
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(392, 461);
+            ClientSize = new Size(392, 426);
+            Controls.Add(comboBoxSupplier);
             Controls.Add(txtBoxID);
             Controls.Add(label5);
             Controls.Add(btnCancel);
-            Controls.Add(chkBoxActive);
             Controls.Add(label6);
             Controls.Add(btnUpdate);
-            Controls.Add(txtBoxContact);
             Controls.Add(label4);
-            Controls.Add(txtBoxLocation);
+            Controls.Add(txtBoxQuantity);
             Controls.Add(label3);
-            Controls.Add(txtBoxEmail);
+            Controls.Add(txtBoxPrice);
             Controls.Add(label2);
-            Controls.Add(txtBoxSupplier);
+            Controls.Add(txtBoxProductName);
             Controls.Add(label1);
+            MaximizeBox = false;
             Name = "UpdateProduct";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "UpdateProduct";
             ResumeLayout(false);
             PerformLayout();
@@ -201,16 +192,15 @@
         private TextBox txtBoxID;
         private Label label5;
         private Button btnCancel;
-        private CheckBox chkBoxActive;
         private Label label6;
         private Button btnUpdate;
-        private TextBox txtBoxContact;
-        private Label label4;
-        private TextBox txtBoxLocation;
+        private TextBox txtBoxQuantity;
         private Label label3;
-        private TextBox txtBoxEmail;
+        private TextBox txtBoxPrice;
         private Label label2;
-        private TextBox txtBoxSupplier;
+        private TextBox txtBoxProductName;
         private Label label1;
+        private Label label4;
+        private ComboBox comboBoxSupplier;
     }
 }

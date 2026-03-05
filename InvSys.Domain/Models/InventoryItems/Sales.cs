@@ -1,9 +1,6 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace InvSys.Domain.Models.InventoryItems
 {
@@ -11,10 +8,11 @@ namespace InvSys.Domain.Models.InventoryItems
     {
         public DateTime SaleDate { get; set; } = DateTime.UtcNow;
 
-        [Column(TypeName = "REAL")]
-        public decimal QuantitySold { get; set; }
+        [Range(1, int.MaxValue)]  
+        public int QuantitySold { get; set; }  
 
-        [Column(TypeName = "REAL")]
+        [Column(TypeName = "DECIMAL(18,2)")]
+        [Range(0.01, double.MaxValue)]
         public decimal TotalAmount { get; set; }
 
         public int ProductId { get; set; }

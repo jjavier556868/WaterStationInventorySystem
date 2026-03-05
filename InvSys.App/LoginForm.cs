@@ -1,10 +1,15 @@
-﻿using BCrypt.Net;  // Add this for BCrypt
+﻿using BCrypt.Net;
 using InvSys.Domain.Models.Account;
+using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
+using Microsoft.EntityFrameworkCore; 
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Linq;
 using System.Windows.Forms;
 using static System.Windows.Forms.DataFormats;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace InvSys.App
 {
@@ -21,6 +26,7 @@ namespace InvSys.App
             InitializeComponent();
             TxtBoxShowPasswordChar(false);
             InitializeDatabases();
+           
         }
 
         private void InitializeDatabases()
@@ -31,7 +37,6 @@ namespace InvSys.App
             using var accContext = new AccountsDbContext();
             accContext.Database.EnsureCreated();
         }
-
 
         private void TxtBoxShowPasswordChar(bool _bool)
         {
@@ -45,14 +50,15 @@ namespace InvSys.App
 
         private void AddUserToDatabase(string username, string email, string password)
         {
-            
+
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             var userAccount = new UserAccount
             {
                 Username = username,
                 Email = email,
-                PasswordHash = passwordHash
+                PasswordHash = passwordHash,
+                Role = UserRole.User
             };
 
             using (var context = new AccountsDbContext())
@@ -70,6 +76,34 @@ namespace InvSys.App
             }
         }
 
+        private void AddAdminToDatabase(string username, string email, string password)
+        {
+            string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
+
+            var userAccount = new UserAccount
+            {
+                Username = username,
+                Email = email,
+                PasswordHash = passwordHash,
+                Role = UserRole.Admin,
+                CreatedBy = "System" // <--- Added this to satisfy your updated model!
+            };
+
+            using (var context = new AccountsDbContext())
+            {
+                if (context.UserAccounts.Any(u => u.Username == username))
+                {
+                    MessageBox.Show("Username already exists!", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                context.UserAccounts.Add(userAccount);
+                context.SaveChanges();
+                MessageBox.Show("Admin created successfully!", "Success");
+            }
+        }
+
         private void btnLogin_Click(object sender, EventArgs e)
         {
             string loginInput = txtBoxUserEmail.Text.Trim();
@@ -83,19 +117,24 @@ namespace InvSys.App
 
             using (var context = new AccountsDbContext())
             {
-               
                 var user = context.UserAccounts
                     .FirstOrDefault(u => u.Username == loginInput || u.Email == loginInput);
 
                 if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
                 {
-                    string greeting = $"Welcome back, {user.Username}!";
-                    MessageBox.Show(greeting, "Login Successful");
+                    if (user.Role == UserRole.Admin)
+                    {
+                        MessageBox.Show($"Welcome back, Admin {user.Username}!", "Admin Login Successful");
+                    }
+                    else
+                    {
+                        MessageBox.Show($"Welcome back, {user.Username}!", "Login Successful");
+                    }
+
                     this.Hide();
-                    var mainInv = new MainInventory(user.Username);
+                    var mainInv = new MainInventory(user.Username, user.Role);
                     mainInv.Closed += (s, args) => this.Close();
                     mainInv.Show();
-
                 }
                 else
                 {
@@ -105,6 +144,7 @@ namespace InvSys.App
                 }
             }
         }
+
 
         private void txtBoxUserEmail_KeyDown(object sender, KeyEventArgs e)
         {

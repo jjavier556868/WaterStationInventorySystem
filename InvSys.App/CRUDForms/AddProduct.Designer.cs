@@ -165,6 +165,7 @@
             Controls.Add(txtBoxProductName);
             Controls.Add(label1);
             Name = "AddProduct";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "AddProduct";
             ((System.ComponentModel.ISupportInitialize)supplierBindingSource).EndInit();
             ResumeLayout(false);

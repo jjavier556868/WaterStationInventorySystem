@@ -32,7 +32,6 @@
             label4 = new Label();
             panel1 = new Syncfusion.Windows.Forms.Tools.GradientPanelExt();
             txtBoxUserEmail = new TextBox();
-            linkLabelRegister = new LinkLabel();
             panel4 = new Panel();
             panel3 = new Panel();
             panel2 = new Panel();
@@ -43,6 +42,8 @@
             txtBoxPassword = new TextBox();
             label3 = new Label();
             label2 = new Label();
+            label5 = new Label();
+            label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panel1).BeginInit();
@@ -55,13 +56,15 @@
             gradientPanel1.BackgroundImageLayout = ImageLayout.Stretch;
             gradientPanel1.Border3DStyle = Border3DStyle.Flat;
             gradientPanel1.BorderSingle = ButtonBorderStyle.None;
+            gradientPanel1.Controls.Add(label6);
+            gradientPanel1.Controls.Add(label5);
             gradientPanel1.Controls.Add(label4);
             gradientPanel1.Controls.Add(panel1);
             gradientPanel1.Dock = DockStyle.Fill;
             gradientPanel1.ForeColor = Color.Lavender;
             gradientPanel1.Location = new Point(0, 0);
             gradientPanel1.Name = "gradientPanel1";
-            gradientPanel1.Size = new Size(1045, 566);
+            gradientPanel1.Size = new Size(1045, 561);
             gradientPanel1.TabIndex = 0;
             // 
             // label4
@@ -70,7 +73,7 @@
             label4.BackColor = Color.Transparent;
             label4.Font = new Font("Segoe UI Semibold", 36F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label4.ForeColor = Color.Snow;
-            label4.Location = new Point(90, 231);
+            label4.Location = new Point(69, 152);
             label4.Name = "label4";
             label4.Size = new Size(305, 65);
             label4.TabIndex = 12;
@@ -84,7 +87,6 @@
             panel1.BorderGap = 10;
             panel1.BorderStyle = BorderStyle.None;
             panel1.Controls.Add(txtBoxUserEmail);
-            panel1.Controls.Add(linkLabelRegister);
             panel1.Controls.Add(panel4);
             panel1.Controls.Add(panel3);
             panel1.Controls.Add(panel2);
@@ -100,7 +102,7 @@
             panel1.ForeColor = Color.SlateBlue;
             panel1.Location = new Point(469, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(572, 562);
+            panel1.Size = new Size(572, 557);
             panel1.TabIndex = 0;
             // 
             // txtBoxUserEmail
@@ -112,20 +114,6 @@
             txtBoxUserEmail.Size = new Size(484, 33);
             txtBoxUserEmail.TabIndex = 14;
             txtBoxUserEmail.KeyDown += txtBoxUserEmail_KeyDown;
-            // 
-            // linkLabelRegister
-            // 
-            linkLabelRegister.ActiveLinkColor = Color.LightSkyBlue;
-            linkLabelRegister.AutoSize = true;
-            linkLabelRegister.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            linkLabelRegister.LinkColor = Color.White;
-            linkLabelRegister.Location = new Point(46, 345);
-            linkLabelRegister.Name = "linkLabelRegister";
-            linkLabelRegister.Size = new Size(192, 21);
-            linkLabelRegister.TabIndex = 12;
-            linkLabelRegister.TabStop = true;
-            linkLabelRegister.Text = "No account? Register here";
-            linkLabelRegister.VisitedLinkColor = Color.FromArgb(64, 0, 64);
             // 
             // panel4
             // 
@@ -161,11 +149,14 @@
             btnExit.FlatStyle = FlatStyle.Flat;
             btnExit.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnExit.ForeColor = SystemColors.ButtonFace;
-            btnExit.Location = new Point(46, 466);
+            btnExit.Image = Properties.Resources.exit_to_app_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnExit.Location = new Point(46, 428);
             btnExit.Name = "btnExit";
+            btnExit.Padding = new Padding(140, 0, 0, 0);
             btnExit.Size = new Size(483, 55);
             btnExit.TabIndex = 9;
             btnExit.Text = "Exit";
+            btnExit.TextImageRelation = TextImageRelation.ImageBeforeText;
             btnExit.UseVisualStyleBackColor = false;
             btnExit.Click += btnExit_Click;
             // 
@@ -176,8 +167,9 @@
             btnLogin.FlatStyle = FlatStyle.Flat;
             btnLogin.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             btnLogin.ForeColor = Color.AliceBlue;
+            btnLogin.Image = Properties.Resources.login_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
             btnLogin.ImageAlign = ContentAlignment.MiddleRight;
-            btnLogin.Location = new Point(46, 405);
+            btnLogin.Location = new Point(45, 367);
             btnLogin.Name = "btnLogin";
             btnLogin.Size = new Size(483, 55);
             btnLogin.TabIndex = 8;
@@ -191,7 +183,7 @@
             checkBoxShowPassword.AutoSize = true;
             checkBoxShowPassword.Font = new Font("Segoe UI", 14.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
             checkBoxShowPassword.ForeColor = Color.WhiteSmoke;
-            checkBoxShowPassword.Location = new Point(46, 313);
+            checkBoxShowPassword.Location = new Point(46, 308);
             checkBoxShowPassword.Name = "checkBoxShowPassword";
             checkBoxShowPassword.Size = new Size(157, 29);
             checkBoxShowPassword.TabIndex = 7;
@@ -205,7 +197,7 @@
             label1.BackColor = Color.Transparent;
             label1.Font = new Font("Segoe UI Light", 30F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Snow;
-            label1.Location = new Point(258, 52);
+            label1.Location = new Point(251, 52);
             label1.Name = "label1";
             label1.Size = new Size(138, 54);
             label1.TabIndex = 0;
@@ -243,12 +235,36 @@
             label2.TabIndex = 1;
             label2.Text = "Username/Email:";
             // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.BackColor = Color.Transparent;
+            label5.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
+            label5.ImageAlign = ContentAlignment.BottomRight;
+            label5.Location = new Point(69, 248);
+            label5.Name = "label5";
+            label5.Size = new Size(340, 45);
+            label5.TabIndex = 13;
+            label5.Text = "Control your workflow, ";
+            // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.BackColor = Color.Transparent;
+            label6.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
+            label6.ImageAlign = ContentAlignment.BottomRight;
+            label6.Location = new Point(69, 293);
+            label6.Name = "label6";
+            label6.Size = new Size(292, 45);
+            label6.TabIndex = 14;
+            label6.Text = "Organize on the go.";
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
             BackColor = Color.White;
-            ClientSize = new Size(1045, 566);
+            ClientSize = new Size(1045, 561);
             Controls.Add(gradientPanel1);
             Font = new Font("Segoe UI", 9F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ForeColor = Color.Navy;
@@ -280,7 +296,8 @@
         private Panel panel4;
         private Panel panel3;
         private Panel panel2;
-        private LinkLabel linkLabelRegister;
         private TextBox txtBoxUserEmail;
+        private Label label6;
+        private Label label5;
     }
 }

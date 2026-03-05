@@ -23,8 +23,21 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -32,16 +45,19 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("Price")
-                        .HasColumnType("REAL");
+                        .HasColumnType("DECIMAL(18,2)");
 
-                    b.Property<decimal>("QuantityInStock")
-                        .HasColumnType("REAL");
+                    b.Property<int>("QuantityInStock")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("SupplierId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<bool>("isActive")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -56,29 +72,93 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         .ValueGeneratedOnAdd()
                         .HasColumnType("INTEGER");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
                         .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("QuantitySold")
-                        .HasColumnType("REAL");
+                    b.Property<int>("QuantitySold")
+                        .HasColumnType("INTEGER");
 
                     b.Property<DateTime>("SaleDate")
                         .HasColumnType("TEXT");
 
                     b.Property<decimal>("TotalAmount")
-                        .HasColumnType("REAL");
+                        .HasColumnType("DECIMAL(18,2)");
 
-                    b.Property<bool>("isActive")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
                     b.HasIndex("ProductId");
 
                     b.ToTable("Sale");
+                });
+
+            modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Stock", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("ProductId")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("Transaction")
+                        .HasMaxLength(50)
+                        .HasColumnType("INTEGER");
+
+                    b.Property<DateTime>("TransactionDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ProductId");
+
+                    b.ToTable("Stock");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Supplier", b =>
@@ -92,13 +172,26 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         .HasMaxLength(20)
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
                     b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
                         .HasColumnType("TEXT");
 
                     b.Property<string>("Email")
                         .IsRequired()
                         .HasMaxLength(150)
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Location")
                         .IsRequired()
@@ -110,8 +203,11 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         .HasMaxLength(100)
                         .HasColumnType("TEXT");
 
-                    b.Property<bool>("isActive")
-                        .HasColumnType("INTEGER");
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
 
                     b.HasKey("Id");
 
@@ -132,7 +228,18 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Sales", b =>
                 {
                     b.HasOne("InvSys.Domain.Models.InventoryItems.Product", "Product")
-                        .WithMany("Sale")
+                        .WithMany("AllSales")
+                        .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Product");
+                });
+
+            modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Stock", b =>
+                {
+                    b.HasOne("InvSys.Domain.Models.InventoryItems.Product", "Product")
+                        .WithMany("StockTransactions")
                         .HasForeignKey("ProductId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
@@ -142,7 +249,9 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Product", b =>
                 {
-                    b.Navigation("Sale");
+                    b.Navigation("AllSales");
+
+                    b.Navigation("StockTransactions");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Supplier", b =>

@@ -172,6 +172,7 @@
             Controls.Add(label1);
             MaximizeBox = false;
             Name = "AddSupplier";
+            StartPosition = FormStartPosition.CenterScreen;
             Text = "AddSupplier";
             ResumeLayout(false);
             PerformLayout();
