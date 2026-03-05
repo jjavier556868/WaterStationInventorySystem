@@ -21,6 +21,7 @@ namespace InvSys.App
             InitializeComponent();
             TxtBoxShowPasswordChar(false);
             InitializeDatabases();
+           
         }
 
         private void InitializeDatabases()
