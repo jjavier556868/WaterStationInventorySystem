@@ -15,6 +15,8 @@ namespace InvSys.App
         public RegisterForm()
         {
             InitializeComponent();
+
+            //register
         }
     }
 }

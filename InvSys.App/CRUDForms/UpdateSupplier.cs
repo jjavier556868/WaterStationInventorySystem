@@ -15,28 +15,36 @@ namespace InvSys.App.CRUDForms
         {
             InitializeComponent();
             _parentForm = parentForm;
-            txtBoxID.Enabled = false;  // Disable ID textbox
+            txtBoxID.Enabled = false;
             chkBoxActive.Checked = true;
             this.AcceptButton = btnUpdate;
             this.CancelButton = btnCancel;
         }
 
-        public void LoadSelectedSupplier(DataGridViewRow selectedRow)
+        // Updated for SfDataGrid - accepts Supplier object directly
+        public void LoadSelectedSupplier(Supplier supplier)
         {
-            _selectedSupplier = selectedRow.DataBoundItem as Supplier;
+            _selectedSupplier = supplier;
             if (_selectedSupplier != null)
             {
                 txtBoxID.Text = _selectedSupplier.Id.ToString();
                 txtBoxSupplier.Text = _selectedSupplier.Name ?? "";
                 txtBoxEmail.Text = _selectedSupplier.Email ?? "";
                 txtBoxLocation.Text = _selectedSupplier.Location ?? "";
-                txtBoxContact.Text = _selectedSupplier.ContactNo ?? "";  // ✅ ContactNo from model
-                chkBoxActive.Checked = _selectedSupplier.isActive;
+                txtBoxContact.Text = _selectedSupplier.ContactNo ?? "";
+                chkBoxActive.Checked = _selectedSupplier.IsActive;
             }
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
         {
+            if (_selectedSupplier == null)
+            {
+                MessageBox.Show("No supplier selected!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                return;
+            }
+
             if (string.IsNullOrWhiteSpace(txtBoxSupplier.Text))
             {
                 MessageBox.Show("Supplier Name is required!", "Validation Error",
@@ -77,7 +85,7 @@ namespace InvSys.App.CRUDForms
                     txtBoxSupplier.Text.Trim(),
                     txtBoxEmail.Text.Trim(),
                     txtBoxLocation.Text.Trim(),
-                    txtBoxContact.Text.Trim(), 
+                    txtBoxContact.Text.Trim(),
                     chkBoxActive.Checked
                 );
 

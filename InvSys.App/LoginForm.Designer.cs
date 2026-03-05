@@ -32,7 +32,6 @@
             label4 = new Label();
             panel1 = new Syncfusion.Windows.Forms.Tools.GradientPanelExt();
             txtBoxUserEmail = new TextBox();
-            linkLabelRegister = new LinkLabel();
             panel4 = new Panel();
             panel3 = new Panel();
             panel2 = new Panel();
@@ -84,7 +83,6 @@
             panel1.BorderGap = 10;
             panel1.BorderStyle = BorderStyle.None;
             panel1.Controls.Add(txtBoxUserEmail);
-            panel1.Controls.Add(linkLabelRegister);
             panel1.Controls.Add(panel4);
             panel1.Controls.Add(panel3);
             panel1.Controls.Add(panel2);
@@ -112,20 +110,6 @@
             txtBoxUserEmail.Size = new Size(484, 33);
             txtBoxUserEmail.TabIndex = 14;
             txtBoxUserEmail.KeyDown += txtBoxUserEmail_KeyDown;
-            // 
-            // linkLabelRegister
-            // 
-            linkLabelRegister.ActiveLinkColor = Color.LightSkyBlue;
-            linkLabelRegister.AutoSize = true;
-            linkLabelRegister.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            linkLabelRegister.LinkColor = Color.White;
-            linkLabelRegister.Location = new Point(46, 345);
-            linkLabelRegister.Name = "linkLabelRegister";
-            linkLabelRegister.Size = new Size(192, 21);
-            linkLabelRegister.TabIndex = 12;
-            linkLabelRegister.TabStop = true;
-            linkLabelRegister.Text = "No account? Register here";
-            linkLabelRegister.VisitedLinkColor = Color.FromArgb(64, 0, 64);
             // 
             // panel4
             // 
@@ -191,7 +175,7 @@
             checkBoxShowPassword.AutoSize = true;
             checkBoxShowPassword.Font = new Font("Segoe UI", 14.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
             checkBoxShowPassword.ForeColor = Color.WhiteSmoke;
-            checkBoxShowPassword.Location = new Point(46, 313);
+            checkBoxShowPassword.Location = new Point(46, 316);
             checkBoxShowPassword.Name = "checkBoxShowPassword";
             checkBoxShowPassword.Size = new Size(157, 29);
             checkBoxShowPassword.TabIndex = 7;
@@ -280,7 +264,6 @@
         private Panel panel4;
         private Panel panel3;
         private Panel panel2;
-        private LinkLabel linkLabelRegister;
         private TextBox txtBoxUserEmail;
     }
 }
