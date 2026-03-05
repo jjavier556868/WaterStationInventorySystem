@@ -73,6 +73,16 @@ namespace InvSys.App.Properties {
         /// <summary>
         ///   Looks up a localized resource of type System.Drawing.Bitmap.
         /// </summary>
+        internal static System.Drawing.Bitmap add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 {
+            get {
+                object obj = ResourceManager.GetObject("add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
         internal static System.Drawing.Bitmap add_shopping_cart_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 {
             get {
                 object obj = ResourceManager.GetObject("add_shopping_cart_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24", resourceCulture);
@@ -96,6 +106,26 @@ namespace InvSys.App.Properties {
         internal static System.Drawing.Bitmap dashboard_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 {
             get {
                 object obj = ResourceManager.GetObject("dashboard_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 {
+            get {
+                object obj = ResourceManager.GetObject("delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24", resourceCulture);
+                return ((System.Drawing.Bitmap)(obj));
+            }
+        }
+        
+        /// <summary>
+        ///   Looks up a localized resource of type System.Drawing.Bitmap.
+        /// </summary>
+        internal static System.Drawing.Bitmap edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24 {
+            get {
+                object obj = ResourceManager.GetObject("edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24", resourceCulture);
                 return ((System.Drawing.Bitmap)(obj));
             }
         }
