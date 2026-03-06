@@ -41,6 +41,6 @@ Built using **C# and .NET Windows Forms**, H2Organizer integrates a database to 
 
 ---
 
-## 👨‍💻 Author
+## 👨‍💻 Developers
 
 Developed by **John Paulo C. Javier, Grali IV Jaroda, & Ronil Jr. Rozano**
