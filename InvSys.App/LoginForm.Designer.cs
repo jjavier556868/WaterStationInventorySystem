@@ -29,10 +29,12 @@
         private void InitializeComponent()
         {
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
+            label6 = new Label();
+            label5 = new Label();
             label4 = new Label();
             panel1 = new Syncfusion.Windows.Forms.Tools.GradientPanelExt();
+            label7 = new Label();
             txtBoxUserEmail = new TextBox();
-            panel4 = new Panel();
             panel3 = new Panel();
             panel2 = new Panel();
             btnExit = new Button();
@@ -42,8 +44,6 @@
             txtBoxPassword = new TextBox();
             label3 = new Label();
             label2 = new Label();
-            label5 = new Label();
-            label6 = new Label();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panel1).BeginInit();
@@ -67,6 +67,30 @@
             gradientPanel1.Size = new Size(1045, 561);
             gradientPanel1.TabIndex = 0;
             // 
+            // label6
+            // 
+            label6.AutoSize = true;
+            label6.BackColor = Color.Transparent;
+            label6.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
+            label6.ImageAlign = ContentAlignment.BottomRight;
+            label6.Location = new Point(69, 293);
+            label6.Name = "label6";
+            label6.Size = new Size(292, 45);
+            label6.TabIndex = 14;
+            label6.Text = "Organize on the go.";
+            // 
+            // label5
+            // 
+            label5.AutoSize = true;
+            label5.BackColor = Color.Transparent;
+            label5.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
+            label5.ImageAlign = ContentAlignment.BottomRight;
+            label5.Location = new Point(69, 248);
+            label5.Name = "label5";
+            label5.Size = new Size(340, 45);
+            label5.TabIndex = 13;
+            label5.Text = "Control your workflow, ";
+            // 
             // label4
             // 
             label4.AutoSize = true;
@@ -86,8 +110,8 @@
             panel1.BorderColor = Color.Transparent;
             panel1.BorderGap = 10;
             panel1.BorderStyle = BorderStyle.None;
+            panel1.Controls.Add(label7);
             panel1.Controls.Add(txtBoxUserEmail);
-            panel1.Controls.Add(panel4);
             panel1.Controls.Add(panel3);
             panel1.Controls.Add(panel2);
             panel1.Controls.Add(btnExit);
@@ -105,30 +129,33 @@
             panel1.Size = new Size(572, 557);
             panel1.TabIndex = 0;
             // 
+            // label7
+            // 
+            label7.AutoSize = true;
+            label7.BackColor = Color.Transparent;
+            label7.Font = new Font("Segoe UI Light", 15F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label7.ForeColor = Color.Snow;
+            label7.Location = new Point(196, 96);
+            label7.Name = "label7";
+            label7.Size = new Size(219, 28);
+            label7.TabIndex = 15;
+            label7.Text = "Please enter your details.";
+            // 
             // txtBoxUserEmail
             // 
             txtBoxUserEmail.Font = new Font("Segoe UI", 14.25F);
-            txtBoxUserEmail.Location = new Point(45, 181);
+            txtBoxUserEmail.Location = new Point(44, 182);
             txtBoxUserEmail.Name = "txtBoxUserEmail";
             txtBoxUserEmail.PlaceholderText = "Username/email";
             txtBoxUserEmail.Size = new Size(484, 33);
             txtBoxUserEmail.TabIndex = 14;
             txtBoxUserEmail.KeyDown += txtBoxUserEmail_KeyDown;
             // 
-            // panel4
-            // 
-            panel4.BackgroundImage = Properties.Resources.log_in;
-            panel4.BackgroundImageLayout = ImageLayout.Stretch;
-            panel4.Location = new Point(168, 41);
-            panel4.Name = "panel4";
-            panel4.Size = new Size(65, 65);
-            panel4.TabIndex = 11;
-            // 
             // panel3
             // 
             panel3.BackgroundImage = Properties.Resources.padlock;
             panel3.BackgroundImageLayout = ImageLayout.Stretch;
-            panel3.Location = new Point(45, 231);
+            panel3.Location = new Point(44, 232);
             panel3.Name = "panel3";
             panel3.Size = new Size(24, 25);
             panel3.TabIndex = 11;
@@ -137,7 +164,7 @@
             // 
             panel2.BackgroundImage = Properties.Resources.user;
             panel2.BackgroundImageLayout = ImageLayout.Stretch;
-            panel2.Location = new Point(45, 150);
+            panel2.Location = new Point(44, 151);
             panel2.Name = "panel2";
             panel2.Size = new Size(24, 25);
             panel2.TabIndex = 10;
@@ -183,7 +210,7 @@
             checkBoxShowPassword.AutoSize = true;
             checkBoxShowPassword.Font = new Font("Segoe UI", 14.25F, FontStyle.Italic, GraphicsUnit.Point, 0);
             checkBoxShowPassword.ForeColor = Color.WhiteSmoke;
-            checkBoxShowPassword.Location = new Point(46, 308);
+            checkBoxShowPassword.Location = new Point(45, 309);
             checkBoxShowPassword.Name = "checkBoxShowPassword";
             checkBoxShowPassword.Size = new Size(157, 29);
             checkBoxShowPassword.TabIndex = 7;
@@ -195,18 +222,18 @@
             // 
             label1.AutoSize = true;
             label1.BackColor = Color.Transparent;
-            label1.Font = new Font("Segoe UI Light", 30F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label1.Font = new Font("Segoe UI Light", 30F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label1.ForeColor = Color.Snow;
-            label1.Location = new Point(251, 52);
+            label1.Location = new Point(196, 42);
             label1.Name = "label1";
-            label1.Size = new Size(138, 54);
+            label1.Size = new Size(213, 54);
             label1.TabIndex = 0;
-            label1.Text = "LOGIN";
+            label1.Text = "WELCOME!";
             // 
             // txtBoxPassword
             // 
             txtBoxPassword.Font = new Font("Segoe UI", 14.25F);
-            txtBoxPassword.Location = new Point(45, 260);
+            txtBoxPassword.Location = new Point(44, 261);
             txtBoxPassword.Name = "txtBoxPassword";
             txtBoxPassword.PlaceholderText = "Password";
             txtBoxPassword.Size = new Size(484, 33);
@@ -218,7 +245,7 @@
             label3.AutoSize = true;
             label3.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label3.ForeColor = Color.WhiteSmoke;
-            label3.Location = new Point(75, 231);
+            label3.Location = new Point(74, 232);
             label3.Name = "label3";
             label3.Size = new Size(96, 25);
             label3.TabIndex = 5;
@@ -229,35 +256,11 @@
             label2.AutoSize = true;
             label2.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label2.ForeColor = Color.WhiteSmoke;
-            label2.Location = new Point(75, 150);
+            label2.Location = new Point(74, 151);
             label2.Name = "label2";
             label2.Size = new Size(158, 25);
             label2.TabIndex = 1;
             label2.Text = "Username/Email:";
-            // 
-            // label5
-            // 
-            label5.AutoSize = true;
-            label5.BackColor = Color.Transparent;
-            label5.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
-            label5.ImageAlign = ContentAlignment.BottomRight;
-            label5.Location = new Point(69, 248);
-            label5.Name = "label5";
-            label5.Size = new Size(340, 45);
-            label5.TabIndex = 13;
-            label5.Text = "Control your workflow, ";
-            // 
-            // label6
-            // 
-            label6.AutoSize = true;
-            label6.BackColor = Color.Transparent;
-            label6.Font = new Font("Segoe UI", 24F, FontStyle.Italic);
-            label6.ImageAlign = ContentAlignment.BottomRight;
-            label6.Location = new Point(69, 293);
-            label6.Name = "label6";
-            label6.Size = new Size(292, 45);
-            label6.TabIndex = 14;
-            label6.Text = "Organize on the go.";
             // 
             // LoginForm
             // 
@@ -293,11 +296,11 @@
         private Button btnLogin;
         private Button btnExit;
         private Label label4;
-        private Panel panel4;
         private Panel panel3;
         private Panel panel2;
         private TextBox txtBoxUserEmail;
         private Label label6;
         private Label label5;
+        private Label label7;
     }
 }

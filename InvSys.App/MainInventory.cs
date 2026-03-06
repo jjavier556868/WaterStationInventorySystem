@@ -343,71 +343,12 @@ namespace InvSys.App
 
         private void btnAddProduct_Click(object sender, EventArgs e)
         {
-            if (_currentUserRole != UserRole.Admin)
-            {
-                MessageBox.Show("Admin access required.", "Access Denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            var addForm = new AddProduct();
-            addForm.ShowDialog();
-            if (addForm.DialogResult == DialogResult.OK)
-            {
-                RefreshProductTable();
-            }
+
         }
 
         private void btnDeleteProduct_Click(object sender, EventArgs e)
         {
-            if (_currentUserRole != UserRole.Admin)
-            {
-                MessageBox.Show("Admin access required.", "Access Denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var selectedItems = ProductTable.SelectedItems;
-            if (selectedItems == null || selectedItems.Count == 0)
-            {
-                MessageBox.Show("Please select a product to delete.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            int rowCount = selectedItems.Count;
-            string message = rowCount == 1
-                ? "Are you sure you want to delete the selected product?"
-                : $"Are you sure you want to delete {rowCount} selected products?";
-
-            var result = MessageBox.Show(message, "Confirm Delete",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
-
-            if (result != DialogResult.Yes)
-                return;
-
-            try
-            {
-                using var service = new InventoryService();
-                int deletedCount = 0;
-                var productsToDelete = selectedItems.Cast<dynamic>().ToList();
-
-                foreach (var product in productsToDelete)
-                {
-                    int productId = product.Id;
-                    service.DeleteProduct(productId);
-                    deletedCount++;
-                }
-
-                MessageBox.Show($"{deletedCount} product(s) deleted successfully!", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-
-                RefreshProductTable();
-            }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Delete failed: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+           
         }
 
         private void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
@@ -463,29 +404,7 @@ namespace InvSys.App
 
         private void btnUpdateProduct_Click(object sender, EventArgs e)
         {
-            if (_currentUserRole != UserRole.Admin)
-            {
-                MessageBox.Show("Admin access required.", "Access Denied",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
 
-            if (ProductTable.SelectedItem == null)
-            {
-                MessageBox.Show("Please select a product to update.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
-            var selectedProduct = ProductTable.SelectedItem;
-            var updateForm = new UpdateProduct(this);
-            updateForm.LoadSelectedProduct(selectedProduct);
-            updateForm.ShowDialog();
-
-            if (updateForm.DialogResult == DialogResult.OK)
-            {
-                RefreshProductTable();
-            }
         }
 
         private void textBox2_TextChanged(object sender, EventArgs e)
@@ -512,6 +431,103 @@ namespace InvSys.App
             if (ProductTable.View != null && ProductTable.View.Records.Count > 0)
             {
                 ProductTable.SelectedIndex = 0;
+            }
+        }
+
+        private void btnAddProduct_Click_1(object sender, EventArgs e)
+        {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            var addForm = new AddProduct();
+            addForm.ShowDialog();
+            if (addForm.DialogResult == DialogResult.OK)
+            {
+                RefreshProductTable();
+            }
+        }
+
+        private void btnUpdateProduct_Click_1(object sender, EventArgs e)
+        {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (ProductTable.SelectedItem == null)
+            {
+                MessageBox.Show("Please select a product to update.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedProduct = ProductTable.SelectedItem;
+            var updateForm = new UpdateProduct(this);
+            updateForm.LoadSelectedProduct(selectedProduct);
+            updateForm.ShowDialog();
+
+            if (updateForm.DialogResult == DialogResult.OK)
+            {
+                RefreshProductTable();
+            }
+        }
+
+
+        private void btnDeleteProduct_Click_1(object sender, EventArgs e)
+        {
+            if (_currentUserRole != UserRole.Admin)
+            {
+                MessageBox.Show("Admin access required.", "Access Denied",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var selectedItems = ProductTable.SelectedItems;
+            if (selectedItems == null || selectedItems.Count == 0)
+            {
+                MessageBox.Show("Please select a product to delete.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int rowCount = selectedItems.Count;
+            string message = rowCount == 1
+                ? "Are you sure you want to delete the selected product?"
+                : $"Are you sure you want to delete {rowCount} selected products?";
+
+            var result = MessageBox.Show(message, "Confirm Delete",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question);
+
+            if (result != DialogResult.Yes)
+                return;
+
+            try
+            {
+                using var service = new InventoryService();
+                int deletedCount = 0;
+                var productsToDelete = selectedItems.Cast<dynamic>().ToList();
+
+                foreach (var product in productsToDelete)
+                {
+                    int productId = product.Id;
+                    service.DeleteProduct(productId);
+                    deletedCount++;
+                }
+
+                MessageBox.Show($"{deletedCount} product(s) deleted successfully!", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+                RefreshProductTable();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Delete failed: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
     }
