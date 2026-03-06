@@ -29,8 +29,12 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer4 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer4 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint5 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint6 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint7 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint8 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer2 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer2 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -51,15 +55,15 @@
             panel16 = new Panel();
             label8 = new Label();
             panel17 = new Panel();
-            label10 = new Label();
+            chartControl1 = new Syncfusion.Windows.Forms.Chart.ChartControl();
             panel14 = new Panel();
             label5 = new Label();
             panel15 = new Panel();
-            label9 = new Label();
+            sfDataGrid3 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel13 = new Panel();
             label1 = new Label();
             panel12 = new Panel();
-            label6 = new Label();
+            sfDataGrid2 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             tabPage2 = new TabPage();
             panel6 = new Panel();
             button7 = new Button();
@@ -99,9 +103,6 @@
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
-            chartControl1 = new Syncfusion.Windows.Forms.Chart.ChartControl();
-            sfDataGrid2 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
-            sfDataGrid3 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -114,8 +115,10 @@
             panel17.SuspendLayout();
             panel14.SuspendLayout();
             panel15.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).BeginInit();
             panel13.SuspendLayout();
             panel12.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).BeginInit();
             tabPage2.SuspendLayout();
             panel6.SuspendLayout();
             tabPage3.SuspendLayout();
@@ -133,8 +136,6 @@
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).BeginInit();
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -403,29 +404,53 @@
             label8.ForeColor = SystemColors.ButtonFace;
             label8.Location = new Point(15, 13);
             label8.Name = "label8";
-            label8.Size = new Size(170, 20);
+            label8.Size = new Size(153, 20);
             label8.TabIndex = 2;
-            label8.Text = "TOTAL MONTHLY SALES";
+            label8.Text = "TOTAL WEEKLY SALES";
             // 
             // panel17
             // 
             panel17.BackColor = Color.WhiteSmoke;
             panel17.Controls.Add(chartControl1);
-            panel17.Controls.Add(label10);
             panel17.Location = new Point(45, 287);
             panel17.Name = "panel17";
             panel17.Size = new Size(888, 339);
             panel17.TabIndex = 4;
             // 
-            // label10
+            // chartControl1
             // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label10.Location = new Point(15, 61);
-            label10.Name = "label10";
-            label10.Size = new Size(52, 21);
-            label10.TabIndex = 1;
-            label10.Text = "label6";
+            chartControl1.BackInterior = new Syncfusion.Drawing.BrushInfo(Color.WhiteSmoke);
+            chartControl1.ChartArea.CursorLocation = new Point(0, 0);
+            chartControl1.ChartArea.CursorReDraw = false;
+            chartCustomPoint5.Font.Facename = "Segoe UI";
+            chartCustomPoint6.Font.Facename = "Segoe UI";
+            chartCustomPoint6.XValue = 2D;
+            chartCustomPoint6.YValue = 5D;
+            chartCustomPoint7.Font.Facename = "Segoe UI";
+            chartCustomPoint7.XValue = 7D;
+            chartCustomPoint7.YValue = 10D;
+            chartCustomPoint8.Font.Facename = "Segoe UI";
+            chartControl1.CustomPoints.Add(chartCustomPoint5);
+            chartControl1.CustomPoints.Add(chartCustomPoint6);
+            chartControl1.CustomPoints.Add(chartCustomPoint7);
+            chartControl1.CustomPoints.Add(chartCustomPoint8);
+            chartControl1.Dock = DockStyle.Bottom;
+            // 
+            // 
+            // 
+            chartControl1.Legend.Location = new Point(779, 31);
+            chartControl1.Location = new Point(0, 36);
+            chartControl1.Name = "chartControl1";
+            chartControl1.PrimaryXAxis.LogLabelsDisplayMode = Syncfusion.Windows.Forms.Chart.LogLabelsDisplayMode.Default;
+            chartControl1.PrimaryXAxis.Margin = true;
+            chartControl1.PrimaryYAxis.LogLabelsDisplayMode = Syncfusion.Windows.Forms.Chart.LogLabelsDisplayMode.Default;
+            chartControl1.PrimaryYAxis.Margin = true;
+            chartControl1.Size = new Size(888, 303);
+            chartControl1.TabIndex = 2;
+            // 
+            // 
+            // 
+            chartControl1.Title.Name = "Default";
             // 
             // panel14
             // 
@@ -451,21 +476,28 @@
             // 
             panel15.BackColor = Color.WhiteSmoke;
             panel15.Controls.Add(sfDataGrid3);
-            panel15.Controls.Add(label9);
             panel15.Location = new Point(580, 42);
             panel15.Name = "panel15";
             panel15.Size = new Size(353, 181);
             panel15.TabIndex = 2;
             // 
-            // label9
+            // sfDataGrid3
             // 
-            label9.AutoSize = true;
-            label9.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label9.Location = new Point(12, 48);
-            label9.Name = "label9";
-            label9.Size = new Size(52, 21);
-            label9.TabIndex = 0;
-            label9.Text = "label6";
+            sfDataGrid3.AccessibleName = "Table";
+            sfDataGrid3.Dock = DockStyle.Bottom;
+            sfDataGrid3.Location = new Point(0, 36);
+            sfDataGrid3.Name = "sfDataGrid3";
+            sfDataGrid3.Size = new Size(353, 145);
+            sfDataGrid3.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            sfDataGrid3.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            sfDataGrid3.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.TabIndex = 6;
+            sfDataGrid3.Text = "sfDataGrid3";
             // 
             // panel13
             // 
@@ -491,21 +523,28 @@
             // 
             panel12.BackColor = Color.WhiteSmoke;
             panel12.Controls.Add(sfDataGrid2);
-            panel12.Controls.Add(label6);
             panel12.Location = new Point(45, 42);
             panel12.Name = "panel12";
             panel12.Size = new Size(353, 181);
             panel12.TabIndex = 0;
             // 
-            // label6
+            // sfDataGrid2
             // 
-            label6.AutoSize = true;
-            label6.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label6.Location = new Point(13, 48);
-            label6.Name = "label6";
-            label6.Size = new Size(52, 21);
-            label6.TabIndex = 0;
-            label6.Text = "label6";
+            sfDataGrid2.AccessibleName = "Table";
+            sfDataGrid2.Dock = DockStyle.Bottom;
+            sfDataGrid2.Location = new Point(0, 36);
+            sfDataGrid2.Name = "sfDataGrid2";
+            sfDataGrid2.Size = new Size(353, 145);
+            sfDataGrid2.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            sfDataGrid2.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            sfDataGrid2.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.TabIndex = 6;
+            sfDataGrid2.Text = "sfDataGrid2";
             // 
             // tabPage2
             // 
@@ -513,7 +552,7 @@
             tabPage2.Location = new Point(4, 4);
             tabPage2.Name = "tabPage2";
             tabPage2.Padding = new Padding(3);
-            tabPage2.Size = new Size(927, 654);
+            tabPage2.Size = new Size(976, 648);
             tabPage2.TabIndex = 1;
             tabPage2.Text = "tabPage2";
             tabPage2.UseVisualStyleBackColor = true;
@@ -532,7 +571,7 @@
             panel6.Dock = DockStyle.Top;
             panel6.Location = new Point(3, 3);
             panel6.Name = "panel6";
-            panel6.Size = new Size(921, 63);
+            panel6.Size = new Size(970, 63);
             panel6.TabIndex = 1;
             // 
             // button7
@@ -543,7 +582,7 @@
             button7.Font = new Font("Yu Gothic UI", 11.25F);
             button7.ForeColor = SystemColors.ButtonHighlight;
             button7.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button7.Location = new Point(762, 7);
+            button7.Location = new Point(811, 7);
             button7.Name = "button7";
             button7.Size = new Size(156, 48);
             button7.TabIndex = 9;
@@ -559,7 +598,7 @@
             button8.Font = new Font("Yu Gothic UI", 11.25F);
             button8.ForeColor = SystemColors.ButtonHighlight;
             button8.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button8.Location = new Point(600, 7);
+            button8.Location = new Point(649, 7);
             button8.Name = "button8";
             button8.Size = new Size(156, 48);
             button8.TabIndex = 8;
@@ -575,7 +614,7 @@
             button9.Font = new Font("Yu Gothic UI", 11.25F);
             button9.ForeColor = SystemColors.ButtonHighlight;
             button9.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button9.Location = new Point(438, 7);
+            button9.Location = new Point(487, 7);
             button9.Name = "button9";
             button9.Size = new Size(156, 48);
             button9.TabIndex = 7;
@@ -610,7 +649,7 @@
             button1.Font = new Font("Yu Gothic UI", 11.25F);
             button1.ForeColor = SystemColors.ButtonHighlight;
             button1.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button1.Location = new Point(1475, -12);
+            button1.Location = new Point(1524, -12);
             button1.Name = "button1";
             button1.Size = new Size(156, 48);
             button1.TabIndex = 4;
@@ -626,7 +665,7 @@
             button2.Font = new Font("Yu Gothic UI", 11.25F);
             button2.ForeColor = SystemColors.ButtonHighlight;
             button2.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button2.Location = new Point(1313, -12);
+            button2.Location = new Point(1362, -12);
             button2.Name = "button2";
             button2.Size = new Size(156, 48);
             button2.TabIndex = 3;
@@ -642,7 +681,7 @@
             button6.Font = new Font("Yu Gothic UI", 11.25F);
             button6.ForeColor = SystemColors.ButtonHighlight;
             button6.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button6.Location = new Point(1151, -12);
+            button6.Location = new Point(1200, -12);
             button6.Name = "button6";
             button6.Size = new Size(156, 48);
             button6.TabIndex = 2;
@@ -657,7 +696,7 @@
             tabPage3.Location = new Point(4, 4);
             tabPage3.Name = "tabPage3";
             tabPage3.Padding = new Padding(3);
-            tabPage3.Size = new Size(927, 648);
+            tabPage3.Size = new Size(976, 648);
             tabPage3.TabIndex = 2;
             tabPage3.Text = "tabPage3";
             tabPage3.UseVisualStyleBackColor = true;
@@ -671,7 +710,7 @@
             SupplierTable.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             SupplierTable.Location = new Point(3, 66);
             SupplierTable.Name = "SupplierTable";
-            SupplierTable.Size = new Size(921, 579);
+            SupplierTable.Size = new Size(970, 579);
             SupplierTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             SupplierTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             SupplierTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -694,7 +733,7 @@
             panel7.Dock = DockStyle.Top;
             panel7.Location = new Point(3, 3);
             panel7.Name = "panel7";
-            panel7.Size = new Size(921, 63);
+            panel7.Size = new Size(970, 63);
             panel7.TabIndex = 0;
             // 
             // txtBoxSupplierSearch
@@ -725,7 +764,7 @@
             btnDeleteSupplier.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeleteSupplier.ForeColor = SystemColors.ButtonHighlight;
             btnDeleteSupplier.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnDeleteSupplier.Location = new Point(762, 7);
+            btnDeleteSupplier.Location = new Point(811, 7);
             btnDeleteSupplier.Name = "btnDeleteSupplier";
             btnDeleteSupplier.Size = new Size(156, 48);
             btnDeleteSupplier.TabIndex = 4;
@@ -742,7 +781,7 @@
             btnUpdateSupplier.Font = new Font("Yu Gothic UI", 11.25F);
             btnUpdateSupplier.ForeColor = SystemColors.ButtonHighlight;
             btnUpdateSupplier.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnUpdateSupplier.Location = new Point(600, 7);
+            btnUpdateSupplier.Location = new Point(649, 7);
             btnUpdateSupplier.Name = "btnUpdateSupplier";
             btnUpdateSupplier.Size = new Size(156, 48);
             btnUpdateSupplier.TabIndex = 3;
@@ -759,7 +798,7 @@
             btnAddSupplier.Font = new Font("Yu Gothic UI", 11.25F);
             btnAddSupplier.ForeColor = SystemColors.ButtonHighlight;
             btnAddSupplier.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnAddSupplier.Location = new Point(438, 7);
+            btnAddSupplier.Location = new Point(487, 7);
             btnAddSupplier.Name = "btnAddSupplier";
             btnAddSupplier.Size = new Size(156, 48);
             btnAddSupplier.TabIndex = 2;
@@ -775,7 +814,7 @@
             tabPage4.Location = new Point(4, 4);
             tabPage4.Name = "tabPage4";
             tabPage4.Padding = new Padding(3);
-            tabPage4.Size = new Size(927, 654);
+            tabPage4.Size = new Size(976, 648);
             tabPage4.TabIndex = 3;
             tabPage4.Text = "tabPage4";
             tabPage4.UseVisualStyleBackColor = true;
@@ -787,7 +826,7 @@
             ProductTable.Font = new Font("Segoe UI", 18F, FontStyle.Regular, GraphicsUnit.Point, 0);
             ProductTable.Location = new Point(3, 70);
             ProductTable.Name = "ProductTable";
-            ProductTable.Size = new Size(921, 581);
+            ProductTable.Size = new Size(970, 575);
             ProductTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -809,7 +848,7 @@
             panel9.Dock = DockStyle.Top;
             panel9.Location = new Point(3, 3);
             panel9.Name = "panel9";
-            panel9.Size = new Size(921, 67);
+            panel9.Size = new Size(970, 67);
             panel9.TabIndex = 1;
             // 
             // btnDeleteProduct
@@ -820,7 +859,7 @@
             btnDeleteProduct.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeleteProduct.ForeColor = SystemColors.ButtonHighlight;
             btnDeleteProduct.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnDeleteProduct.Location = new Point(762, 9);
+            btnDeleteProduct.Location = new Point(811, 9);
             btnDeleteProduct.Name = "btnDeleteProduct";
             btnDeleteProduct.Size = new Size(156, 48);
             btnDeleteProduct.TabIndex = 10;
@@ -836,7 +875,7 @@
             btnUpdateProduct.Font = new Font("Yu Gothic UI", 11.25F);
             btnUpdateProduct.ForeColor = SystemColors.ButtonHighlight;
             btnUpdateProduct.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnUpdateProduct.Location = new Point(600, 9);
+            btnUpdateProduct.Location = new Point(649, 9);
             btnUpdateProduct.Name = "btnUpdateProduct";
             btnUpdateProduct.Size = new Size(156, 48);
             btnUpdateProduct.TabIndex = 9;
@@ -852,7 +891,7 @@
             btnAddProduct.Font = new Font("Yu Gothic UI", 11.25F);
             btnAddProduct.ForeColor = SystemColors.ButtonHighlight;
             btnAddProduct.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnAddProduct.Location = new Point(438, 9);
+            btnAddProduct.Location = new Point(487, 9);
             btnAddProduct.Name = "btnAddProduct";
             btnAddProduct.Size = new Size(156, 48);
             btnAddProduct.TabIndex = 8;
@@ -896,7 +935,7 @@
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
-            tabPage5.Size = new Size(927, 654);
+            tabPage5.Size = new Size(976, 648);
             tabPage5.TabIndex = 4;
             tabPage5.Text = "tabPage5";
             tabPage5.UseVisualStyleBackColor = true;
@@ -907,7 +946,7 @@
             sfDataGrid1.Dock = DockStyle.Fill;
             sfDataGrid1.Location = new Point(3, 3);
             sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(921, 648);
+            sfDataGrid1.Size = new Size(970, 642);
             sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -925,7 +964,7 @@
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
-            tabPage6.Size = new Size(927, 654);
+            tabPage6.Size = new Size(976, 648);
             tabPage6.TabIndex = 5;
             tabPage6.Text = "tabPage6";
             tabPage6.UseVisualStyleBackColor = true;
@@ -938,7 +977,7 @@
             panel18.Dock = DockStyle.Top;
             panel18.Location = new Point(3, 3);
             panel18.Name = "panel18";
-            panel18.Size = new Size(921, 71);
+            panel18.Size = new Size(970, 71);
             panel18.TabIndex = 2;
             // 
             // button3
@@ -1022,8 +1061,8 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 6, 8, 29, 2, 636);
-            clock1.DigitalRenderer = digitalClockRenderer4;
+            clock1.CustomTime = new DateTime(2026, 3, 6, 8, 58, 22, 372);
+            clock1.DigitalRenderer = digitalClockRenderer2;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(795, 3);
@@ -1031,7 +1070,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer4;
+            clock1.Renderer = clockRenderer2;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;
@@ -1044,67 +1083,6 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
-            // 
-            // chartControl1
-            // 
-            chartControl1.BackInterior = new Syncfusion.Drawing.BrushInfo(Color.WhiteSmoke);
-            chartControl1.ChartArea.CursorLocation = new Point(0, 0);
-            chartControl1.ChartArea.CursorReDraw = false;
-            chartControl1.Dock = DockStyle.Bottom;
-            // 
-            // 
-            // 
-            chartControl1.Legend.Location = new Point(291, 75);
-            chartControl1.Location = new Point(0, 85);
-            chartControl1.Name = "chartControl1";
-            chartControl1.PrimaryXAxis.LogLabelsDisplayMode = Syncfusion.Windows.Forms.Chart.LogLabelsDisplayMode.Default;
-            chartControl1.PrimaryXAxis.Margin = true;
-            chartControl1.PrimaryYAxis.LogLabelsDisplayMode = Syncfusion.Windows.Forms.Chart.LogLabelsDisplayMode.Default;
-            chartControl1.PrimaryYAxis.Margin = true;
-            chartControl1.Size = new Size(888, 254);
-            chartControl1.TabIndex = 2;
-            chartControl1.Text = "chartControl1";
-            // 
-            // 
-            // 
-            chartControl1.Title.Name = "Default";
-            chartControl1.Titles.Add(chartControl1.Title);
-            // 
-            // sfDataGrid2
-            // 
-            sfDataGrid2.AccessibleName = "Table";
-            sfDataGrid2.Dock = DockStyle.Bottom;
-            sfDataGrid2.Location = new Point(0, 72);
-            sfDataGrid2.Name = "sfDataGrid2";
-            sfDataGrid2.Size = new Size(353, 109);
-            sfDataGrid2.Style.BorderColor = Color.FromArgb(100, 100, 100);
-            sfDataGrid2.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid2.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid2.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid2.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
-            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
-            sfDataGrid2.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid2.TabIndex = 6;
-            sfDataGrid2.Text = "sfDataGrid2";
-            // 
-            // sfDataGrid3
-            // 
-            sfDataGrid3.AccessibleName = "Table";
-            sfDataGrid3.Dock = DockStyle.Bottom;
-            sfDataGrid3.Location = new Point(0, 72);
-            sfDataGrid3.Name = "sfDataGrid3";
-            sfDataGrid3.Size = new Size(353, 109);
-            sfDataGrid3.Style.BorderColor = Color.FromArgb(100, 100, 100);
-            sfDataGrid3.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid3.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid3.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid3.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
-            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
-            sfDataGrid3.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid3.TabIndex = 6;
-            sfDataGrid3.Text = "sfDataGrid3";
             // 
             // MainInventory
             // 
@@ -1130,15 +1108,14 @@
             panel16.ResumeLayout(false);
             panel16.PerformLayout();
             panel17.ResumeLayout(false);
-            panel17.PerformLayout();
             panel14.ResumeLayout(false);
             panel14.PerformLayout();
             panel15.ResumeLayout(false);
-            panel15.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).EndInit();
             panel13.ResumeLayout(false);
             panel13.PerformLayout();
             panel12.ResumeLayout(false);
-            panel12.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).EndInit();
             tabPage2.ResumeLayout(false);
             panel6.ResumeLayout(false);
             panel6.PerformLayout();
@@ -1160,8 +1137,6 @@
             gradientPanel2.ResumeLayout(false);
             gradientPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).EndInit();
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).EndInit();
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).EndInit();
             ResumeLayout(false);
         }
 
@@ -1215,9 +1190,6 @@
         private Panel panel11;
         private Label label8;
         private Label label5;
-        private Label label10;
-        private Label label9;
-        private Label label6;
         private Panel panel18;
         private Button button3;
         private Button button4;
