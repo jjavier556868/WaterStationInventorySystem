@@ -29,12 +29,12 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint5 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
-            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint6 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
-            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint7 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
-            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint8 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer2 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer2 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint1 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint2 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint3 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Chart.ChartCustomPoint chartCustomPoint4 = new Syncfusion.Windows.Forms.Chart.ChartCustomPoint();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer3 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer3 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -422,18 +422,18 @@
             chartControl1.BackInterior = new Syncfusion.Drawing.BrushInfo(Color.WhiteSmoke);
             chartControl1.ChartArea.CursorLocation = new Point(0, 0);
             chartControl1.ChartArea.CursorReDraw = false;
-            chartCustomPoint5.Font.Facename = "Segoe UI";
-            chartCustomPoint6.Font.Facename = "Segoe UI";
-            chartCustomPoint6.XValue = 2D;
-            chartCustomPoint6.YValue = 5D;
-            chartCustomPoint7.Font.Facename = "Segoe UI";
-            chartCustomPoint7.XValue = 7D;
-            chartCustomPoint7.YValue = 10D;
-            chartCustomPoint8.Font.Facename = "Segoe UI";
-            chartControl1.CustomPoints.Add(chartCustomPoint5);
-            chartControl1.CustomPoints.Add(chartCustomPoint6);
-            chartControl1.CustomPoints.Add(chartCustomPoint7);
-            chartControl1.CustomPoints.Add(chartCustomPoint8);
+            chartCustomPoint1.Font.Facename = "Segoe UI";
+            chartCustomPoint2.Font.Facename = "Segoe UI";
+            chartCustomPoint2.XValue = 2D;
+            chartCustomPoint2.YValue = 5D;
+            chartCustomPoint3.Font.Facename = "Segoe UI";
+            chartCustomPoint3.XValue = 7D;
+            chartCustomPoint3.YValue = 10D;
+            chartCustomPoint4.Font.Facename = "Segoe UI";
+            chartControl1.CustomPoints.Add(chartCustomPoint1);
+            chartControl1.CustomPoints.Add(chartCustomPoint2);
+            chartControl1.CustomPoints.Add(chartCustomPoint3);
+            chartControl1.CustomPoints.Add(chartCustomPoint4);
             chartControl1.Dock = DockStyle.Bottom;
             // 
             // 
@@ -515,9 +515,9 @@
             label1.ForeColor = SystemColors.ButtonFace;
             label1.Location = new Point(13, 13);
             label1.Name = "label1";
-            label1.Size = new Size(163, 20);
+            label1.Size = new Size(169, 20);
             label1.TabIndex = 0;
-            label1.Text = "MOST SOLD PRODUCT";
+            label1.Text = "REGISTERED SUPPLIERS";
             // 
             // panel12
             // 
@@ -1062,7 +1062,7 @@
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
             clock1.CustomTime = new DateTime(2026, 3, 6, 8, 58, 22, 372);
-            clock1.DigitalRenderer = digitalClockRenderer2;
+            clock1.DigitalRenderer = digitalClockRenderer3;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(795, 3);
@@ -1070,7 +1070,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer2;
+            clock1.Renderer = clockRenderer3;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;
