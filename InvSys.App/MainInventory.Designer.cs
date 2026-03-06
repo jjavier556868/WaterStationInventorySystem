@@ -29,8 +29,8 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer3 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer3 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer4 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer4 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -100,6 +100,8 @@
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
             chartControl1 = new Syncfusion.Windows.Forms.Chart.ChartControl();
+            sfDataGrid2 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            sfDataGrid3 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -131,6 +133,8 @@
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -446,6 +450,7 @@
             // panel15
             // 
             panel15.BackColor = Color.WhiteSmoke;
+            panel15.Controls.Add(sfDataGrid3);
             panel15.Controls.Add(label9);
             panel15.Location = new Point(580, 42);
             panel15.Name = "panel15";
@@ -485,6 +490,7 @@
             // panel12
             // 
             panel12.BackColor = Color.WhiteSmoke;
+            panel12.Controls.Add(sfDataGrid2);
             panel12.Controls.Add(label6);
             panel12.Location = new Point(45, 42);
             panel12.Name = "panel12";
@@ -1017,7 +1023,7 @@
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
             clock1.CustomTime = new DateTime(2026, 3, 6, 8, 29, 2, 636);
-            clock1.DigitalRenderer = digitalClockRenderer3;
+            clock1.DigitalRenderer = digitalClockRenderer4;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(795, 3);
@@ -1025,7 +1031,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer3;
+            clock1.Renderer = clockRenderer4;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;
@@ -1063,6 +1069,42 @@
             // 
             chartControl1.Title.Name = "Default";
             chartControl1.Titles.Add(chartControl1.Title);
+            // 
+            // sfDataGrid2
+            // 
+            sfDataGrid2.AccessibleName = "Table";
+            sfDataGrid2.Dock = DockStyle.Bottom;
+            sfDataGrid2.Location = new Point(0, 72);
+            sfDataGrid2.Name = "sfDataGrid2";
+            sfDataGrid2.Size = new Size(353, 109);
+            sfDataGrid2.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            sfDataGrid2.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            sfDataGrid2.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid2.TabIndex = 6;
+            sfDataGrid2.Text = "sfDataGrid2";
+            // 
+            // sfDataGrid3
+            // 
+            sfDataGrid3.AccessibleName = "Table";
+            sfDataGrid3.Dock = DockStyle.Bottom;
+            sfDataGrid3.Location = new Point(0, 72);
+            sfDataGrid3.Name = "sfDataGrid3";
+            sfDataGrid3.Size = new Size(353, 109);
+            sfDataGrid3.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            sfDataGrid3.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            sfDataGrid3.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            sfDataGrid3.TabIndex = 6;
+            sfDataGrid3.Text = "sfDataGrid3";
             // 
             // MainInventory
             // 
@@ -1118,6 +1160,8 @@
             gradientPanel2.ResumeLayout(false);
             gradientPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid2).EndInit();
+            ((System.ComponentModel.ISupportInitialize)sfDataGrid3).EndInit();
             ResumeLayout(false);
         }
 
@@ -1191,5 +1235,7 @@
         private Button button2;
         private Button button6;
         private Syncfusion.Windows.Forms.Chart.ChartControl chartControl1;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid sfDataGrid3;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid sfDataGrid2;
     }
 }
