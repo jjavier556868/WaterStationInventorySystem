@@ -32,13 +32,6 @@ Built using **C# and .NET Windows Forms**, H2Organizer integrates a database to 
 
 ---
 
-## 🔮 Possible Future Improvements
-
-- 📄 Sales and transaction tracking  
-- 📈 Inventory reports and analytics  
-- 🔐 User authentication and role management  
-- ⚠️ Low stock notifications  
-
 ---
 
 ## 👨‍💻 Developers
