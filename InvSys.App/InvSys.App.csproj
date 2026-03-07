@@ -24,6 +24,7 @@
   <ItemGroup>
     <ProjectReference Include="..\InvSys.Domain\InvSys.Domain.csproj" />
     <ProjectReference Include="..\InvSys.Infrastructure\InvSys.Infrastructure.csproj" />
+    <ProjectReference Include="..\InvSys.Services\InvSys.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>

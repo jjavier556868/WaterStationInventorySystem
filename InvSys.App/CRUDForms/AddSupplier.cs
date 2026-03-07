@@ -2,7 +2,8 @@
 using System.Linq;
 using System.Windows.Forms;
 using InvSys.Infrastructure;        // InventoryService + DbContext
-using InvSys.Domain.Models.InventoryItems;  // Supplier model
+using InvSys.Domain.Models.InventoryItems;
+using InvSys.Services;  // Supplier model
 
 namespace InvSys.App.CRUDForms
 {
@@ -46,7 +47,7 @@ namespace InvSys.App.CRUDForms
             }
 
             //check duplicate email
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             if (service.GetAllSuppliers().Any(s => s.Email == txtBoxEmail.Text.Trim()))
             {
                 MessageBox.Show("Supplier with this email already exists!", "Duplicate",

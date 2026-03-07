@@ -3,16 +3,19 @@ using System;
 using InvSys.Infrastructure;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Migrations;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
 
-namespace InvSys.Infrastructure.Migrations.InventoryDb
+namespace InvSys.Infrastructure.Migrations
 {
     [DbContext(typeof(InventoryDbContext))]
-    partial class InventoryDbContextModelSnapshot : ModelSnapshot
+    [Migration("20260307010220_initialCreate")]
+    partial class initialCreate
     {
-        protected override void BuildModel(ModelBuilder modelBuilder)
+        /// <inheritdoc />
+        protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "8.0.24");
@@ -66,6 +69,45 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.ToTable("Products");
                 });
 
+            modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Purchase", b =>
+                {
+                    b.Property<int>("Id")
+                        .ValueGeneratedOnAdd()
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("CreatedBy")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime>("CreatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("DeletedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("DeletedDate")
+                        .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsActive")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<int>("PaymentMethod")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<decimal>("TotalAmount")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<string>("UpdatedBy")
+                        .HasColumnType("TEXT");
+
+                    b.Property<DateTime?>("UpdatedDate")
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.ToTable("Purchases");
+                });
+
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Sales", b =>
                 {
                     b.Property<int>("Id")
@@ -91,13 +133,16 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.Property<int>("ProductId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("QuantitySold")
+                    b.Property<int>("PurchaseId")
                         .HasColumnType("INTEGER");
 
-                    b.Property<DateTime>("SaleDate")
-                        .HasColumnType("TEXT");
+                    b.Property<int>("Quantity")
+                        .HasColumnType("INTEGER");
 
-                    b.Property<decimal>("TotalAmount")
+                    b.Property<decimal>("Subtotal")
+                        .HasColumnType("DECIMAL(18,2)");
+
+                    b.Property<decimal>("UnitPrice")
                         .HasColumnType("DECIMAL(18,2)");
 
                     b.Property<string>("UpdatedBy")
@@ -110,7 +155,9 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Sale");
+                    b.HasIndex("PurchaseId");
+
+                    b.ToTable("Sales");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Stock", b =>
@@ -141,13 +188,6 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.Property<int>("Quantity")
                         .HasColumnType("INTEGER");
 
-                    b.Property<int>("Transaction")
-                        .HasMaxLength(50)
-                        .HasColumnType("INTEGER");
-
-                    b.Property<DateTime>("TransactionDate")
-                        .HasColumnType("TEXT");
-
                     b.Property<string>("UpdatedBy")
                         .HasColumnType("TEXT");
 
@@ -158,7 +198,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
 
                     b.HasIndex("ProductId");
 
-                    b.ToTable("Stock");
+                    b.ToTable("Stocks");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Supplier", b =>
@@ -219,7 +259,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.HasOne("InvSys.Domain.Models.InventoryItems.Supplier", "Supplier")
                         .WithMany("Products")
                         .HasForeignKey("SupplierId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Supplier");
@@ -230,10 +270,18 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.HasOne("InvSys.Domain.Models.InventoryItems.Product", "Product")
                         .WithMany("AllSales")
                         .HasForeignKey("ProductId")
+                        .OnDelete(DeleteBehavior.Restrict)
+                        .IsRequired();
+
+                    b.HasOne("InvSys.Domain.Models.InventoryItems.Purchase", "Purchase")
+                        .WithMany("SalesItems")
+                        .HasForeignKey("PurchaseId")
                         .OnDelete(DeleteBehavior.Cascade)
                         .IsRequired();
 
                     b.Navigation("Product");
+
+                    b.Navigation("Purchase");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Stock", b =>
@@ -241,7 +289,7 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.HasOne("InvSys.Domain.Models.InventoryItems.Product", "Product")
                         .WithMany("StockTransactions")
                         .HasForeignKey("ProductId")
-                        .OnDelete(DeleteBehavior.Cascade)
+                        .OnDelete(DeleteBehavior.Restrict)
                         .IsRequired();
 
                     b.Navigation("Product");
@@ -252,6 +300,11 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                     b.Navigation("AllSales");
 
                     b.Navigation("StockTransactions");
+                });
+
+            modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Purchase", b =>
+                {
+                    b.Navigation("SalesItems");
                 });
 
             modelBuilder.Entity("InvSys.Domain.Models.InventoryItems.Supplier", b =>

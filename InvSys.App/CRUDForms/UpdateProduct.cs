@@ -2,6 +2,7 @@
 using System.Linq;
 using System.Windows.Forms;
 using InvSys.Infrastructure;
+using InvSys.Services.Services;
 
 namespace InvSys.App.CRUDForms
 {
@@ -9,13 +10,13 @@ namespace InvSys.App.CRUDForms
     {
         private readonly MainInventory _parentForm;
         private int _productId;
-        private readonly InventoryService _service;
+        private readonly InventoryServices _service;
 
         public UpdateProduct(MainInventory parentForm)
         {
             InitializeComponent();
             _parentForm = parentForm;
-            _service = new InventoryService();
+            _service = new InventoryServices();
             LoadSuppliers();
         }
 

@@ -2,31 +2,30 @@
 using InvSys.Domain.Models.Account;
 using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
-using Microsoft.EntityFrameworkCore; 
-using Microsoft.VisualBasic.ApplicationServices;
+using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Windows.Forms;
-using static System.Windows.Forms.DataFormats;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.ListView;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace InvSys.App
 {
     public partial class LoginForm : Form
     {
+        private readonly IServiceProvider _serviceProvider;
+
         private void SyncfusionLicensing()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1fc3RdRWJcV0J3WkVWYEs=");
         }
 
-        public LoginForm()
+        // ── DI Constructor ──────────────────────────────────────────────
+        public LoginForm(IServiceProvider serviceProvider)
         {
+            _serviceProvider = serviceProvider;
             SyncfusionLicensing();
             InitializeComponent();
             TxtBoxShowPasswordChar(false);
             InitializeDatabases();
-           
         }
 
         private void InitializeDatabases()
@@ -50,7 +49,6 @@ namespace InvSys.App
 
         private void AddUserToDatabase(string username, string email, string password)
         {
-
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
 
             var userAccount = new UserAccount
@@ -61,19 +59,17 @@ namespace InvSys.App
                 Role = UserRole.User
             };
 
-            using (var context = new AccountsDbContext())
+            using var context = new AccountsDbContext();
+            if (context.UserAccounts.Any(u => u.Username == username))
             {
-                if (context.UserAccounts.Any(u => u.Username == username))
-                {
-                    MessageBox.Show("Username already exists!", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                context.UserAccounts.Add(userAccount);
-                context.SaveChanges();
-                MessageBox.Show("User created successfully!", "Success");
+                MessageBox.Show("Username already exists!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            context.UserAccounts.Add(userAccount);
+            context.SaveChanges();
+            MessageBox.Show("User created successfully!", "Success");
         }
 
         private void AddAdminToDatabase(string username, string email, string password)
@@ -86,25 +82,23 @@ namespace InvSys.App
                 Email = email,
                 PasswordHash = passwordHash,
                 Role = UserRole.Admin,
-                CreatedBy = "System" // <--- Added this to satisfy your updated model!
+                CreatedBy = "System"
             };
 
-            using (var context = new AccountsDbContext())
+            using var context = new AccountsDbContext();
+            if (context.UserAccounts.Any(u => u.Username == username))
             {
-                if (context.UserAccounts.Any(u => u.Username == username))
-                {
-                    MessageBox.Show("Username already exists!", "Error",
-                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
-
-                context.UserAccounts.Add(userAccount);
-                context.SaveChanges();
-                MessageBox.Show("Admin created successfully!", "Success");
+                MessageBox.Show("Username already exists!", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
             }
+
+            context.UserAccounts.Add(userAccount);
+            context.SaveChanges();
+            MessageBox.Show("Admin created successfully!", "Success");
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private async void btnLogin_Click(object sender, EventArgs e)
         {
             string loginInput = txtBoxUserEmail.Text.Trim();
             string password = txtBoxPassword.Text;
@@ -115,40 +109,35 @@ namespace InvSys.App
                 return;
             }
 
-            using (var context = new AccountsDbContext())
+            using var context = new AccountsDbContext();
+            var user = context.UserAccounts
+                .FirstOrDefault(u => u.Username == loginInput || u.Email == loginInput);
+
+            if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                var user = context.UserAccounts
-                    .FirstOrDefault(u => u.Username == loginInput || u.Email == loginInput);
+                var greeting = user.Role == UserRole.Admin
+                    ? $"Welcome back, Admin {user.Username}!"
+                    : $"Welcome back, {user.Username}!";
+                MessageBox.Show(greeting, "Login Successful");
 
-                if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
-                {
-                    if (user.Role == UserRole.Admin)
-                    {
-                        MessageBox.Show($"Welcome back, Admin {user.Username}!", "Admin Login Successful");
-                    }
-                    else
-                    {
-                        MessageBox.Show($"Welcome back, {user.Username}!", "Login Successful");
-                    }
+                // ── Ask DI container for MainInventory ──────────────────
+                var mainInv = _serviceProvider.GetRequiredService<MainInventory>();
+                await mainInv.LoadAsync(user.Username, user.Role);
 
-                    this.Hide();
-                    var mainInv = new MainInventory(user.Username, user.Role);
-                    mainInv.Closed += (s, args) => this.Close();
-                    mainInv.Show();
-                }
-                else
-                {
-                    MessageBox.Show("Invalid username/email or password.", "Login Failed");
-                    txtBoxPassword.Clear();
-                    txtBoxUserEmail.Focus();
-                }
+                this.Hide();
+                mainInv.Closed += (s, args) => this.Close();
+                mainInv.Show();
+            }
+            else
+            {
+                MessageBox.Show("Invalid username/email or password.", "Login Failed");
+                txtBoxPassword.Clear();
+                txtBoxUserEmail.Focus();
             }
         }
 
-
         private void txtBoxUserEmail_KeyDown(object sender, KeyEventArgs e)
         {
-
             if (e.KeyCode == Keys.Enter)
             {
                 txtBoxPassword.Focus();
@@ -165,7 +154,6 @@ namespace InvSys.App
                 e.Handled = true;
                 e.SuppressKeyPress = true;
             }
-
         }
 
         private void btnExit_Click(object sender, EventArgs e)

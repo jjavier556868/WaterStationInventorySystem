@@ -1,17 +1,19 @@
-﻿using InvSys.Domain.Models.InventoryItems;
-using InvSys.Infrastructure;
-using Microsoft.EntityFrameworkCore;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Text;
+using System.Threading.Tasks;
+using InvSys.Domain.Models;
+using InvSys.Domain.Models.InventoryItems;
+using InvSys.Infrastructure;
 
-namespace InvSys.Infrastructure
+namespace InvSys.Services.Services
 {
-    public class InventoryService : IDisposable
+    public class InventoryServices:IDisposable
     {
         private readonly InventoryDbContext _context;
 
-        public InventoryService()
+        public InventoryServices()
         {
             _context = new InventoryDbContext();
         }
@@ -84,7 +86,7 @@ namespace InvSys.Infrastructure
                 .ToList<object>();
         }
 
-        
+
 
         public void UpdateProduct(int id, string name, decimal price, int quantity, int supplierId)
         {

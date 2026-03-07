@@ -10,6 +10,8 @@ using System.Collections.Generic;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using InvSys.Services;
+using InvSys.Services.Services;
 
 namespace InvSys.App
 {
@@ -160,14 +162,14 @@ namespace InvSys.App
 
         public void RefreshSupplierTable()
         {
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             var suppliers = service.GetAllSuppliers().OrderBy(s => s.Id).ToList();
             SupplierTable.DataSource = suppliers;
         }
 
         public void RefreshProductTable()
         {
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             var products = service.GetAllProducts();
             ProductTable.DataSource = products;
         }
@@ -290,7 +292,7 @@ namespace InvSys.App
 
             try
             {
-                using var service = new InventoryService();
+                using var service = new InventoryServices();
                 int deletedCount = 0;
                 var suppliersToDelete = selectedItems.Cast<Supplier>().ToList();
 
@@ -387,7 +389,7 @@ namespace InvSys.App
 
             try
             {
-                using var service = new InventoryService();
+                using var service = new InventoryServices();
                 int deletedCount = 0;
                 var productsToDelete = selectedItems.Cast<dynamic>().ToList();
 
@@ -420,7 +422,7 @@ namespace InvSys.App
                 return;
             }
 
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             var allSuppliers = service.GetAllSuppliers();
             var filteredSuppliers = allSuppliers
                 .Where(s => s.Name.IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -498,7 +500,7 @@ namespace InvSys.App
                 return;
             }
 
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             var allProducts = service.GetAllProducts().Cast<dynamic>()
                 .Where(p => p.Name.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||
                            p.Price.ToString().IndexOf(searchText, StringComparison.OrdinalIgnoreCase) >= 0 ||

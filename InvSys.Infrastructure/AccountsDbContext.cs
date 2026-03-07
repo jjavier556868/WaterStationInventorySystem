@@ -15,6 +15,25 @@ namespace InvSys.Infrastructure
         }
 
         protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
-            => optionsBuilder.UseSqlite($"Data Source={DbPath}");
+        {
+            optionsBuilder.UseSqlite($"Data Source={DbPath}");
+        }
+
+        protected override void OnModelCreating(ModelBuilder modelBuilder)
+        {
+            base.OnModelCreating(modelBuilder);
+
+            // ── Global soft-delete query filter ──────────────────────────
+            modelBuilder.Entity<UserAccount>().HasQueryFilter(u => u.DeletedAt == null);
+
+            // ── Unique constraints ───────────────────────────────────────
+            modelBuilder.Entity<UserAccount>()
+                .HasIndex(u => u.Username)
+                .IsUnique();
+
+            modelBuilder.Entity<UserAccount>()
+                .HasIndex(u => u.Email)
+                .IsUnique();
+        }
     }
 }

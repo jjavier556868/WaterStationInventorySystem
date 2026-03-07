@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using InvSys.Infrastructure;
 using InvSys.Domain.Models.InventoryItems;
+using InvSys.Services;
 
 namespace InvSys.App.CRUDForms
 {
@@ -69,7 +70,7 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             if (service.GetAllSuppliers().Any(s => s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
             {
                 MessageBox.Show("Supplier with this email already exists!", "Duplicate",

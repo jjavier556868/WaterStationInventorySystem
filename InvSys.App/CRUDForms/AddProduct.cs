@@ -3,6 +3,7 @@ using System.Linq;
 using System.Windows.Forms;
 using InvSys.Infrastructure;
 using InvSys.Domain.Models.InventoryItems;
+using InvSys.Services;
 
 namespace InvSys.App.CRUDForms
 {
@@ -21,7 +22,7 @@ namespace InvSys.App.CRUDForms
 
         private void LoadSuppliers()
         {
-            using var service = new InventoryService();
+            using var service = new InventoryServices();
             comboBoxSupplier.DataSource = service.GetAllSuppliers();
             comboBoxSupplier.DisplayMember = "Name";
             comboBoxSupplier.ValueMember = "Id";
@@ -67,7 +68,7 @@ namespace InvSys.App.CRUDForms
 
             try
             {
-                using var service = new InventoryService();
+                using var service = new InventoryServices();
                 service.AddProduct(
                     txtBoxProductName.Text.Trim(),
                     price,
