@@ -4,7 +4,7 @@
 
 The system simplifies inventory monitoring by providing an organized interface for managing stock levels and supplier information, helping reduce manual errors and improve operational efficiency.
 
-Built using **C# and .NET Windows Forms**, H2Organizer integrates a database to store and manage inventory data in real time.
+Built using **C# and .NET Windows Forms**, H2Organizer integrates a database to store and manage inventory data locally.
 
 ---
 
