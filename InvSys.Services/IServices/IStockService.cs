@@ -1,13 +1,12 @@
-﻿using InvSys.Services.DTO;
+﻿using InvSys.Domain.Models.InventoryItems;
 
-namespace InvSys.Services.IServices
+namespace InvSys.Services.Interfaces
 {
     public interface IStockService : IDisposable
     {
-        Task RestockAsync(int productId, int quantity);
-        Task<List<StockDto>> GetStockByProductAsync(int productId);
-        Task<int> GetAvailableStockAsync(int productId);
-        Task UpdateStockAsync(int id, int quantity);
-        Task DeleteStockAsync(int id);
+        void Restock(int productId, int quantity);
+        int GetAvailableStock(int productId);
+        List<Stock> GetAllStock();
+        void DeleteStock(int id);
     }
 }

@@ -1,9 +1,7 @@
-﻿using System;
+﻿using InvSys.Services.Services;
+using System;
 using System.Linq;
 using System.Windows.Forms;
-using InvSys.Infrastructure;        // InventoryService + DbContext
-using InvSys.Domain.Models.InventoryItems;
-using InvSys.Services;  // Supplier model
 
 namespace InvSys.App.CRUDForms
 {
@@ -30,27 +28,19 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text))
+            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text) || !txtBoxEmail.Text.Contains("@"))
             {
-                MessageBox.Show("Email is required!", "Validation Error",
+                MessageBox.Show("Please enter a valid email!", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBoxEmail.Focus();
                 return;
             }
 
-            if (!txtBoxEmail.Text.Contains("@"))
-            {
-                MessageBox.Show("Please enter a valid email!", "Invalid Email",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxEmail.Focus();
-                return;
-            }
+            using var service = new SupplierService();
 
-            //check duplicate email
-            using var service = new InventoryServices();
             if (service.GetAllSuppliers().Any(s => s.Email == txtBoxEmail.Text.Trim()))
             {
-                MessageBox.Show("Supplier with this email already exists!", "Duplicate",
+                MessageBox.Show("A supplier with this email already exists!", "Duplicate",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBoxEmail.Focus();
                 return;

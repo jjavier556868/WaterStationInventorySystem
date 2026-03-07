@@ -1,12 +1,12 @@
 ﻿using InvSys.Services.DTOs;
 
-namespace InvSys.Services.IServices
+public interface ISupplierService : IDisposable
 {
-    public interface ISupplierService : IDisposable
-    {
-        Task AddSupplierAsync(string name, string email, string location, string contact);
-        Task<List<SupplierDto>> GetAllSuppliersAsync();
-        Task UpdateSupplierAsync(int id, string name, string email, string location, string contact, bool isActive);
-        Task DeleteSupplierAsync(int id);
-    }
+    void AddSupplier(string name, string email, string location, string contact, bool isActive = true);
+
+    List<SupplierDTO> GetAllSuppliers();
+
+    void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive = true);
+
+    void DeleteSupplier(int id);
 }

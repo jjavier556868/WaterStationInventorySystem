@@ -33,7 +33,7 @@
             btnCancel = new Button();
             label6 = new Label();
             btnUpdate = new Button();
-            txtBoxQuantity = new TextBox();
+            txtBoxDescription = new TextBox();
             label3 = new Label();
             txtBoxPrice = new TextBox();
             label2 = new Label();
@@ -70,6 +70,7 @@
             btnCancel.TabIndex = 39;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click_1;
             // 
             // label6
             // 
@@ -92,12 +93,12 @@
             btnUpdate.UseVisualStyleBackColor = true;
             btnUpdate.Click += btnUpdate_Click;
             // 
-            // txtBoxQuantity
+            // txtBoxDescription
             // 
-            txtBoxQuantity.Location = new Point(33, 243);
-            txtBoxQuantity.Name = "txtBoxQuantity";
-            txtBoxQuantity.Size = new Size(327, 23);
-            txtBoxQuantity.TabIndex = 33;
+            txtBoxDescription.Location = new Point(33, 243);
+            txtBoxDescription.Name = "txtBoxDescription";
+            txtBoxDescription.Size = new Size(327, 23);
+            txtBoxDescription.TabIndex = 33;
             // 
             // label3
             // 
@@ -105,9 +106,9 @@
             label3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label3.Location = new Point(33, 219);
             label3.Name = "label3";
-            label3.Size = new Size(73, 21);
+            label3.Size = new Size(92, 21);
             label3.TabIndex = 32;
-            label3.Text = "Quantity:";
+            label3.Text = "Description:";
             // 
             // txtBoxPrice
             // 
@@ -173,7 +174,7 @@
             Controls.Add(label6);
             Controls.Add(btnUpdate);
             Controls.Add(label4);
-            Controls.Add(txtBoxQuantity);
+            Controls.Add(txtBoxDescription);
             Controls.Add(label3);
             Controls.Add(txtBoxPrice);
             Controls.Add(label2);
@@ -194,7 +195,7 @@
         private Button btnCancel;
         private Label label6;
         private Button btnUpdate;
-        private TextBox txtBoxQuantity;
+        private TextBox txtBoxDescription;
         private Label label3;
         private TextBox txtBoxPrice;
         private Label label2;

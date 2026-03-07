@@ -1,8 +1,9 @@
-﻿using System;
+﻿using InvSys.Domain.Models.InventoryItems;
+using InvSys.Services.DTOs;
+using InvSys.Services.Services;
+using System;
 using System.Linq;
 using System.Windows.Forms;
-using InvSys.Infrastructure;
-using InvSys.Services.Services;
 
 namespace InvSys.App.CRUDForms
 {
@@ -10,53 +11,35 @@ namespace InvSys.App.CRUDForms
     {
         private readonly MainInventory _parentForm;
         private int _productId;
-        private readonly InventoryServices _service;
 
-        public UpdateProduct(MainInventory parentForm)
+        public UpdateProduct(MainInventory parentForm = null)
         {
             InitializeComponent();
             _parentForm = parentForm;
-            _service = new InventoryServices();
+            txtBoxID.Enabled = false;
             LoadSuppliers();
         }
 
         private void LoadSuppliers()
         {
-            var suppliers = _service.GetAllSuppliers();
-            comboBoxSupplier.DataSource = suppliers;
+            using var service = new SupplierService();
+            comboBoxSupplier.DataSource = service.GetAllSuppliers();
             comboBoxSupplier.DisplayMember = "Name";
             comboBoxSupplier.ValueMember = "Id";
         }
 
-        // Updated for SfDataGrid - accepts object directly instead of DataGridViewRow
-        public void LoadSelectedProduct(object selectedProduct)
+        public void LoadSelectedProduct(ProductDTO product)
         {
-            if (selectedProduct != null)
-            {
-                dynamic product = selectedProduct;
-                _productId = (int)product.Id;
+            if (product == null) return;
 
-                txtBoxID.Text = product.Id.ToString();
-                txtBoxProductName.Text = product.Name ?? "";
-                txtBoxPrice.Text = product.Price?.ToString() ?? "0";
-                txtBoxQuantity.Text = product.QuantityInStock?.ToString() ?? "0";
+            _productId = product.Id;
 
-                // Set the supplier dropdown by name
-                string supplierName = product.SupplierName ?? "No Supplier";
+            txtBoxID.Text = product.Id.ToString();
+            txtBoxProductName.Text = product.Name ?? "";
+            txtBoxDescription.Text = product.Description ?? "";
+            txtBoxPrice.Text = product.Price.ToString();
 
-                // Find and select the supplier in the dropdown
-                var supplier = comboBoxSupplier.Items.Cast<dynamic>()
-                    .FirstOrDefault(s => s.Name == supplierName);
-
-                if (supplier != null)
-                {
-                    comboBoxSupplier.SelectedItem = supplier;
-                }
-                else
-                {
-                    comboBoxSupplier.Text = supplierName;
-                }
-            }
+            comboBoxSupplier.SelectedValue = product.SupplierId;
         }
 
         private void btnUpdate_Click(object sender, EventArgs e)
@@ -77,33 +60,30 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            if (!int.TryParse(txtBoxQuantity.Text, out int quantity) || quantity < 0)
-            {
-                MessageBox.Show("Please enter a valid quantity (0 or more).", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxQuantity.Focus();
-                return;
-            }
-
             if (comboBoxSupplier.SelectedValue == null ||
-                !int.TryParse(comboBoxSupplier.SelectedValue.ToString(), out int supplierId) ||
-                supplierId <= 0)
+                !int.TryParse(comboBoxSupplier.SelectedValue.ToString(), out int supplierId) || supplierId <= 0)
             {
-                MessageBox.Show("Please select a valid supplier from the dropdown.", "Validation Error",
+                MessageBox.Show("Please select a valid supplier.", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                comboBoxSupplier.DroppedDown = true;
                 comboBoxSupplier.Focus();
                 return;
             }
 
             try
             {
-                _service.UpdateProduct(_productId, txtBoxProductName.Text.Trim(), price, quantity, supplierId);
+                using var service = new ProductService();
+                service.UpdateProduct(
+                    _productId,
+                    txtBoxProductName.Text.Trim(),
+                    txtBoxDescription.Text.Trim(),
+                    price,
+                    supplierId
+                );
 
                 MessageBox.Show("Product updated successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
+                _parentForm?.RefreshProductTable();
 
-                _parentForm.RefreshProductTable();
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
@@ -114,11 +94,16 @@ namespace InvSys.App.CRUDForms
             }
         }
 
-        // Clean up the service when form closes
-        protected override void OnFormClosing(FormClosingEventArgs e)
+        private void btnCancel_Click(object sender, EventArgs e)
         {
-            base.OnFormClosing(e);
-            _service?.Dispose();
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
+        }
+
+        private void btnCancel_Click_1(object sender, EventArgs e)
+        {
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

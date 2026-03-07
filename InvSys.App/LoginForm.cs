@@ -2,7 +2,6 @@
 using InvSys.Domain.Models.Account;
 using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
-using Microsoft.Extensions.DependencyInjection;
 using System;
 using System.Linq;
 using System.Windows.Forms;
@@ -11,17 +10,13 @@ namespace InvSys.App
 {
     public partial class LoginForm : Form
     {
-        private readonly IServiceProvider _serviceProvider;
-
         private void SyncfusionLicensing()
         {
             Syncfusion.Licensing.SyncfusionLicenseProvider.RegisterLicense("Ngo9BigBOggjHTQxAR8/V1JGaF5cXGpCf1FpRmJGdld5fUVHYVZUTXxaS00DNHVRdkdlWX1fc3RdRWJcV0J3WkVWYEs=");
         }
 
-        // ── DI Constructor ──────────────────────────────────────────────
-        public LoginForm(IServiceProvider serviceProvider)
+        public LoginForm()
         {
-            _serviceProvider = serviceProvider;
             SyncfusionLicensing();
             InitializeComponent();
             TxtBoxShowPasswordChar(false);
@@ -37,9 +32,9 @@ namespace InvSys.App
             accContext.Database.EnsureCreated();
         }
 
-        private void TxtBoxShowPasswordChar(bool _bool)
+        private void TxtBoxShowPasswordChar(bool show)
         {
-            txtBoxPassword.UseSystemPasswordChar = !_bool;
+            txtBoxPassword.UseSystemPasswordChar = !show;
         }
 
         private void checkBox1_CheckedChanged(object sender, EventArgs e)
@@ -50,7 +45,6 @@ namespace InvSys.App
         private void AddUserToDatabase(string username, string email, string password)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-
             var userAccount = new UserAccount
             {
                 Username = username,
@@ -58,7 +52,6 @@ namespace InvSys.App
                 PasswordHash = passwordHash,
                 Role = UserRole.User
             };
-
             using var context = new AccountsDbContext();
             if (context.UserAccounts.Any(u => u.Username == username))
             {
@@ -66,7 +59,6 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             context.UserAccounts.Add(userAccount);
             context.SaveChanges();
             MessageBox.Show("User created successfully!", "Success");
@@ -75,7 +67,6 @@ namespace InvSys.App
         private void AddAdminToDatabase(string username, string email, string password)
         {
             string passwordHash = BCrypt.Net.BCrypt.HashPassword(password);
-
             var userAccount = new UserAccount
             {
                 Username = username,
@@ -84,7 +75,6 @@ namespace InvSys.App
                 Role = UserRole.Admin,
                 CreatedBy = "System"
             };
-
             using var context = new AccountsDbContext();
             if (context.UserAccounts.Any(u => u.Username == username))
             {
@@ -92,13 +82,12 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             context.UserAccounts.Add(userAccount);
             context.SaveChanges();
             MessageBox.Show("Admin created successfully!", "Success");
         }
 
-        private async void btnLogin_Click(object sender, EventArgs e)
+        private void btnLogin_Click(object sender, EventArgs e)
         {
             string loginInput = txtBoxUserEmail.Text.Trim();
             string password = txtBoxPassword.Text;
@@ -120,10 +109,7 @@ namespace InvSys.App
                     : $"Welcome back, {user.Username}!";
                 MessageBox.Show(greeting, "Login Successful");
 
-                // ── Ask DI container for MainInventory ──────────────────
-                var mainInv = _serviceProvider.GetRequiredService<MainInventory>();
-                await mainInv.LoadAsync(user.Username, user.Role);
-
+                var mainInv = new MainInventory(user.Username, user.Role);
                 this.Hide();
                 mainInv.Closed += (s, args) => this.Close();
                 mainInv.Show();

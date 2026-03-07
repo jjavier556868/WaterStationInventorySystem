@@ -1,12 +1,19 @@
 ﻿namespace InvSys.Services.DTOs
 {
-    public record SupplierDto(
-        int Id,
-        string Name,
-        string Email,
-        string Location,
-        string ContactNo,
-        bool IsActive,
-        DateTime CreatedDate
-    );
+    public class SupplierDTO
+    {
+        public int Id { get; set; }
+
+        public string Name { get; set; }
+
+        public string Email { get; set; }
+
+        public string Location { get; set; }
+
+        public string ContactNo { get; set; }
+
+        public bool IsActive { get; set; }
+
+        public DateTime CreatedDate { get; set; }
+    }
 }

@@ -1,9 +1,7 @@
-﻿using InvSys.Domain.Models;
-using InvSys.Domain.Models.InventoryItems;
+﻿using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
-using InvSys.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using InvSys.Services.Interfaces;
 
 namespace InvSys.Services.Services
 {
@@ -11,12 +9,12 @@ namespace InvSys.Services.Services
     {
         private readonly InventoryDbContext _context;
 
-        public SupplierService(InventoryDbContext context)
+        public SupplierService()
         {
-            _context = context;
+            _context = new InventoryDbContext();
         }
 
-        public async Task AddSupplierAsync(string name, string email, string location, string contact)
+        public void AddSupplier(string name, string email, string location, string contact, bool isActive = true)
         {
             var supplier = new Supplier
             {
@@ -24,36 +22,32 @@ namespace InvSys.Services.Services
                 Email = email,
                 Location = location,
                 ContactNo = contact,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "system"
-                // IsActive defaults to true via BaseEntity
+                IsActive = isActive,
+                CreatedDate = DateTime.Now
             };
-
-            await _context.Suppliers.AddAsync(supplier);
-            await _context.SaveChangesAsync();
+            _context.Suppliers.Add(supplier);
+            _context.SaveChanges();
         }
 
-        // Global query filter handles DeletedDate == null automatically
-        public async Task<List<SupplierDto>> GetAllSuppliersAsync()
+        public List<SupplierDTO> GetAllSuppliers()
         {
-            return await _context.Suppliers
-                .Select(s => new SupplierDto(
-                    s.Id,
-                    s.Name,
-                    s.Email,
-                    s.Location,
-                    s.ContactNo,
-                    s.IsActive,
-                    s.CreatedDate
-                ))
-                .ToListAsync();
+            return _context.Suppliers
+                .Select(s => new SupplierDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Email = s.Email,
+                    Location = s.Location,
+                    ContactNo = s.ContactNo,
+                    IsActive = s.IsActive,
+                    CreatedDate = s.CreatedDate
+                })
+                .ToList();
         }
 
-        public async Task UpdateSupplierAsync(int id, string name, string email, string location, string contact, bool isActive)
+        public void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive)
         {
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.Id == id);
-
+            var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
             if (supplier != null)
             {
                 supplier.Name = name;
@@ -61,40 +55,25 @@ namespace InvSys.Services.Services
                 supplier.Location = location;
                 supplier.ContactNo = contact;
                 supplier.IsActive = isActive;
-                supplier.UpdatedDate = DateTime.UtcNow;
-                supplier.UpdatedBy = "system";
-
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 
-        public async Task DeleteSupplierAsync(int id)
+        public void DeleteSupplier(int id)
         {
-            var supplier = await _context.Suppliers
-                .FirstOrDefaultAsync(s => s.Id == id);
-
+            var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
             if (supplier != null)
             {
-                // Global filter already excludes deleted products,
-                // so this count only includes active ones
-                var productCount = await _context.Products
-                    .CountAsync(p => p.SupplierId == id);
-
+                var productCount = _context.Products.Count(p => p.SupplierId == id);
                 if (productCount > 0)
                     throw new InvalidOperationException(
-                        $"Cannot delete supplier with {productCount} active product(s). Reassign or delete products first.");
+                        $"Cannot delete supplier with {productCount} product(s). Reassign or delete products first.");
 
-                supplier.IsActive = false;
-                supplier.DeletedDate = DateTime.UtcNow;
-                supplier.DeletedBy = "system";
-
-                await _context.SaveChangesAsync();
+                _context.Suppliers.Remove(supplier);
+                _context.SaveChanges();
             }
         }
 
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+        public void Dispose() => _context?.Dispose();
     }
 }

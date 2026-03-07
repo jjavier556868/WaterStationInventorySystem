@@ -9,15 +9,16 @@ namespace InvSys.Domain.Models.InventoryItems
         [Required, MaxLength(100)]
         public string Name { get; set; } = string.Empty;
 
+        [MaxLength(255)]
+        public string Description { get; set; } = string.Empty;
+
         [Column(TypeName = "DECIMAL(18,2)")]
         public decimal Price { get; set; }
 
         public int SupplierId { get; set; }
+
         [ForeignKey(nameof(SupplierId))]
         public Supplier? Supplier { get; set; }
-
-        [Column(TypeName = "INTEGER")]
-        public int QuantityInStock { get; set; } = 0;
 
         public virtual ICollection<Sales> AllSales { get; set; } = new List<Sales>();
         public virtual ICollection<Stock> StockTransactions { get; set; } = new List<Stock>();

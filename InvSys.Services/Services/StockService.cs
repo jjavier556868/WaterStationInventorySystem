@@ -1,8 +1,6 @@
 ﻿using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
-using InvSys.Services.DTO;
-using InvSys.Services.IServices;
-using Microsoft.EntityFrameworkCore;
+using InvSys.Services.Interfaces;
 
 namespace InvSys.Services.Services
 {
@@ -10,87 +8,63 @@ namespace InvSys.Services.Services
     {
         private readonly InventoryDbContext _context;
 
-        public StockService(InventoryDbContext context)
+        public StockService()
         {
-            _context = context;
+            _context = new InventoryDbContext();
         }
 
-        public async Task RestockAsync(int productId, int quantity)
+        // Updates existing stock quantity for a product, or creates one if none exists
+        public void Restock(int productId, int quantity)
         {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == productId && p.DeletedDate == null)
-                ?? throw new InvalidOperationException($"Product with ID {productId} not found.");
-
-            var stock = new Stock
+            var stock = _context.Stocks.FirstOrDefault(s => s.ProductId == productId);
+            if (stock != null)
             {
-                ProductId = productId,
-                Quantity = quantity,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "system"
-            };
-
-            await _context.Stocks.AddAsync(stock);
-            await _context.SaveChangesAsync();
+                stock.Quantity += quantity;
+                stock.UpdatedDate = DateTime.Now;
+            }
+            else
+            {
+                _context.Stocks.Add(new Stock
+                {
+                    ProductId = productId,
+                    Quantity = quantity,
+                    CreatedDate = DateTime.Now
+                });
+            }
+            _context.SaveChanges();
         }
 
-        public async Task<List<StockDto>> GetStockByProductAsync(int productId)
+        // Available = total stocked - total sold
+        public int GetAvailableStock(int productId)
         {
-            return await _context.Stocks
-                .Include(s => s.Product)
+            int stocked = _context.Stocks
                 .Where(s => s.ProductId == productId)
+                .Sum(s => (int?)s.Quantity) ?? 0;
+
+            int sold = _context.Sales
+                .Where(s => s.ProductId == productId)
+                .Sum(s => (int?)s.Quantity) ?? 0;
+
+            return stocked - sold;
+        }
+
+        public List<Stock> GetAllStock()
+        {
+            return _context.Stocks
                 .OrderByDescending(s => s.CreatedDate)
-                .Select(s => new StockDto(
-                    s.Id,
-                    s.ProductId,
-                    s.Product.Name,
-                    s.Quantity,
-                    s.CreatedDate
-                ))
-                .ToListAsync();
+                .ToList();
         }
 
-        public async Task<int> GetAvailableStockAsync(int productId)
+        public void DeleteStock(int id)
         {
-            var totalRestocked = await _context.Stocks
-                .Where(s => s.ProductId == productId)
-                .SumAsync(s => (int?)s.Quantity) ?? 0;
-
-            var totalSold = await _context.Sales
-                .Where(s => s.ProductId == productId)
-                .SumAsync(s => (int?)s.Quantity) ?? 0;
-
-            return totalRestocked - totalSold;
+            var stock = _context.Stocks.FirstOrDefault(s => s.Id == id);
+            if (stock != null)
+            {
+                _context.Stocks.Remove(stock);
+                _context.SaveChanges();
+            }
         }
 
-        public async Task UpdateStockAsync(int id, int quantity)
-        {
-            var stock = await _context.Stocks
-                .FirstOrDefaultAsync(s => s.Id == id)
-                ?? throw new InvalidOperationException($"Stock entry with ID {id} not found.");
-
-            stock.Quantity = quantity;
-            stock.UpdatedDate = DateTime.UtcNow;
-            stock.UpdatedBy = "system";
-
-            await _context.SaveChangesAsync();
-        }
-
-        public async Task DeleteStockAsync(int id)
-        {
-            var stock = await _context.Stocks
-                .FirstOrDefaultAsync(s => s.Id == id)
-                ?? throw new InvalidOperationException($"Stock entry with ID {id} not found.");
-
-            stock.IsActive = false;
-            stock.DeletedDate = DateTime.UtcNow;
-            stock.DeletedBy = "system";
-
-            await _context.SaveChangesAsync();
-        }
-
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+        public void Dispose() => _context?.Dispose();
     }
 }

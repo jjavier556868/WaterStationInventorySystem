@@ -2,8 +2,6 @@
 using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
 using InvSys.Services.Interfaces;
-using InvSys.Services.IServices;
-using Microsoft.EntityFrameworkCore;
 
 namespace InvSys.Services.Services
 {
@@ -11,80 +9,63 @@ namespace InvSys.Services.Services
     {
         private readonly InventoryDbContext _context;
 
-        public ProductService(InventoryDbContext context)
+        public ProductService()
         {
-            _context = context;
+            _context = new InventoryDbContext();
         }
 
-        public async Task AddProductAsync(string name, decimal price, int supplierId)
+        public void AddProduct(string name, string description, decimal price, int supplierId)
         {
             var product = new Product
             {
                 Name = name,
+                Description = description,
                 Price = price,
                 SupplierId = supplierId,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "system"
+                CreatedDate = DateTime.Now
             };
-
-            await _context.Products.AddAsync(product);
-            await _context.SaveChangesAsync();
+            _context.Products.Add(product);
+            _context.SaveChanges();
         }
 
-        public async Task<List<ProductDto>> GetAllProductsAsync()
+        public List<ProductDTO> GetAllProducts()
         {
-            return await _context.Products
-
-                .Include(p => p.Supplier)
-                .OrderBy(p => p.Id)
-                .Select(p => new ProductDto(
-                    p.Id,
-                    p.Name,
-                    p.Price,
-                    p.SupplierId,
-                    p.Supplier != null ? p.Supplier.Name : "No Supplier",
-                    p.StockTransactions.Sum(s => s.Quantity) - p.AllSales.Sum(s => s.Quantity),
-                    p.CreatedDate
-                ))
-                .ToListAsync();
+            return _context.Products
+                .Select(p => new ProductDTO
+                {
+                    Id = p.Id,
+                    Name = p.Name,
+                    Price = p.Price,
+                    Description = p.Description,
+                    SupplierId = p.SupplierId,
+                    SupplierName = p.Supplier.Name
+                })
+                .ToList();
         }
 
-        public async Task UpdateProductAsync(int id, string name, decimal price, int supplierId)
+        public void UpdateProduct(int id, string name, string description, decimal price, int supplierId)
         {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == id);
-
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
             if (product != null)
             {
                 product.Name = name;
+                product.Description = description;
                 product.Price = price;
                 product.SupplierId = supplierId;
-                product.UpdatedDate = DateTime.UtcNow;
-                product.UpdatedBy = "system";
-
-                await _context.SaveChangesAsync();
+                _context.SaveChanges();
             }
         }
 
-        public async Task DeleteProductAsync(int id)
+        public void DeleteProduct(int id)
         {
-            var product = await _context.Products
-                .FirstOrDefaultAsync(p => p.Id == id);
-
+            var product = _context.Products.FirstOrDefault(p => p.Id == id);
             if (product != null)
             {
-                // Soft delete
-                product.IsActive = false;
-                product.DeletedDate = DateTime.UtcNow;
-                product.DeletedBy = "system";
-
-                await _context.SaveChangesAsync();
+                _context.Products.Remove(product);
+                _context.SaveChanges();
             }
         }
 
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+        public void Dispose() => _context?.Dispose();
     }
 }

@@ -36,7 +36,7 @@
             label1 = new Label();
             txtBoxPrice = new TextBox();
             label2 = new Label();
-            txtBoxQuantity = new TextBox();
+            txtBoxDescription = new TextBox();
             label3 = new Label();
             label4 = new Label();
             supplierBindingSource = new BindingSource(components);
@@ -53,6 +53,7 @@
             btnCancel.TabIndex = 25;
             btnCancel.Text = "Cancel";
             btnCancel.UseVisualStyleBackColor = true;
+            btnCancel.Click += btnCancel_Click_1;
             // 
             // label6
             // 
@@ -109,12 +110,12 @@
             label2.TabIndex = 26;
             label2.Text = "Price:";
             // 
-            // txtBoxQuantity
+            // txtBoxDescription
             // 
-            txtBoxQuantity.Location = new Point(33, 188);
-            txtBoxQuantity.Name = "txtBoxQuantity";
-            txtBoxQuantity.Size = new Size(327, 23);
-            txtBoxQuantity.TabIndex = 29;
+            txtBoxDescription.Location = new Point(33, 188);
+            txtBoxDescription.Name = "txtBoxDescription";
+            txtBoxDescription.Size = new Size(327, 23);
+            txtBoxDescription.TabIndex = 29;
             // 
             // label3
             // 
@@ -122,9 +123,9 @@
             label3.Font = new Font("Segoe UI", 12F, FontStyle.Regular, GraphicsUnit.Point, 0);
             label3.Location = new Point(33, 164);
             label3.Name = "label3";
-            label3.Size = new Size(73, 21);
+            label3.Size = new Size(92, 21);
             label3.TabIndex = 28;
-            label3.Text = "Quantity:";
+            label3.Text = "Description:";
             // 
             // label4
             // 
@@ -155,7 +156,7 @@
             ClientSize = new Size(390, 383);
             Controls.Add(comboBoxSupplier);
             Controls.Add(label4);
-            Controls.Add(txtBoxQuantity);
+            Controls.Add(txtBoxDescription);
             Controls.Add(label3);
             Controls.Add(txtBoxPrice);
             Controls.Add(label2);
@@ -181,7 +182,7 @@
         private Label label1;
         private TextBox txtBoxPrice;
         private Label label2;
-        private TextBox txtBoxQuantity;
+        private TextBox txtBoxDescription;
         private Label label3;
         private Label label4;
         private BindingSource supplierBindingSource;

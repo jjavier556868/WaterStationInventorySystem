@@ -1,12 +1,12 @@
 ﻿using InvSys.Services.DTOs;
 
-namespace InvSys.Services.Interfaces
+public interface IProductService : IDisposable
 {
-    public interface IProductService : IDisposable
-    {
-        Task AddProductAsync(string name, decimal price, int supplierId);
-        Task<List<ProductDto>> GetAllProductsAsync();
-        Task UpdateProductAsync(int id, string name, decimal price, int supplierId);
-        Task DeleteProductAsync(int id);
-    }
+    void AddProduct(string name, string description, decimal price, int supplierId);
+
+    List<ProductDTO> GetAllProducts();
+
+    void UpdateProduct(int id, string name, string description, decimal price, int supplierId);
+
+    void DeleteProduct(int id);
 }

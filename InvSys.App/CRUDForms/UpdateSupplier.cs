@@ -1,29 +1,27 @@
-﻿using System;
+﻿using InvSys.Domain.Models.InventoryItems;
+using InvSys.Services.DTOs;
+using InvSys.Services.Services;
+using System;
 using System.Linq;
 using System.Windows.Forms;
-using InvSys.Infrastructure;
-using InvSys.Domain.Models.InventoryItems;
-using InvSys.Services;
 
 namespace InvSys.App.CRUDForms
 {
     public partial class UpdateSupplier : Form
     {
         private readonly MainInventory _parentForm;
-        private Supplier _selectedSupplier;
+        private SupplierDTO _selectedSupplier;
 
         public UpdateSupplier(MainInventory parentForm = null)
         {
             InitializeComponent();
             _parentForm = parentForm;
             txtBoxID.Enabled = false;
-            chkBoxActive.Checked = true;
             this.AcceptButton = btnUpdate;
             this.CancelButton = btnCancel;
         }
 
-        // Updated for SfDataGrid - accepts Supplier object directly
-        public void LoadSelectedSupplier(Supplier supplier)
+        public void LoadSelectedSupplier(SupplierDTO supplier)
         {
             _selectedSupplier = supplier;
             if (_selectedSupplier != null)
@@ -54,26 +52,21 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text))
+            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text) || !txtBoxEmail.Text.Contains("@"))
             {
-                MessageBox.Show("Email is required!", "Validation Error",
+                MessageBox.Show("Please enter a valid email!", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBoxEmail.Focus();
                 return;
             }
 
-            if (!txtBoxEmail.Text.Contains("@"))
-            {
-                MessageBox.Show("Please enter a valid email!", "Invalid Email",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxEmail.Focus();
-                return;
-            }
+            using var service = new SupplierService();
 
-            using var service = new InventoryServices();
-            if (service.GetAllSuppliers().Any(s => s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
+            // Optional: check for duplicate email
+            if (service.GetAllSuppliers().Any(s =>
+                s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
             {
-                MessageBox.Show("Supplier with this email already exists!", "Duplicate",
+                MessageBox.Show("A supplier with this email already exists!", "Duplicate",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBoxEmail.Focus();
                 return;
@@ -104,15 +97,15 @@ namespace InvSys.App.CRUDForms
             }
         }
 
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+        }
+
         private void btnCancel_Click(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
         }
     }
 }

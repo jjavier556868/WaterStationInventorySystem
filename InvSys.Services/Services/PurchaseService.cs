@@ -3,173 +3,106 @@ using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
 using InvSys.Services.Interfaces;
-using InvSys.Services.IServices;
-using Microsoft.EntityFrameworkCore;
 
 namespace InvSys.Services.Services
 {
     public class PurchaseService : IPurchaseService
     {
         private readonly InventoryDbContext _context;
-        private readonly IStockService _stockService;
 
-        public PurchaseService(InventoryDbContext context, IStockService stockService)
+        public PurchaseService()
         {
-            _context = context;
-            _stockService = stockService;
+            _context = new InventoryDbContext();
         }
 
-        public async Task<PurchaseDto> ProcessPurchaseAsync(List<SaleItemRequest> items, PaymentMethod paymentMethod)
+        public Purchase ProcessPurchase(List<SaleItemRequest> items, PaymentMethod paymentMethod)
         {
-            // 1. Validate stock availability for all items first
+            // Validate stock availability for all items first
             foreach (var item in items)
             {
-                var available = await _stockService.GetAvailableStockAsync(item.ProductId);
-                if (available < item.Quantity)
+                int stocked = _context.Stocks
+                    .Where(s => s.ProductId == item.ProductId)
+                    .Sum(s => (int?)s.Quantity) ?? 0;
+
+                int sold = _context.Sales
+                    .Where(s => s.ProductId == item.ProductId)
+                    .Sum(s => (int?)s.Quantity) ?? 0;
+
+                int available = stocked - sold;
+
+                if (item.Quantity > available)
                 {
-                    var product = await _context.Products.FindAsync(item.ProductId);
+                    var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
                     throw new InvalidOperationException(
-                        $"Insufficient stock for '{product?.Name ?? $"Product {item.ProductId}"}'. " +
-                        $"Requested: {item.Quantity}, Available: {available}.");
+                        $"Insufficient stock for '{product?.Name ?? "Unknown"}'. Available: {available}, Requested: {item.Quantity}");
                 }
             }
 
-            // 2. Create the Purchase header
+            // Create purchase header
             var purchase = new Purchase
             {
                 PaymentMethod = paymentMethod,
                 TotalAmount = 0,
-                CreatedDate = DateTime.UtcNow,
-                CreatedBy = "system"
+                CreatedDate = DateTime.Now
             };
+            _context.Purchases.Add(purchase);
+            _context.SaveChanges();
 
-            await _context.Purchases.AddAsync(purchase);
-            await _context.SaveChangesAsync();
-
-            // 3. Create Sales line items
-            var salesItems = new List<Sales>();
+            // Create sales line items
             decimal total = 0;
-
             foreach (var item in items)
             {
-                var product = await _context.Products.FindAsync(item.ProductId)
-                    ?? throw new InvalidOperationException($"Product with ID {item.ProductId} not found.");
-
-                var subtotal = product.Price * item.Quantity;
+                var product = _context.Products.FirstOrDefault(p => p.Id == item.ProductId);
+                decimal unitPrice = product?.Price ?? 0;
+                decimal subtotal = unitPrice * item.Quantity;
                 total += subtotal;
 
-                var sale = new Sales
+                _context.Sales.Add(new Sales
                 {
                     PurchaseId = purchase.Id,
                     ProductId = item.ProductId,
                     Quantity = item.Quantity,
-                    UnitPrice = product.Price,
+                    UnitPrice = unitPrice,
                     Subtotal = subtotal,
-                    CreatedDate = DateTime.UtcNow,
-                    CreatedBy = "system"
-                };
-
-                salesItems.Add(sale);
-                await _context.Sales.AddAsync(sale);
+                    CreatedDate = DateTime.Now
+                });
             }
 
-            // 4. Update Purchase total and save
+            // Update total on purchase
             purchase.TotalAmount = total;
-            await _context.SaveChangesAsync();
+            _context.SaveChanges();
 
-            // 5. Return full PurchaseDto with line items
-            return new PurchaseDto(
-                purchase.Id,
-                purchase.CreatedDate,
-                purchase.TotalAmount,
-                purchase.PaymentMethod,
-                salesItems.Select(s => new SalesDto(
-                    s.Id,
-                    s.PurchaseId,
-                    s.ProductId,
-                    _context.Products.Find(s.ProductId)?.Name ?? string.Empty,
-                    s.Quantity,
-                    s.UnitPrice,
-                    s.Subtotal
-                )).ToList()
-            );
+            return purchase;
         }
 
-        public async Task<List<PurchaseDto>> GetAllPurchasesAsync()
+        public List<SalesLineItemDto> GetAllSales()
         {
-            return await _context.Purchases
-                .Where(p => p.DeletedDate == null)
-                .Include(p => p.SalesItems)
-                    .ThenInclude(s => s.Product)
-                .OrderByDescending(p => p.CreatedDate)
-                .Select(p => new PurchaseDto(
-                    p.Id,
-                    p.CreatedDate,
-                    p.TotalAmount,
-                    p.PaymentMethod,
-                    p.SalesItems.Select(s => new SalesDto(
-                        s.Id,
-                        s.PurchaseId,
-                        s.ProductId,
-                        s.Product.Name,
-                        s.Quantity,
-                        s.UnitPrice,
-                        s.Subtotal
-                    )).ToList()
-                ))
-                .ToListAsync();
+            return _context.Sales.ToList()
+                .Select(s => new SalesLineItemDto
+                {
+                    SaleId = s.Id,
+                    PurchaseId = s.PurchaseId,
+                    PurchasedOn = s.CreatedDate,
+                    ProductName = _context.Products
+                                        .Where(p => p.Id == s.ProductId)
+                                        .Select(p => p.Name)
+                                        .FirstOrDefault() ?? "Unknown",
+                    Quantity = s.Quantity,
+                    UnitPrice = s.UnitPrice,
+                    Subtotal = s.Subtotal,
+                    PurchaseTotal = _context.Purchases
+                                        .Where(p => p.Id == s.PurchaseId)
+                                        .Select(p => p.TotalAmount)
+                                        .FirstOrDefault(),
+                    PaymentMethod = _context.Purchases
+                                        .Where(p => p.Id == s.PurchaseId)
+                                        .Select(p => p.PaymentMethod.ToString())
+                                        .FirstOrDefault() ?? ""
+                })
+                .OrderByDescending(s => s.PurchasedOn)
+                .ToList();
         }
 
-        public async Task<PurchaseDto?> GetPurchaseByIdAsync(int purchaseId)
-        {
-            var purchase = await _context.Purchases
-                .Where(p => p.DeletedDate == null)
-                .Include(p => p.SalesItems)
-                    .ThenInclude(s => s.Product)
-                .FirstOrDefaultAsync(p => p.Id == purchaseId);
-
-            if (purchase is null) return null;
-
-            return new PurchaseDto(
-                purchase.Id,
-                purchase.CreatedDate,
-                purchase.TotalAmount,
-                purchase.PaymentMethod,
-                purchase.SalesItems.Select(s => new SalesDto(
-                    s.Id,
-                    s.PurchaseId,
-                    s.ProductId,
-                    s.Product.Name,
-                    s.Quantity,
-                    s.UnitPrice,
-                    s.Subtotal
-                )).ToList()
-            );
-        }
-
-        public async Task<List<SalesLineItemDto>> GetAllSalesAsync()
-        {
-            return await _context.Sales
-                .Include(s => s.Product)
-                .Include(s => s.Purchase)
-                .OrderByDescending(s => s.Purchase.CreatedDate)
-                .Select(s => new SalesLineItemDto(
-                    s.Id,
-                    s.PurchaseId,
-                    s.Purchase.CreatedDate,
-                    s.Product.Name,
-                    s.Quantity,
-                    s.UnitPrice,
-                    s.Subtotal,
-                    s.Purchase.TotalAmount,
-                    s.Purchase.PaymentMethod
-                ))
-                .ToListAsync();
-        }
-
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+        public void Dispose() => _context?.Dispose();
     }
 }

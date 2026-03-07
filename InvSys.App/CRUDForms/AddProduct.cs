@@ -1,9 +1,6 @@
-﻿using System;
-using System.Linq;
+﻿using InvSys.Services.Services;
+using System;
 using System.Windows.Forms;
-using InvSys.Infrastructure;
-using InvSys.Domain.Models.InventoryItems;
-using InvSys.Services;
 
 namespace InvSys.App.CRUDForms
 {
@@ -22,7 +19,7 @@ namespace InvSys.App.CRUDForms
 
         private void LoadSuppliers()
         {
-            using var service = new InventoryServices();
+            using var service = new SupplierService();
             comboBoxSupplier.DataSource = service.GetAllSuppliers();
             comboBoxSupplier.DisplayMember = "Name";
             comboBoxSupplier.ValueMember = "Id";
@@ -30,7 +27,6 @@ namespace InvSys.App.CRUDForms
 
         private void btnAddProduct_Click(object sender, EventArgs e)
         {
-           
             if (string.IsNullOrWhiteSpace(txtBoxProductName.Text))
             {
                 MessageBox.Show("Product Name is required!", "Validation Error",
@@ -39,7 +35,6 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            
             if (!decimal.TryParse(txtBoxPrice.Text, out decimal price) || price <= 0)
             {
                 MessageBox.Show("Valid price required (e.g. 29.99)!", "Validation Error",
@@ -48,16 +43,6 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            
-            if (!int.TryParse(txtBoxQuantity.Text, out int quantity) || quantity < 0)
-            {
-                MessageBox.Show("Valid quantity required (e.g. 50)!", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxQuantity.Focus();
-                return;
-            }
-
-           
             if (comboBoxSupplier.SelectedValue == null)
             {
                 MessageBox.Show("Please select a supplier!", "Validation Error",
@@ -68,11 +53,11 @@ namespace InvSys.App.CRUDForms
 
             try
             {
-                using var service = new InventoryServices();
+                using var service = new ProductService();
                 service.AddProduct(
                     txtBoxProductName.Text.Trim(),
+                    txtBoxDescription.Text.Trim(),
                     price,
-                    quantity,
                     (int)comboBoxSupplier.SelectedValue
                 );
 
@@ -96,9 +81,10 @@ namespace InvSys.App.CRUDForms
             this.Close();
         }
 
-        private void sfComboBox1_SelectedIndexChanged(object sender, EventArgs e)
+        private void btnCancel_Click_1(object sender, EventArgs e)
         {
-            
+            this.DialogResult = DialogResult.Cancel;
+            this.Close();
         }
     }
 }

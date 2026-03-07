@@ -1,16 +1,15 @@
-﻿using InvSys.Domain.Models.Enums;
-
-namespace InvSys.Services.DTOs
+﻿namespace InvSys.Services.DTOs
 {
-    public record SalesLineItemDto(
-        int SaleId,
-        int PurchaseId,
-        DateTime PurchasedOn,
-        string ProductName,
-        int Quantity,
-        decimal UnitPrice,
-        decimal Subtotal,
-        decimal PurchaseTotal,
-        PaymentMethod PaymentMethod
-    );
+    public class SalesLineItemDto
+    {
+        public int SaleId { get; set; }
+        public int PurchaseId { get; set; }
+        public DateTime PurchasedOn { get; set; }
+        public string ProductName { get; set; }
+        public int Quantity { get; set; }
+        public decimal UnitPrice { get; set; }
+        public decimal Subtotal { get; set; }
+        public decimal PurchaseTotal { get; set; }
+        public string PaymentMethod { get; set; }
+    }
 }
