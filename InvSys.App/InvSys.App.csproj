@@ -19,6 +19,7 @@
     <PackageReference Include="Syncfusion.Licensing" Version="32.2.4" />
     <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="32.2.4" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="32.2.4" />
+    <PackageReference Include="WinForms.DataVisualization" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup>

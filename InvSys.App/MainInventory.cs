@@ -12,6 +12,8 @@ using System.Linq;
 using System.Windows.Forms;
 using System.Xml.Serialization;
 
+
+
 namespace InvSys.App
 {
     public partial class MainInventory : Form
@@ -217,7 +219,7 @@ namespace InvSys.App
             }
 
             var form = new UpdateSupplier(this);
-            form.LoadSelectedSupplier(supplierDto); 
+            form.LoadSelectedSupplier(supplierDto);
             form.ShowDialog();
 
             if (form.DialogResult == DialogResult.OK)
@@ -227,18 +229,18 @@ namespace InvSys.App
         private void btnDeleteSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-            if (SupplierTable.SelectedItem is not Supplier supplier)
+            if (SupplierTable.SelectedItem is not SupplierDTO supplierDto)
             {
                 MessageBox.Show("Please select a supplier to delete.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            if (MessageBox.Show($"Delete '{supplier.Name}'?", "Confirm Delete",
+            if (MessageBox.Show($"Delete '{supplierDto.Name}'?", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
             try
             {
                 using var service = new SupplierService();
-                service.DeleteSupplier(supplier.Id);
+                service.DeleteSupplier(supplierDto.Id);
                 MessageBox.Show("Supplier deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 RefreshSupplierTable();
@@ -257,7 +259,7 @@ namespace InvSys.App
             if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData is SupplierDTO supplierDto)
             {
                 var form = new UpdateSupplier(this);
-                form.LoadSelectedSupplier(supplierDto); 
+                form.LoadSelectedSupplier(supplierDto);
                 form.ShowDialog();
 
                 if (form.DialogResult == DialogResult.OK)
@@ -376,6 +378,21 @@ namespace InvSys.App
         private void btnDeleteProduct_Click_1(object sender, EventArgs e)
         {
             DeleteProductPerform();
+        }
+
+        private void panel26_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel2_Paint(object sender, PaintEventArgs e)
+        {
+
+        }
+
+        private void panel35_Paint(object sender, PaintEventArgs e)
+        {
+
         }
 
         // ── Stock CRUD ────────────────────────────────────────────────────
