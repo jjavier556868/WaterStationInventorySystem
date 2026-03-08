@@ -20,7 +20,7 @@ namespace InvSys.App
     {
         private string _currentUsername;
         private UserRole _currentUserRole;
-
+        private List<CartItem> _cart = new List<CartItem>();
         public MainInventory()
         {
             InitializeComponent();
@@ -127,6 +127,29 @@ namespace InvSys.App
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "C2" });
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" });
+
+            StockViewTable.Columns.Clear();
+            StockViewTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
+            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
+            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Available" });
+
+            ProductsToPurchaseTable.Columns.Clear();
+            ProductsToPurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
+            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
+            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
+            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+            //
+            PurchaseTable.Columns.Clear();
+            PurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
+            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
+            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
+            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
         }
 
         private void InitializeDataGrids()
@@ -141,7 +164,7 @@ namespace InvSys.App
             SupplierTable.SelectionMode = GridSelectionMode.Extended;
             ProductTable.SelectionMode = GridSelectionMode.Extended;
 
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable })
+            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable })
             {
                 grid.AutoGenerateColumns = false;
                 grid.AllowEditing = false;
@@ -153,10 +176,13 @@ namespace InvSys.App
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
 
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable })
+            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable })
             {
                 CustomizeDataGrid(grid);
             }
+
+
+
         }
 
         // ── Role UI ──────────────────────────────────────────────────────
@@ -190,6 +216,7 @@ namespace InvSys.App
             RefreshProductTable();
             RefreshStockTable();
             RefreshSalesTable();
+            RefreshStockViewTable();
         }
 
         public void RefreshSupplierTable()
@@ -222,6 +249,15 @@ namespace InvSys.App
             active.BackColor = on;
         }
 
+        private void HighlightActiveButtonInPurchases(Button active)
+        {
+            Color off = Color.FromArgb(49, 52, 113);
+            Color on = Color.FromArgb(108, 117, 219);
+            foreach (var btn in new[] { btnManagePurchase, btnPurchaseCheckout })
+                btn.BackColor = off;
+            active.BackColor = on;
+        }
+
         private void btnDashboard_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 0; HighlightActiveButton((Button)sender); }
         private void btnStock_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 1; HighlightActiveButton((Button)sender); }
         private void btnSupplier_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 2; HighlightActiveButton((Button)sender); }
@@ -229,6 +265,10 @@ namespace InvSys.App
 
         private void btnPurchase_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 4; HighlightActiveButton((Button)sender); }
         private void btnSales_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 5; HighlightActiveButton((Button)sender); }
+
+        private void btnManagePurchase_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 0; HighlightActiveButtonInPurchases((Button)sender); }
+
+        private void btnPurchaseCheckout_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 1; HighlightActiveButtonInPurchases((Button)sender); }
 
         private void btnAccounts_Click(object sender, EventArgs e)
         {
@@ -594,5 +634,296 @@ namespace InvSys.App
             StockTable.DataSource = service.GetAllStock();
         }
 
+        public void RefreshStockViewTable()
+        {
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+
+            var allStock = stockService.GetAllStock();
+            var products = productService.GetAllProducts();
+
+            var view = allStock.Select(s =>
+            {
+                var product = products.FirstOrDefault(p => p.Id == s.ProductId);
+                if (product == null) return null;
+
+                int available = stockService.GetAvailableStock(s.ProductId);
+
+                var inCart = _cart.FirstOrDefault(c => c.ProductId == s.ProductId);
+                int cartQty = inCart?.Quantity ?? 0;
+
+                return new StockViewDTO
+                {
+                    ProductId = s.ProductId,
+                    ProductName = s.ProductName,
+                    Price = product.Price,
+                    Quantity = Math.Max(0, available - cartQty),
+                    Description = product.Description,
+                    SupplierName = product.SupplierName
+                };
+            })
+            .Where(v => v != null)
+            .OrderBy(v => v.ProductName)
+            .ToList();
+
+            StockViewTable.DataSource = view;
+        }
+
+
+        private bool TryParsePurchaseQuantity(string input, int availableQty, out int quantity)
+        {
+            quantity = 0;
+
+            if (string.IsNullOrWhiteSpace(input))
+            {
+                MessageBox.Show("Please enter a purchase quantity.", "Input Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (!int.TryParse(input.Trim(), out quantity))
+            {
+                MessageBox.Show("Quantity must be a whole number (e.g. 3). No decimals or letters allowed.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (quantity <= 0)
+            {
+                MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            if (quantity > availableQty)
+            {
+                MessageBox.Show(
+                    $"Requested quantity ({quantity}) exceeds available stock ({availableQty}).",
+                    "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return false;
+            }
+
+            return true;
+        }
+
+        private void btnAddPurchase_Click(object sender, EventArgs e)
+        {
+            if (StockViewTable.SelectedItem is not StockViewDTO selected)
+            {
+                MessageBox.Show("Please select a product from the list first.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            int selectedProductId = selected.ProductId;
+
+            if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty))
+                return;
+
+            var existing = _cart.FirstOrDefault(c => c.ProductId == selected.ProductId);
+            if (existing != null)
+            {
+                // Recompute true available = DB stock minus what's already in cart BEFORE this add
+                int currentCartQty = existing.Quantity;
+                int remainingAvailable = selected.Quantity; // already reflects cart deduction from StockViewTable
+
+                if (qty > remainingAvailable)
+                {
+                    MessageBox.Show(
+                        $"Cannot add {qty} more. Only {remainingAvailable} unit(s) still available.",
+                        "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                existing.Quantity += qty;
+                existing.Subtotal = existing.Price * existing.Quantity;
+            }
+            else
+            {
+                _cart.Add(new CartItem
+                {
+                    ProductId = selected.ProductId,
+                    ProductName = selected.ProductName,
+                    Price = selected.Price,
+                    Quantity = qty,
+                    Subtotal = selected.Price * qty
+                });
+            }
+
+            txtBoxPurchaseQuantity.Clear();
+            RefreshCartTables();
+            RefreshStockViewTable();
+
+            var updatedRow = (StockViewTable.DataSource as List<StockViewDTO>)
+                                ?.FirstOrDefault(v => v.ProductId == selectedProductId);
+            if (updatedRow != null)
+            {
+                int rowIndex = (StockViewTable.DataSource as List<StockViewDTO>).IndexOf(updatedRow);
+                StockViewTable.SelectedIndex = rowIndex;
+            }
+
+            SyncPurchaseInfoLabelsToSelection();
+            MessageBox.Show("Cart item added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private void btnUpdatePurchase_Click(object sender, EventArgs e)
+        {
+            if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
+            {
+                MessageBox.Show("Please select an item in the cart to update.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // Get true available stock from DB
+            int dbAvailable;
+            using (var svc = new StockService())
+                dbAvailable = svc.GetAvailableStock(cartItem.ProductId);
+
+            // Available = DB stock minus other cart items for this product
+            // (effectively the max the user can set this item's qty to)
+            int maxAllowed = dbAvailable;
+
+            // Show input dialog
+            string input = Microsoft.VisualBasic.Interaction.InputBox(
+                $"Enter new quantity for '{cartItem.ProductName}'.\n" +
+                $"Available stock: {maxAllowed}",
+                "Update Purchase Quantity",
+                cartItem.Quantity.ToString()
+            );
+
+            // User cancelled
+            if (string.IsNullOrWhiteSpace(input))
+                return;
+
+            if (!int.TryParse(input.Trim(), out int newQty))
+            {
+                MessageBox.Show("Quantity must be a whole number (e.g. 3). No decimals or letters allowed.",
+                    "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (newQty <= 0)
+            {
+                MessageBox.Show("Quantity must be greater than zero.",
+                    "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (newQty > maxAllowed)
+            {
+                MessageBox.Show(
+                    $"Quantity ({newQty}) exceeds available stock ({maxAllowed}).",
+                    "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            var item = _cart.FirstOrDefault(c => c.ProductId == cartItem.ProductId);
+            if (item == null) return;
+
+            item.Quantity = newQty;
+            item.Subtotal = item.Price * newQty;
+
+            RefreshCartTables();
+            RefreshStockViewTable();
+            SyncPurchaseInfoLabelsToSelection();
+
+            MessageBox.Show($"'{cartItem.ProductName}' quantity updated to {newQty}.",
+                "Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+
+        }
+
+        private void btnDeletePurchase_Click(object sender, EventArgs e)
+        {
+            if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
+            {
+                MessageBox.Show("Please select an item in the cart to remove.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
+                return;
+
+            _cart.RemoveAll(c => c.ProductId == cartItem.ProductId);
+            txtBoxPurchaseQuantity.Clear();
+            RefreshCartTables();
+            RefreshStockViewTable();
+            SyncPurchaseInfoLabelsToSelection();
+        }
+
+        private void btnResetPurchase_Click(object sender, EventArgs e)
+        {
+            if (_cart.Count == 0)
+            {
+                MessageBox.Show("The cart is already empty.", "Nothing to Reset",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (MessageBox.Show("Clear all items from the cart?", "Confirm Reset",
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            _cart.Clear();
+            txtBoxPurchaseQuantity.Clear();
+            ClearPurchaseInfoLabels();
+            RefreshCartTables();
+            RefreshStockViewTable();
+            SyncPurchaseInfoLabelsToSelection();
+        }
+
+        private void RefreshCartTables()
+        {
+            var snapshot = _cart.ToList();
+            ProductsToPurchaseTable.DataSource = null;
+            ProductsToPurchaseTable.DataSource = snapshot;
+            PurchaseTable.DataSource = null;
+            PurchaseTable.DataSource = snapshot;
+        }
+
+        private void ClearPurchaseInfoLabels()
+        {
+            txtFromPurchaseProductID.Text = "Product ID:";
+            txtFromPurchaseProductName.Text = "Product Name:";
+            txtFromPurchaseProductQuantity.Text = "Quantity Available:";
+            txtFromPurchaseProductPrice.Text = "Price:";
+            txtFromPurchaseProductDescription.Text = "Description:";
+            txtFromPurchaseProductSupplier.Text = "Supplier:";
+        }
+
+        private void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+        }
+
+        private void StockViewTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (StockViewTable.SelectedItem is not StockViewDTO item)
+            {
+                ClearPurchaseInfoLabels();
+                return;
+            }
+
+            UpdatePurchaseInfoLabels(item);
+        }
+
+        private void SyncPurchaseInfoLabelsToSelection()
+        {
+            if (StockViewTable.SelectedItem is StockViewDTO item)
+                UpdatePurchaseInfoLabels(item);
+            else
+                ClearPurchaseInfoLabels();
+        }
+
+        private void UpdatePurchaseInfoLabels(StockViewDTO item)
+        {
+            txtFromPurchaseProductID.Text = $"Product ID: {item.ProductId}";
+            txtFromPurchaseProductName.Text = $"Product Name: {item.ProductName}";
+            txtFromPurchaseProductQuantity.Text = $"Quantity Available: {item.Quantity}";
+            txtFromPurchaseProductPrice.Text = $"Price: ₱{item.Price:N2}";
+            txtFromPurchaseProductDescription.Text = $"Description: {item.Description}";
+            txtFromPurchaseProductSupplier.Text = $"Supplier: {item.SupplierName}";
+        }
     }
 }

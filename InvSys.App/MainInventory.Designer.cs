@@ -135,7 +135,52 @@
             txtBoxProductSearch = new TextBox();
             label4 = new Label();
             tabPage5 = new TabPage();
-            sfDataGrid1 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel41 = new Panel();
+            PurchaseControl = new TabControl();
+            tabPage8 = new TabPage();
+            panel43 = new Panel();
+            panel54 = new Panel();
+            StockViewTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel47 = new Panel();
+            tableLayoutPanel4 = new TableLayoutPanel();
+            panel48 = new Panel();
+            panel53 = new Panel();
+            txtFromPurchaseProductName = new Label();
+            label27 = new Label();
+            txtBoxPurchaseQuantity = new TextBox();
+            txtFromPurchaseProductSupplier = new Label();
+            txtFromPurchaseProductDescription = new Label();
+            btnAddPurchase = new Button();
+            txtFromPurchaseProductPrice = new Label();
+            txtFromPurchaseProductQuantity = new Label();
+            txtFromPurchaseProductID = new Label();
+            panel52 = new Panel();
+            label21 = new Label();
+            panel49 = new Panel();
+            ProductsToPurchaseTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            tableLayoutPanel5 = new TableLayoutPanel();
+            btnResetPurchase = new Button();
+            btnUpdatePurchase = new Button();
+            btnDeletePurchase = new Button();
+            panel55 = new Panel();
+            label28 = new Label();
+            panel46 = new Panel();
+            panel45 = new Panel();
+            panel51 = new Panel();
+            panel50 = new Panel();
+            textBox2 = new TextBox();
+            label20 = new Label();
+            tabPage9 = new TabPage();
+            panel44 = new Panel();
+            tableLayoutPanel6 = new TableLayoutPanel();
+            panel56 = new Panel();
+            PurchaseTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel58 = new Panel();
+            label22 = new Label();
+            panel57 = new Panel();
+            panel42 = new Panel();
+            btnPurchaseCheckout = new Button();
+            btnManagePurchase = new Button();
             tabPage6 = new TabPage();
             SalesTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             tabPage7 = new TabPage();
@@ -144,6 +189,7 @@
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
+            label23 = new Label();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -194,7 +240,31 @@
             panel9.SuspendLayout();
             panel10.SuspendLayout();
             tabPage5.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid1).BeginInit();
+            panel41.SuspendLayout();
+            PurchaseControl.SuspendLayout();
+            tabPage8.SuspendLayout();
+            panel43.SuspendLayout();
+            panel54.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)StockViewTable).BeginInit();
+            panel47.SuspendLayout();
+            tableLayoutPanel4.SuspendLayout();
+            panel48.SuspendLayout();
+            panel53.SuspendLayout();
+            panel52.SuspendLayout();
+            panel49.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ProductsToPurchaseTable).BeginInit();
+            tableLayoutPanel5.SuspendLayout();
+            panel55.SuspendLayout();
+            panel45.SuspendLayout();
+            panel51.SuspendLayout();
+            tabPage9.SuspendLayout();
+            panel44.SuspendLayout();
+            tableLayoutPanel6.SuspendLayout();
+            panel56.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)PurchaseTable).BeginInit();
+            panel58.SuspendLayout();
+            panel57.SuspendLayout();
+            panel42.SuspendLayout();
             tabPage6.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SalesTable).BeginInit();
             panel5.SuspendLayout();
@@ -419,7 +489,7 @@
             lblWelcome.BackColor = Color.Transparent;
             lblWelcome.Font = new Font("Segoe UI Light", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblWelcome.ForeColor = Color.White;
-            lblWelcome.Location = new Point(51, 26);
+            lblWelcome.Location = new Point(51, 24);
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(208, 40);
             lblWelcome.TabIndex = 15;
@@ -456,7 +526,7 @@
             tabPage1.Padding = new Padding(3);
             tabPage1.Size = new Size(916, 654);
             tabPage1.TabIndex = 0;
-            tabPage1.Text = "tabPage1";
+            tabPage1.Text = "Dashboard";
             tabPage1.UseVisualStyleBackColor = true;
             // 
             // panel2
@@ -810,7 +880,7 @@
             tabPage2.Padding = new Padding(3);
             tabPage2.Size = new Size(916, 654);
             tabPage2.TabIndex = 1;
-            tabPage2.Text = "tabPage2";
+            tabPage2.Text = "Stock";
             tabPage2.UseVisualStyleBackColor = true;
             // 
             // tableLayoutPanel1
@@ -1236,7 +1306,7 @@
             tabPage3.Padding = new Padding(3);
             tabPage3.Size = new Size(916, 654);
             tabPage3.TabIndex = 2;
-            tabPage3.Text = "tabPage3";
+            tabPage3.Text = "Supplier";
             tabPage3.UseVisualStyleBackColor = true;
             // 
             // SupplierTable
@@ -1366,7 +1436,7 @@
             tabPage4.Padding = new Padding(3);
             tabPage4.Size = new Size(916, 654);
             tabPage4.TabIndex = 3;
-            tabPage4.Text = "tabPage4";
+            tabPage4.Text = "Products";
             tabPage4.UseVisualStyleBackColor = true;
             // 
             // ProductTable
@@ -1497,32 +1567,589 @@
             // 
             // tabPage5
             // 
-            tabPage5.Controls.Add(sfDataGrid1);
+            tabPage5.Controls.Add(panel41);
             tabPage5.Location = new Point(4, 4);
             tabPage5.Name = "tabPage5";
             tabPage5.Padding = new Padding(3);
             tabPage5.Size = new Size(916, 654);
             tabPage5.TabIndex = 4;
-            tabPage5.Text = "tabPage5";
+            tabPage5.Text = "Purchase";
             tabPage5.UseVisualStyleBackColor = true;
             // 
-            // sfDataGrid1
+            // panel41
             // 
-            sfDataGrid1.AccessibleName = "Table";
-            sfDataGrid1.Dock = DockStyle.Fill;
-            sfDataGrid1.Location = new Point(3, 3);
-            sfDataGrid1.Name = "sfDataGrid1";
-            sfDataGrid1.Size = new Size(910, 648);
-            sfDataGrid1.Style.BorderColor = Color.FromArgb(100, 100, 100);
-            sfDataGrid1.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid1.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid1.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid1.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
-            sfDataGrid1.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid1.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
-            sfDataGrid1.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
-            sfDataGrid1.TabIndex = 0;
-            sfDataGrid1.Text = "sfDataGrid1";
+            panel41.Controls.Add(PurchaseControl);
+            panel41.Controls.Add(panel42);
+            panel41.Dock = DockStyle.Fill;
+            panel41.Location = new Point(3, 3);
+            panel41.Name = "panel41";
+            panel41.Size = new Size(910, 648);
+            panel41.TabIndex = 0;
+            // 
+            // PurchaseControl
+            // 
+            PurchaseControl.Alignment = TabAlignment.Right;
+            PurchaseControl.CausesValidation = false;
+            PurchaseControl.Controls.Add(tabPage8);
+            PurchaseControl.Controls.Add(tabPage9);
+            PurchaseControl.Dock = DockStyle.Fill;
+            PurchaseControl.ItemSize = new Size(55, 50);
+            PurchaseControl.Location = new Point(0, 49);
+            PurchaseControl.Multiline = true;
+            PurchaseControl.Name = "PurchaseControl";
+            PurchaseControl.SelectedIndex = 0;
+            PurchaseControl.Size = new Size(910, 599);
+            PurchaseControl.SizeMode = TabSizeMode.Fixed;
+            PurchaseControl.TabIndex = 1;
+            // 
+            // tabPage8
+            // 
+            tabPage8.Controls.Add(panel43);
+            tabPage8.Location = new Point(4, 4);
+            tabPage8.Name = "tabPage8";
+            tabPage8.Padding = new Padding(3);
+            tabPage8.Size = new Size(852, 591);
+            tabPage8.TabIndex = 0;
+            tabPage8.Text = "tabPage8";
+            tabPage8.UseVisualStyleBackColor = true;
+            // 
+            // panel43
+            // 
+            panel43.Controls.Add(panel54);
+            panel43.Controls.Add(panel47);
+            panel43.Controls.Add(panel46);
+            panel43.Controls.Add(panel45);
+            panel43.Dock = DockStyle.Fill;
+            panel43.Location = new Point(3, 3);
+            panel43.Name = "panel43";
+            panel43.Size = new Size(846, 585);
+            panel43.TabIndex = 0;
+            // 
+            // panel54
+            // 
+            panel54.BackColor = Color.White;
+            panel54.Controls.Add(StockViewTable);
+            panel54.Dock = DockStyle.Fill;
+            panel54.Location = new Point(0, 47);
+            panel54.Name = "panel54";
+            panel54.Size = new Size(846, 227);
+            panel54.TabIndex = 0;
+            // 
+            // StockViewTable
+            // 
+            StockViewTable.AccessibleName = "Table";
+            StockViewTable.Dock = DockStyle.Fill;
+            StockViewTable.Location = new Point(0, 0);
+            StockViewTable.Name = "StockViewTable";
+            StockViewTable.Size = new Size(846, 227);
+            StockViewTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            StockViewTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            StockViewTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            StockViewTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            StockViewTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            StockViewTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            StockViewTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            StockViewTable.Style.HeaderStyle.FilterIconColor = Color.FromArgb(29, 29, 29);
+            StockViewTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            StockViewTable.TabIndex = 0;
+            StockViewTable.Text = "sfDataGrid1";
+            StockViewTable.SelectionChanged += StockViewTable_SelectionChanged;
+            // 
+            // panel47
+            // 
+            panel47.Controls.Add(tableLayoutPanel4);
+            panel47.Dock = DockStyle.Bottom;
+            panel47.Location = new Point(0, 274);
+            panel47.Name = "panel47";
+            panel47.Size = new Size(846, 311);
+            panel47.TabIndex = 2;
+            // 
+            // tableLayoutPanel4
+            // 
+            tableLayoutPanel4.ColumnCount = 2;
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel4.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel4.Controls.Add(panel48, 0, 0);
+            tableLayoutPanel4.Controls.Add(panel49, 1, 0);
+            tableLayoutPanel4.Dock = DockStyle.Fill;
+            tableLayoutPanel4.Location = new Point(0, 0);
+            tableLayoutPanel4.Name = "tableLayoutPanel4";
+            tableLayoutPanel4.RowCount = 1;
+            tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel4.Size = new Size(846, 311);
+            tableLayoutPanel4.TabIndex = 0;
+            // 
+            // panel48
+            // 
+            panel48.Controls.Add(panel53);
+            panel48.Dock = DockStyle.Fill;
+            panel48.Location = new Point(3, 3);
+            panel48.Name = "panel48";
+            panel48.Size = new Size(417, 305);
+            panel48.TabIndex = 0;
+            // 
+            // panel53
+            // 
+            panel53.AutoScroll = true;
+            panel53.BackColor = Color.AliceBlue;
+            panel53.Controls.Add(txtFromPurchaseProductName);
+            panel53.Controls.Add(label27);
+            panel53.Controls.Add(txtBoxPurchaseQuantity);
+            panel53.Controls.Add(txtFromPurchaseProductSupplier);
+            panel53.Controls.Add(txtFromPurchaseProductDescription);
+            panel53.Controls.Add(btnAddPurchase);
+            panel53.Controls.Add(txtFromPurchaseProductPrice);
+            panel53.Controls.Add(txtFromPurchaseProductQuantity);
+            panel53.Controls.Add(txtFromPurchaseProductID);
+            panel53.Controls.Add(panel52);
+            panel53.Dock = DockStyle.Fill;
+            panel53.Location = new Point(0, 0);
+            panel53.Name = "panel53";
+            panel53.Size = new Size(417, 305);
+            panel53.TabIndex = 7;
+            // 
+            // txtFromPurchaseProductName
+            // 
+            txtFromPurchaseProductName.AutoSize = true;
+            txtFromPurchaseProductName.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductName.Location = new Point(7, 64);
+            txtFromPurchaseProductName.Name = "txtFromPurchaseProductName";
+            txtFromPurchaseProductName.Size = new Size(119, 21);
+            txtFromPurchaseProductName.TabIndex = 17;
+            txtFromPurchaseProductName.Text = "Product Name:";
+            // 
+            // label27
+            // 
+            label27.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            label27.AutoSize = true;
+            label27.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            label27.Location = new Point(6, 226);
+            label27.Name = "label27";
+            label27.Size = new Size(145, 21);
+            label27.TabIndex = 16;
+            label27.Text = "Purchase Quantity:";
+            // 
+            // txtBoxPurchaseQuantity
+            // 
+            txtBoxPurchaseQuantity.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
+            txtBoxPurchaseQuantity.Location = new Point(156, 228);
+            txtBoxPurchaseQuantity.MaximumSize = new Size(420, 0);
+            txtBoxPurchaseQuantity.MaxLength = 0;
+            txtBoxPurchaseQuantity.MinimumSize = new Size(200, 0);
+            txtBoxPurchaseQuantity.Name = "txtBoxPurchaseQuantity";
+            txtBoxPurchaseQuantity.Size = new Size(240, 23);
+            txtBoxPurchaseQuantity.TabIndex = 12;
+            // 
+            // txtFromPurchaseProductSupplier
+            // 
+            txtFromPurchaseProductSupplier.AutoSize = true;
+            txtFromPurchaseProductSupplier.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductSupplier.Location = new Point(7, 146);
+            txtFromPurchaseProductSupplier.Name = "txtFromPurchaseProductSupplier";
+            txtFromPurchaseProductSupplier.Size = new Size(76, 21);
+            txtFromPurchaseProductSupplier.TabIndex = 6;
+            txtFromPurchaseProductSupplier.Text = "Supplier:";
+            // 
+            // txtFromPurchaseProductDescription
+            // 
+            txtFromPurchaseProductDescription.AutoSize = true;
+            txtFromPurchaseProductDescription.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductDescription.Location = new Point(7, 125);
+            txtFromPurchaseProductDescription.Name = "txtFromPurchaseProductDescription";
+            txtFromPurchaseProductDescription.Size = new Size(98, 21);
+            txtFromPurchaseProductDescription.TabIndex = 5;
+            txtFromPurchaseProductDescription.Text = "Description:";
+            // 
+            // btnAddPurchase
+            // 
+            btnAddPurchase.BackColor = Color.MidnightBlue;
+            btnAddPurchase.Dock = DockStyle.Bottom;
+            btnAddPurchase.FlatStyle = FlatStyle.Flat;
+            btnAddPurchase.Font = new Font("Yu Gothic UI", 11.25F);
+            btnAddPurchase.ForeColor = SystemColors.ButtonHighlight;
+            btnAddPurchase.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnAddPurchase.Location = new Point(0, 257);
+            btnAddPurchase.Name = "btnAddPurchase";
+            btnAddPurchase.Size = new Size(417, 48);
+            btnAddPurchase.TabIndex = 15;
+            btnAddPurchase.Text = "Add Purchase";
+            btnAddPurchase.TextAlign = ContentAlignment.MiddleRight;
+            btnAddPurchase.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnAddPurchase.UseVisualStyleBackColor = false;
+            btnAddPurchase.Click += btnAddPurchase_Click;
+            // 
+            // txtFromPurchaseProductPrice
+            // 
+            txtFromPurchaseProductPrice.AutoSize = true;
+            txtFromPurchaseProductPrice.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductPrice.Location = new Point(7, 104);
+            txtFromPurchaseProductPrice.Name = "txtFromPurchaseProductPrice";
+            txtFromPurchaseProductPrice.Size = new Size(50, 21);
+            txtFromPurchaseProductPrice.TabIndex = 4;
+            txtFromPurchaseProductPrice.Text = "Price:";
+            // 
+            // txtFromPurchaseProductQuantity
+            // 
+            txtFromPurchaseProductQuantity.AutoSize = true;
+            txtFromPurchaseProductQuantity.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductQuantity.Location = new Point(7, 83);
+            txtFromPurchaseProductQuantity.Name = "txtFromPurchaseProductQuantity";
+            txtFromPurchaseProductQuantity.Size = new Size(146, 21);
+            txtFromPurchaseProductQuantity.TabIndex = 3;
+            txtFromPurchaseProductQuantity.Text = "Quantity Available:";
+            // 
+            // txtFromPurchaseProductID
+            // 
+            txtFromPurchaseProductID.AutoSize = true;
+            txtFromPurchaseProductID.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
+            txtFromPurchaseProductID.Location = new Point(7, 43);
+            txtFromPurchaseProductID.Name = "txtFromPurchaseProductID";
+            txtFromPurchaseProductID.Size = new Size(92, 21);
+            txtFromPurchaseProductID.TabIndex = 2;
+            txtFromPurchaseProductID.Text = "Product ID:";
+            // 
+            // panel52
+            // 
+            panel52.BackColor = Color.RoyalBlue;
+            panel52.Controls.Add(label21);
+            panel52.Dock = DockStyle.Top;
+            panel52.Location = new Point(0, 0);
+            panel52.Name = "panel52";
+            panel52.Size = new Size(417, 39);
+            panel52.TabIndex = 1;
+            // 
+            // label21
+            // 
+            label21.AutoSize = true;
+            label21.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label21.ForeColor = SystemColors.ButtonHighlight;
+            label21.Location = new Point(3, 7);
+            label21.Name = "label21";
+            label21.Size = new Size(243, 25);
+            label21.TabIndex = 0;
+            label21.Text = "SELECTED PRODUCT INFO:";
+            // 
+            // panel49
+            // 
+            panel49.AutoScroll = true;
+            panel49.Controls.Add(ProductsToPurchaseTable);
+            panel49.Controls.Add(tableLayoutPanel5);
+            panel49.Controls.Add(panel55);
+            panel49.Dock = DockStyle.Fill;
+            panel49.Location = new Point(426, 3);
+            panel49.Name = "panel49";
+            panel49.Size = new Size(417, 305);
+            panel49.TabIndex = 1;
+            // 
+            // ProductsToPurchaseTable
+            // 
+            ProductsToPurchaseTable.AccessibleName = "Table";
+            ProductsToPurchaseTable.Dock = DockStyle.Fill;
+            ProductsToPurchaseTable.Location = new Point(0, 39);
+            ProductsToPurchaseTable.Name = "ProductsToPurchaseTable";
+            ProductsToPurchaseTable.Size = new Size(417, 209);
+            ProductsToPurchaseTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            ProductsToPurchaseTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            ProductsToPurchaseTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            ProductsToPurchaseTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            ProductsToPurchaseTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            ProductsToPurchaseTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            ProductsToPurchaseTable.TabIndex = 20;
+            ProductsToPurchaseTable.Text = "sfDataGrid1";
+            ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
+            // 
+            // tableLayoutPanel5
+            // 
+            tableLayoutPanel5.ColumnCount = 3;
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel5.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel5.Controls.Add(btnResetPurchase, 2, 0);
+            tableLayoutPanel5.Controls.Add(btnUpdatePurchase, 0, 0);
+            tableLayoutPanel5.Controls.Add(btnDeletePurchase, 1, 0);
+            tableLayoutPanel5.Dock = DockStyle.Bottom;
+            tableLayoutPanel5.Location = new Point(0, 248);
+            tableLayoutPanel5.Name = "tableLayoutPanel5";
+            tableLayoutPanel5.RowCount = 1;
+            tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel5.Size = new Size(417, 57);
+            tableLayoutPanel5.TabIndex = 19;
+            // 
+            // btnResetPurchase
+            // 
+            btnResetPurchase.BackColor = Color.Maroon;
+            btnResetPurchase.Dock = DockStyle.Fill;
+            btnResetPurchase.FlatStyle = FlatStyle.Flat;
+            btnResetPurchase.Font = new Font("Yu Gothic UI", 11.25F);
+            btnResetPurchase.ForeColor = SystemColors.ButtonHighlight;
+            btnResetPurchase.Image = Properties.Resources.restart_alt_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24;
+            btnResetPurchase.Location = new Point(279, 3);
+            btnResetPurchase.Name = "btnResetPurchase";
+            btnResetPurchase.Size = new Size(135, 51);
+            btnResetPurchase.TabIndex = 18;
+            btnResetPurchase.Text = "Reset";
+            btnResetPurchase.TextAlign = ContentAlignment.MiddleRight;
+            btnResetPurchase.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnResetPurchase.UseVisualStyleBackColor = false;
+            btnResetPurchase.Click += btnResetPurchase_Click;
+            // 
+            // btnUpdatePurchase
+            // 
+            btnUpdatePurchase.BackColor = Color.MidnightBlue;
+            btnUpdatePurchase.Dock = DockStyle.Fill;
+            btnUpdatePurchase.FlatStyle = FlatStyle.Flat;
+            btnUpdatePurchase.Font = new Font("Yu Gothic UI", 11.25F);
+            btnUpdatePurchase.ForeColor = SystemColors.ButtonHighlight;
+            btnUpdatePurchase.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnUpdatePurchase.Location = new Point(3, 3);
+            btnUpdatePurchase.Name = "btnUpdatePurchase";
+            btnUpdatePurchase.Size = new Size(132, 51);
+            btnUpdatePurchase.TabIndex = 16;
+            btnUpdatePurchase.Text = "Update";
+            btnUpdatePurchase.TextAlign = ContentAlignment.MiddleRight;
+            btnUpdatePurchase.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnUpdatePurchase.UseVisualStyleBackColor = false;
+            btnUpdatePurchase.Click += btnUpdatePurchase_Click;
+            // 
+            // btnDeletePurchase
+            // 
+            btnDeletePurchase.BackColor = Color.Firebrick;
+            btnDeletePurchase.Dock = DockStyle.Fill;
+            btnDeletePurchase.FlatStyle = FlatStyle.Flat;
+            btnDeletePurchase.Font = new Font("Yu Gothic UI", 11.25F);
+            btnDeletePurchase.ForeColor = SystemColors.ButtonHighlight;
+            btnDeletePurchase.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnDeletePurchase.Location = new Point(141, 3);
+            btnDeletePurchase.Name = "btnDeletePurchase";
+            btnDeletePurchase.Size = new Size(132, 51);
+            btnDeletePurchase.TabIndex = 17;
+            btnDeletePurchase.Text = "Delete";
+            btnDeletePurchase.TextAlign = ContentAlignment.MiddleRight;
+            btnDeletePurchase.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnDeletePurchase.UseVisualStyleBackColor = false;
+            btnDeletePurchase.Click += btnDeletePurchase_Click;
+            // 
+            // panel55
+            // 
+            panel55.BackColor = Color.RoyalBlue;
+            panel55.Controls.Add(label28);
+            panel55.Dock = DockStyle.Top;
+            panel55.Location = new Point(0, 0);
+            panel55.Name = "panel55";
+            panel55.Size = new Size(417, 39);
+            panel55.TabIndex = 18;
+            // 
+            // label28
+            // 
+            label28.AutoSize = true;
+            label28.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label28.ForeColor = SystemColors.ButtonHighlight;
+            label28.Location = new Point(3, 7);
+            label28.Name = "label28";
+            label28.Size = new Size(241, 25);
+            label28.TabIndex = 1;
+            label28.Text = "PRODUCTS TO PURCHASE:";
+            // 
+            // panel46
+            // 
+            panel46.Dock = DockStyle.Fill;
+            panel46.Location = new Point(0, 47);
+            panel46.Name = "panel46";
+            panel46.Size = new Size(846, 538);
+            panel46.TabIndex = 1;
+            // 
+            // panel45
+            // 
+            panel45.Controls.Add(panel51);
+            panel45.Dock = DockStyle.Top;
+            panel45.Location = new Point(0, 0);
+            panel45.Name = "panel45";
+            panel45.Size = new Size(846, 47);
+            panel45.TabIndex = 0;
+            // 
+            // panel51
+            // 
+            panel51.BackColor = Color.LightGray;
+            panel51.Controls.Add(panel50);
+            panel51.Controls.Add(textBox2);
+            panel51.Controls.Add(label20);
+            panel51.Dock = DockStyle.Top;
+            panel51.Location = new Point(0, 0);
+            panel51.Name = "panel51";
+            panel51.Size = new Size(846, 52);
+            panel51.TabIndex = 1;
+            // 
+            // panel50
+            // 
+            panel50.BackgroundImage = Properties.Resources.search_24dp_434343_FILL0_wght400_GRAD0_opsz24;
+            panel50.BackgroundImageLayout = ImageLayout.Center;
+            panel50.Location = new Point(10, 9);
+            panel50.Name = "panel50";
+            panel50.Size = new Size(32, 34);
+            panel50.TabIndex = 8;
+            // 
+            // textBox2
+            // 
+            textBox2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            textBox2.Location = new Point(110, 15);
+            textBox2.MaximumSize = new Size(420, 0);
+            textBox2.MaxLength = 0;
+            textBox2.MinimumSize = new Size(200, 0);
+            textBox2.Name = "textBox2";
+            textBox2.Size = new Size(356, 23);
+            textBox2.TabIndex = 6;
+            // 
+            // label20
+            // 
+            label20.AutoSize = true;
+            label20.Font = new Font("Yu Gothic UI", 11.25F);
+            label20.Location = new Point(48, 16);
+            label20.Name = "label20";
+            label20.Size = new Size(56, 20);
+            label20.TabIndex = 5;
+            label20.Text = "Search:";
+            // 
+            // tabPage9
+            // 
+            tabPage9.Controls.Add(panel44);
+            tabPage9.Location = new Point(4, 4);
+            tabPage9.Name = "tabPage9";
+            tabPage9.Padding = new Padding(3);
+            tabPage9.Size = new Size(852, 591);
+            tabPage9.TabIndex = 1;
+            tabPage9.Text = "tabPage9";
+            tabPage9.UseVisualStyleBackColor = true;
+            // 
+            // panel44
+            // 
+            panel44.Controls.Add(tableLayoutPanel6);
+            panel44.Dock = DockStyle.Fill;
+            panel44.Location = new Point(3, 3);
+            panel44.Name = "panel44";
+            panel44.Size = new Size(846, 585);
+            panel44.TabIndex = 0;
+            // 
+            // tableLayoutPanel6
+            // 
+            tableLayoutPanel6.ColumnCount = 1;
+            tableLayoutPanel6.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel6.Controls.Add(panel56, 0, 0);
+            tableLayoutPanel6.Controls.Add(panel57, 0, 1);
+            tableLayoutPanel6.Dock = DockStyle.Fill;
+            tableLayoutPanel6.Location = new Point(0, 0);
+            tableLayoutPanel6.Name = "tableLayoutPanel6";
+            tableLayoutPanel6.RowCount = 2;
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 52.48227F));
+            tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 47.51773F));
+            tableLayoutPanel6.Size = new Size(846, 585);
+            tableLayoutPanel6.TabIndex = 0;
+            // 
+            // panel56
+            // 
+            panel56.Controls.Add(PurchaseTable);
+            panel56.Controls.Add(panel58);
+            panel56.Dock = DockStyle.Fill;
+            panel56.Location = new Point(3, 3);
+            panel56.Name = "panel56";
+            panel56.Size = new Size(840, 301);
+            panel56.TabIndex = 0;
+            // 
+            // PurchaseTable
+            // 
+            PurchaseTable.AccessibleName = "Table";
+            PurchaseTable.Dock = DockStyle.Fill;
+            PurchaseTable.Location = new Point(0, 41);
+            PurchaseTable.Name = "PurchaseTable";
+            PurchaseTable.Size = new Size(840, 260);
+            PurchaseTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            PurchaseTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            PurchaseTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            PurchaseTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            PurchaseTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            PurchaseTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            PurchaseTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            PurchaseTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            PurchaseTable.TabIndex = 1;
+            PurchaseTable.Text = "sfDataGrid1";
+            // 
+            // panel58
+            // 
+            panel58.BackColor = Color.RoyalBlue;
+            panel58.Controls.Add(label22);
+            panel58.Dock = DockStyle.Top;
+            panel58.Location = new Point(0, 0);
+            panel58.Name = "panel58";
+            panel58.Size = new Size(840, 41);
+            panel58.TabIndex = 0;
+            // 
+            // label22
+            // 
+            label22.AutoSize = true;
+            label22.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label22.ForeColor = SystemColors.ButtonHighlight;
+            label22.Location = new Point(36, 8);
+            label22.Name = "label22";
+            label22.Size = new Size(107, 25);
+            label22.TabIndex = 1;
+            label22.Text = "PURCHASE";
+            // 
+            // panel57
+            // 
+            panel57.Controls.Add(label23);
+            panel57.Dock = DockStyle.Fill;
+            panel57.Location = new Point(3, 310);
+            panel57.Name = "panel57";
+            panel57.Size = new Size(840, 272);
+            panel57.TabIndex = 1;
+            // 
+            // panel42
+            // 
+            panel42.BackColor = Color.RoyalBlue;
+            panel42.Controls.Add(btnPurchaseCheckout);
+            panel42.Controls.Add(btnManagePurchase);
+            panel42.Dock = DockStyle.Top;
+            panel42.Location = new Point(0, 0);
+            panel42.Name = "panel42";
+            panel42.Size = new Size(910, 49);
+            panel42.TabIndex = 0;
+            // 
+            // btnPurchaseCheckout
+            // 
+            btnPurchaseCheckout.BackColor = Color.FromArgb(49, 52, 113);
+            btnPurchaseCheckout.FlatAppearance.BorderColor = Color.White;
+            btnPurchaseCheckout.FlatAppearance.BorderSize = 0;
+            btnPurchaseCheckout.FlatStyle = FlatStyle.Flat;
+            btnPurchaseCheckout.Font = new Font("Yu Gothic UI Semibold", 12F, FontStyle.Bold);
+            btnPurchaseCheckout.ForeColor = SystemColors.ButtonFace;
+            btnPurchaseCheckout.Image = Properties.Resources.add_shopping_cart_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnPurchaseCheckout.Location = new Point(271, 4);
+            btnPurchaseCheckout.Name = "btnPurchaseCheckout";
+            btnPurchaseCheckout.Size = new Size(259, 40);
+            btnPurchaseCheckout.TabIndex = 15;
+            btnPurchaseCheckout.Text = "Purchase Checkout";
+            btnPurchaseCheckout.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnPurchaseCheckout.UseVisualStyleBackColor = false;
+            btnPurchaseCheckout.Click += btnPurchaseCheckout_Click;
+            // 
+            // btnManagePurchase
+            // 
+            btnManagePurchase.BackColor = Color.FromArgb(108, 117, 219);
+            btnManagePurchase.FlatAppearance.BorderColor = Color.White;
+            btnManagePurchase.FlatAppearance.BorderSize = 0;
+            btnManagePurchase.FlatStyle = FlatStyle.Flat;
+            btnManagePurchase.Font = new Font("Yu Gothic UI Semibold", 12F, FontStyle.Bold);
+            btnManagePurchase.ForeColor = SystemColors.ButtonFace;
+            btnManagePurchase.Image = Properties.Resources.data_table_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24;
+            btnManagePurchase.Location = new Point(11, 4);
+            btnManagePurchase.Name = "btnManagePurchase";
+            btnManagePurchase.Size = new Size(254, 40);
+            btnManagePurchase.TabIndex = 14;
+            btnManagePurchase.Text = "Manage Purchase";
+            btnManagePurchase.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnManagePurchase.UseVisualStyleBackColor = false;
+            btnManagePurchase.Click += btnManagePurchase_Click;
             // 
             // tabPage6
             // 
@@ -1532,13 +2159,13 @@
             tabPage6.Padding = new Padding(3);
             tabPage6.Size = new Size(916, 654);
             tabPage6.TabIndex = 5;
-            tabPage6.Text = "tabPage6";
+            tabPage6.Text = "Sales";
             tabPage6.UseVisualStyleBackColor = true;
             // 
             // SalesTable
             // 
             SalesTable.AccessibleName = "Table";
-            SalesTable.Location = new Point(159, 181);
+            SalesTable.Location = new Point(155, 116);
             SalesTable.Name = "SalesTable";
             SalesTable.Size = new Size(624, 292);
             SalesTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
@@ -1559,7 +2186,7 @@
             tabPage7.Padding = new Padding(3);
             tabPage7.Size = new Size(916, 654);
             tabPage7.TabIndex = 6;
-            tabPage7.Text = "tabPage7";
+            tabPage7.Text = "Accounts";
             tabPage7.UseVisualStyleBackColor = true;
             // 
             // panel5
@@ -1589,7 +2216,7 @@
             panel11.BackColor = Color.Transparent;
             panel11.BackgroundImage = Properties.Resources.account_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
             panel11.BackgroundImageLayout = ImageLayout.Center;
-            panel11.Location = new Point(11, 36);
+            panel11.Location = new Point(11, 34);
             panel11.Name = "panel11";
             panel11.Size = new Size(34, 27);
             panel11.TabIndex = 17;
@@ -1605,11 +2232,11 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 8, 12, 33, 19, 13);
+            clock1.CustomTime = new DateTime(2026, 3, 8, 18, 40, 16, 733);
             clock1.DigitalRenderer = digitalClockRenderer2;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
-            clock1.Location = new Point(784, 3);
+            clock1.Location = new Point(784, 4);
             clock1.MinimumSize = new Size(75, 75);
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
@@ -1627,6 +2254,15 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Location = new Point(21, 21);
+            label23.Name = "label23";
+            label23.Size = new Size(114, 15);
+            label23.TabIndex = 0;
+            label23.Text = "Initial Total Amount:";
             // 
             // MainInventory
             // 
@@ -1709,7 +2345,37 @@
             panel10.ResumeLayout(false);
             panel10.PerformLayout();
             tabPage5.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)sfDataGrid1).EndInit();
+            panel41.ResumeLayout(false);
+            PurchaseControl.ResumeLayout(false);
+            tabPage8.ResumeLayout(false);
+            panel43.ResumeLayout(false);
+            panel54.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)StockViewTable).EndInit();
+            panel47.ResumeLayout(false);
+            tableLayoutPanel4.ResumeLayout(false);
+            panel48.ResumeLayout(false);
+            panel53.ResumeLayout(false);
+            panel53.PerformLayout();
+            panel52.ResumeLayout(false);
+            panel52.PerformLayout();
+            panel49.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)ProductsToPurchaseTable).EndInit();
+            tableLayoutPanel5.ResumeLayout(false);
+            panel55.ResumeLayout(false);
+            panel55.PerformLayout();
+            panel45.ResumeLayout(false);
+            panel51.ResumeLayout(false);
+            panel51.PerformLayout();
+            tabPage9.ResumeLayout(false);
+            panel44.ResumeLayout(false);
+            tableLayoutPanel6.ResumeLayout(false);
+            panel56.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)PurchaseTable).EndInit();
+            panel58.ResumeLayout(false);
+            panel58.PerformLayout();
+            panel57.ResumeLayout(false);
+            panel57.PerformLayout();
+            panel42.ResumeLayout(false);
             tabPage6.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SalesTable).EndInit();
             panel5.ResumeLayout(false);
@@ -1747,7 +2413,6 @@
         private Button btnDeleteSupplier;
         private Button btnUpdateSupplier;
         private Button btnAddSupplier;
-        private Syncfusion.WinForms.DataGrid.SfDataGrid sfDataGrid1;
         private Label lblWelcome;
         private Panel panel5;
         private Panel panel9;
@@ -1831,5 +2496,52 @@
         private Panel panel40;
         private TextBox textBox4;
         private Label label19;
+        private Panel panel41;
+        private TabControl PurchaseControl;
+        private TabPage tabPage8;
+        private TabPage tabPage9;
+        private Panel panel42;
+        private Button btnPurchaseCheckout;
+        private Button btnManagePurchase;
+        private Panel panel43;
+        private Panel panel44;
+        private Panel panel47;
+        private TableLayoutPanel tableLayoutPanel4;
+        private Panel panel48;
+        private Panel panel53;
+        private Label txtFromPurchaseProductSupplier;
+        private Label txtFromPurchaseProductDescription;
+        private Label txtFromPurchaseProductPrice;
+        private Label txtFromPurchaseProductQuantity;
+        private Label txtFromPurchaseProductID;
+        private Panel panel52;
+        private Label label21;
+        private Panel panel49;
+        private TextBox txtBoxPurchaseQuantity;
+        private Panel panel55;
+        private Button btnDeletePurchase;
+        private Button btnAddPurchase;
+        private Button btnUpdatePurchase;
+        private Panel panel46;
+        private Panel panel45;
+        private Panel panel51;
+        private Panel panel50;
+        private TextBox textBox2;
+        private Label label20;
+        private Label label27;
+        private Label label28;
+        private Panel panel54;
+        private TableLayoutPanel tableLayoutPanel5;
+        private Button btnResetPurchase;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid ProductsToPurchaseTable;
+        private TableLayoutPanel tableLayoutPanel6;
+        private Panel panel56;
+        private Panel panel57;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid StockViewTable;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid PurchaseTable;
+        private Panel panel58;
+        private Label label22;
+        private Label txtFromPurchaseProductName;
+        private Label label23;
     }
 }
