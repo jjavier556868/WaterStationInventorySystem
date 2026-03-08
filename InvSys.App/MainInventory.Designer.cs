@@ -107,13 +107,13 @@
             ProductListToStockTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel37 = new Panel();
             panel38 = new Panel();
-            textBox1 = new TextBox();
+            txtProductListSearch = new TextBox();
             label2 = new Label();
             panel36 = new Panel();
             StockTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel39 = new Panel();
             panel40 = new Panel();
-            textBox4 = new TextBox();
+            txtCurrentStockSearch = new TextBox();
             label19 = new Label();
             tabPage3 = new TabPage();
             SupplierTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
@@ -168,7 +168,7 @@
             panel45 = new Panel();
             panel51 = new Panel();
             panel50 = new Panel();
-            textBox2 = new TextBox();
+            txtManagePurchaseSearch = new TextBox();
             label20 = new Label();
             tabPage9 = new TabPage();
             panel44 = new Panel();
@@ -1213,7 +1213,7 @@
             panel37.AutoScroll = true;
             panel37.BackColor = Color.LightGray;
             panel37.Controls.Add(panel38);
-            panel37.Controls.Add(textBox1);
+            panel37.Controls.Add(txtProductListSearch);
             panel37.Controls.Add(label2);
             panel37.Dock = DockStyle.Top;
             panel37.Location = new Point(0, 0);
@@ -1230,16 +1230,17 @@
             panel38.Size = new Size(32, 34);
             panel38.TabIndex = 11;
             // 
-            // textBox1
+            // txtProductListSearch
             // 
-            textBox1.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            textBox1.Location = new Point(109, 12);
-            textBox1.MaximumSize = new Size(420, 0);
-            textBox1.MaxLength = 0;
-            textBox1.MinimumSize = new Size(200, 0);
-            textBox1.Name = "textBox1";
-            textBox1.Size = new Size(316, 23);
-            textBox1.TabIndex = 10;
+            txtProductListSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtProductListSearch.Location = new Point(109, 12);
+            txtProductListSearch.MaximumSize = new Size(420, 0);
+            txtProductListSearch.MaxLength = 0;
+            txtProductListSearch.MinimumSize = new Size(200, 0);
+            txtProductListSearch.Name = "txtProductListSearch";
+            txtProductListSearch.Size = new Size(316, 23);
+            txtProductListSearch.TabIndex = 10;
+            txtProductListSearch.TextChanged += txtProductListSearch_TextChanged;
             // 
             // label2
             // 
@@ -1284,7 +1285,7 @@
             panel39.AutoScroll = true;
             panel39.BackColor = Color.LightGray;
             panel39.Controls.Add(panel40);
-            panel39.Controls.Add(textBox4);
+            panel39.Controls.Add(txtCurrentStockSearch);
             panel39.Controls.Add(label19);
             panel39.Dock = DockStyle.Top;
             panel39.Location = new Point(0, 0);
@@ -1301,16 +1302,17 @@
             panel40.Size = new Size(32, 34);
             panel40.TabIndex = 11;
             // 
-            // textBox4
+            // txtCurrentStockSearch
             // 
-            textBox4.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            textBox4.Location = new Point(109, 12);
-            textBox4.MaximumSize = new Size(420, 0);
-            textBox4.MaxLength = 0;
-            textBox4.MinimumSize = new Size(200, 0);
-            textBox4.Name = "textBox4";
-            textBox4.Size = new Size(325, 23);
-            textBox4.TabIndex = 10;
+            txtCurrentStockSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtCurrentStockSearch.Location = new Point(109, 12);
+            txtCurrentStockSearch.MaximumSize = new Size(420, 0);
+            txtCurrentStockSearch.MaxLength = 0;
+            txtCurrentStockSearch.MinimumSize = new Size(200, 0);
+            txtCurrentStockSearch.Name = "txtCurrentStockSearch";
+            txtCurrentStockSearch.Size = new Size(325, 23);
+            txtCurrentStockSearch.TabIndex = 10;
+            txtCurrentStockSearch.TextChanged += txtCurrentStockSearch_TextChanged;
             // 
             // label19
             // 
@@ -1998,7 +2000,7 @@
             // 
             panel51.BackColor = Color.LightGray;
             panel51.Controls.Add(panel50);
-            panel51.Controls.Add(textBox2);
+            panel51.Controls.Add(txtManagePurchaseSearch);
             panel51.Controls.Add(label20);
             panel51.Dock = DockStyle.Top;
             panel51.Location = new Point(0, 0);
@@ -2015,16 +2017,17 @@
             panel50.Size = new Size(32, 34);
             panel50.TabIndex = 8;
             // 
-            // textBox2
+            // txtManagePurchaseSearch
             // 
-            textBox2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            textBox2.Location = new Point(110, 15);
-            textBox2.MaximumSize = new Size(420, 0);
-            textBox2.MaxLength = 0;
-            textBox2.MinimumSize = new Size(200, 0);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(356, 23);
-            textBox2.TabIndex = 6;
+            txtManagePurchaseSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtManagePurchaseSearch.Location = new Point(110, 15);
+            txtManagePurchaseSearch.MaximumSize = new Size(420, 0);
+            txtManagePurchaseSearch.MaxLength = 0;
+            txtManagePurchaseSearch.MinimumSize = new Size(200, 0);
+            txtManagePurchaseSearch.Name = "txtManagePurchaseSearch";
+            txtManagePurchaseSearch.Size = new Size(356, 23);
+            txtManagePurchaseSearch.TabIndex = 6;
+            txtManagePurchaseSearch.TextChanged += txtManagePurchaseSearch_TextChanged;
             // 
             // label20
             // 
@@ -2446,7 +2449,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 8, 22, 51, 19, 226);
+            clock1.CustomTime = new DateTime(2026, 3, 8, 23, 42, 39, 114);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2696,7 +2699,7 @@
         private Panel panel36;
         private Syncfusion.WinForms.DataGrid.SfDataGrid StockTable;
         private Panel panel38;
-        private TextBox textBox1;
+        private TextBox txtProductListSearch;
         private Label label2;
         private Label label12;
         private Label label17;
@@ -2709,7 +2712,7 @@
         private Label txtSelectedProductDescription;
         private Panel panel39;
         private Panel panel40;
-        private TextBox textBox4;
+        private TextBox txtCurrentStockSearch;
         private Label label19;
         private Panel panel41;
         private TabControl PurchaseControl;
@@ -2741,7 +2744,7 @@
         private Panel panel45;
         private Panel panel51;
         private Panel panel50;
-        private TextBox textBox2;
+        private TextBox txtManagePurchaseSearch;
         private Label label20;
         private Label label27;
         private Label label28;

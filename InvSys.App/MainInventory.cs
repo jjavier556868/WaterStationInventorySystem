@@ -352,11 +352,11 @@ namespace InvSys.App
 
             ProductTableLowStock.Columns.Clear();
             ProductTableLowStock.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductId",    HeaderText = "ID"        });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductName",  HeaderText = "Product"   });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left"});
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "Price",        HeaderText = "Price", Format = "C2" });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier"  });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "ID" });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left" });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
         }
 
         private void InitializeDataGrids()
@@ -423,7 +423,7 @@ namespace InvSys.App
             RefreshProductTable();
             RefreshStockTable();
             RefreshSalesTable();
-            RefreshStockViewTable(); 
+            RefreshStockViewTable();
             RefreshDashboard();
         }
 
@@ -1241,6 +1241,82 @@ namespace InvSys.App
             RefreshCartTables();
             RefreshStockViewTable();
             txtBoxPurchaseQuantity.Clear();
+        }
+
+        private void txtManagePurchaseSearch_TextChanged(object sender, EventArgs e)
+        {
+            var search = txtManagePurchaseSearch.Text.Trim();
+
+            // Re-use the existing StockViewTable data source (already built with cart deductions)
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+
+            var allStock = stockService.GetAllStock();
+            var products = productService.GetAllProducts();
+
+            var view = allStock.Select(s =>
+            {
+                var product = products.FirstOrDefault(p => p.Id == s.ProductId);
+                if (product == null) return null;
+
+                int available = stockService.GetAvailableStock(s.ProductId);
+                var inCart = _cart.FirstOrDefault(c => c.ProductId == s.ProductId);
+                int cartQty = inCart?.Quantity ?? 0;
+
+                return new StockViewDTO
+                {
+                    ProductId = s.ProductId,
+                    ProductName = s.ProductName,
+                    Price = product.Price,
+                    Quantity = Math.Max(0, available - cartQty),
+                    Description = product.Description,
+                    SupplierName = product.SupplierName
+                };
+            })
+            .Where(v => v != null)
+            .OrderBy(v => v.ProductName)
+            .ToList();
+
+            var filtered = string.IsNullOrEmpty(search) ? view : view
+                .Where(v =>
+                    v.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    v.ProductId.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    v.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    v.Price.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                .ToList();
+
+            StockViewTable.DataSource = filtered;
+        }
+
+        private void txtProductListSearch_TextChanged(object sender, EventArgs e)
+        {
+            var search = txtProductListSearch.Text.Trim();
+            using var service = new ProductService();
+            var all = service.GetAllProducts();
+            var filtered = string.IsNullOrEmpty(search) ? all : all
+                .Where(p =>
+                    p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.Price.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(p => p.Name)
+                .ToList();
+            ProductListToStockTable.DataSource = filtered;
+        }
+
+        private void txtCurrentStockSearch_TextChanged(object sender, EventArgs e)
+        {
+            var search = txtCurrentStockSearch.Text.Trim();
+            using var service = new StockService();
+            var all = service.GetAllStock();
+            var filtered = string.IsNullOrEmpty(search) ? all : all
+                .Where(s =>
+                    s.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    s.ProductId.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    s.Quantity.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(s => s.ProductName)
+                .ToList();
+            StockTable.DataSource = filtered;
         }
     }
 }
