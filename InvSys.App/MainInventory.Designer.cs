@@ -83,15 +83,22 @@
             tabPage2 = new TabPage();
             tableLayoutPanel1 = new TableLayoutPanel();
             panel18 = new Panel();
+            txtSelectedProductSupplier = new Label();
+            txtSelectedProductDescription = new Label();
+            txtSelectedProductPrice = new Label();
+            txtSelectedProductName = new Label();
+            txtSelectedProductID = new Label();
             panel33 = new Panel();
             label13 = new Label();
             panel21 = new Panel();
             panel35 = new Panel();
+            txtBoxQuantityAdd = new TextBox();
+            label18 = new Label();
             panel34 = new Panel();
             label11 = new Label();
-            button7 = new Button();
-            button9 = new Button();
-            button8 = new Button();
+            btnDeleteStock = new Button();
+            btnAddStock = new Button();
+            btnUpdateStock = new Button();
             panel31 = new Panel();
             label12 = new Label();
             panel32 = new Panel();
@@ -104,6 +111,10 @@
             label2 = new Label();
             panel36 = new Panel();
             StockTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel39 = new Panel();
+            panel40 = new Panel();
+            textBox4 = new TextBox();
+            label19 = new Label();
             tabPage3 = new TabPage();
             SupplierTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel7 = new Panel();
@@ -121,7 +132,7 @@
             btnAddProduct = new Button();
             panel10 = new Panel();
             panel19 = new Panel();
-            textBox2 = new TextBox();
+            txtBoxProductSearch = new TextBox();
             label4 = new Label();
             tabPage5 = new TabPage();
             sfDataGrid1 = new Syncfusion.WinForms.DataGrid.SfDataGrid();
@@ -133,8 +144,6 @@
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
-            textBox3 = new TextBox();
-            label18 = new Label();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -176,6 +185,7 @@
             panel37.SuspendLayout();
             panel36.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)StockTable).BeginInit();
+            panel39.SuspendLayout();
             tabPage3.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SupplierTable).BeginInit();
             panel7.SuspendLayout();
@@ -473,8 +483,8 @@
             tableLayoutPanel3.Location = new Point(3, 200);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
-            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.Size = new Size(910, 308);
+            tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
+            tableLayoutPanel3.Size = new Size(910, 327);
             tableLayoutPanel3.TabIndex = 4;
             // 
             // panel25
@@ -484,7 +494,7 @@
             panel25.Location = new Point(3, 3);
             panel25.Name = "panel25";
             panel25.Padding = new Padding(20);
-            panel25.Size = new Size(449, 302);
+            panel25.Size = new Size(449, 321);
             panel25.TabIndex = 0;
             // 
             // panel27
@@ -495,7 +505,7 @@
             panel27.Dock = DockStyle.Fill;
             panel27.Location = new Point(20, 20);
             panel27.Name = "panel27";
-            panel27.Size = new Size(409, 262);
+            panel27.Size = new Size(409, 281);
             panel27.TabIndex = 0;
             // 
             // chart1
@@ -512,7 +522,7 @@
             series2.Legend = "Legend1";
             series2.Name = "Series1";
             chart1.Series.Add(series2);
-            chart1.Size = new Size(409, 217);
+            chart1.Size = new Size(409, 236);
             chart1.TabIndex = 3;
             chart1.Text = "chart1";
             // 
@@ -544,7 +554,7 @@
             panel26.Location = new Point(458, 3);
             panel26.Name = "panel26";
             panel26.Padding = new Padding(20);
-            panel26.Size = new Size(449, 302);
+            panel26.Size = new Size(449, 321);
             panel26.TabIndex = 1;
             // 
             // panel28
@@ -555,7 +565,7 @@
             panel28.Dock = DockStyle.Fill;
             panel28.Location = new Point(20, 20);
             panel28.Name = "panel28";
-            panel28.Size = new Size(409, 262);
+            panel28.Size = new Size(409, 281);
             panel28.TabIndex = 0;
             // 
             // ProductTableLowStock
@@ -564,7 +574,7 @@
             ProductTableLowStock.Dock = DockStyle.Fill;
             ProductTableLowStock.Location = new Point(0, 45);
             ProductTableLowStock.Name = "ProductTableLowStock";
-            ProductTableLowStock.Size = new Size(409, 217);
+            ProductTableLowStock.Size = new Size(409, 236);
             ProductTableLowStock.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -820,19 +830,75 @@
             tableLayoutPanel1.RowCount = 3;
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 50F));
             tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 344F));
+            tableLayoutPanel1.RowStyles.Add(new RowStyle(SizeType.Absolute, 246F));
             tableLayoutPanel1.Size = new Size(910, 648);
             tableLayoutPanel1.TabIndex = 6;
             // 
             // panel18
             // 
             panel18.BackColor = Color.AliceBlue;
+            panel18.Controls.Add(txtSelectedProductSupplier);
+            panel18.Controls.Add(txtSelectedProductDescription);
+            panel18.Controls.Add(txtSelectedProductPrice);
+            panel18.Controls.Add(txtSelectedProductName);
+            panel18.Controls.Add(txtSelectedProductID);
             panel18.Controls.Add(panel33);
             panel18.Dock = DockStyle.Fill;
-            panel18.Location = new Point(3, 307);
+            panel18.Location = new Point(3, 405);
             panel18.Name = "panel18";
-            panel18.Size = new Size(449, 338);
+            panel18.Size = new Size(449, 240);
             panel18.TabIndex = 6;
+            // 
+            // txtSelectedProductSupplier
+            // 
+            txtSelectedProductSupplier.AutoSize = true;
+            txtSelectedProductSupplier.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtSelectedProductSupplier.Location = new Point(16, 188);
+            txtSelectedProductSupplier.Name = "txtSelectedProductSupplier";
+            txtSelectedProductSupplier.Size = new Size(97, 30);
+            txtSelectedProductSupplier.TabIndex = 6;
+            txtSelectedProductSupplier.Text = "Supplier:";
+            // 
+            // txtSelectedProductDescription
+            // 
+            txtSelectedProductDescription.AutoSize = true;
+            txtSelectedProductDescription.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtSelectedProductDescription.Location = new Point(12, 158);
+            txtSelectedProductDescription.Name = "txtSelectedProductDescription";
+            txtSelectedProductDescription.Size = new Size(127, 30);
+            txtSelectedProductDescription.TabIndex = 5;
+            txtSelectedProductDescription.Text = "Description:";
+            // 
+            // txtSelectedProductPrice
+            // 
+            txtSelectedProductPrice.AutoSize = true;
+            txtSelectedProductPrice.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtSelectedProductPrice.Location = new Point(12, 129);
+            txtSelectedProductPrice.Name = "txtSelectedProductPrice";
+            txtSelectedProductPrice.Size = new Size(64, 30);
+            txtSelectedProductPrice.TabIndex = 4;
+            txtSelectedProductPrice.Text = "Price:";
+            // 
+            // txtSelectedProductName
+            // 
+            txtSelectedProductName.AutoSize = true;
+            txtSelectedProductName.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtSelectedProductName.Location = new Point(12, 99);
+            txtSelectedProductName.Name = "txtSelectedProductName";
+            txtSelectedProductName.Size = new Size(75, 30);
+            txtSelectedProductName.TabIndex = 3;
+            txtSelectedProductName.Text = "Name:";
+            txtSelectedProductName.Click += label19_Click;
+            // 
+            // txtSelectedProductID
+            // 
+            txtSelectedProductID.AutoSize = true;
+            txtSelectedProductID.Font = new Font("Segoe UI Semibold", 15.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtSelectedProductID.Location = new Point(12, 69);
+            txtSelectedProductID.Name = "txtSelectedProductID";
+            txtSelectedProductID.Size = new Size(39, 30);
+            txtSelectedProductID.TabIndex = 2;
+            txtSelectedProductID.Text = "ID:";
             // 
             // panel33
             // 
@@ -859,19 +925,19 @@
             // 
             panel21.Controls.Add(panel35);
             panel21.Controls.Add(panel34);
-            panel21.Controls.Add(button7);
-            panel21.Controls.Add(button9);
-            panel21.Controls.Add(button8);
+            panel21.Controls.Add(btnDeleteStock);
+            panel21.Controls.Add(btnAddStock);
+            panel21.Controls.Add(btnUpdateStock);
             panel21.Dock = DockStyle.Fill;
-            panel21.Location = new Point(458, 307);
+            panel21.Location = new Point(458, 405);
             panel21.Name = "panel21";
-            panel21.Size = new Size(449, 338);
+            panel21.Size = new Size(449, 240);
             panel21.TabIndex = 7;
             // 
             // panel35
             // 
             panel35.BackColor = Color.DarkGray;
-            panel35.Controls.Add(textBox3);
+            panel35.Controls.Add(txtBoxQuantityAdd);
             panel35.Controls.Add(label18);
             panel35.Dock = DockStyle.Top;
             panel35.Location = new Point(0, 56);
@@ -879,6 +945,27 @@
             panel35.Size = new Size(449, 46);
             panel35.TabIndex = 14;
             panel35.Paint += panel35_Paint;
+            // 
+            // txtBoxQuantityAdd
+            // 
+            txtBoxQuantityAdd.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtBoxQuantityAdd.Location = new Point(138, 12);
+            txtBoxQuantityAdd.MaximumSize = new Size(420, 0);
+            txtBoxQuantityAdd.MaxLength = 0;
+            txtBoxQuantityAdd.MinimumSize = new Size(200, 0);
+            txtBoxQuantityAdd.Name = "txtBoxQuantityAdd";
+            txtBoxQuantityAdd.Size = new Size(296, 23);
+            txtBoxQuantityAdd.TabIndex = 12;
+            // 
+            // label18
+            // 
+            label18.AutoSize = true;
+            label18.Font = new Font("Yu Gothic UI", 11.25F, FontStyle.Bold);
+            label18.Location = new Point(14, 13);
+            label18.Name = "label18";
+            label18.Size = new Size(122, 20);
+            label18.TabIndex = 11;
+            label18.Text = "Quantity to Add:";
             // 
             // panel34
             // 
@@ -901,56 +988,59 @@
             label11.TabIndex = 0;
             label11.Text = "STOCK";
             // 
-            // button7
+            // btnDeleteStock
             // 
-            button7.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            button7.BackColor = Color.Firebrick;
-            button7.FlatStyle = FlatStyle.Flat;
-            button7.Font = new Font("Yu Gothic UI", 11.25F);
-            button7.ForeColor = SystemColors.ButtonHighlight;
-            button7.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button7.Location = new Point(3, 297);
-            button7.Name = "button7";
-            button7.Size = new Size(443, 38);
-            button7.TabIndex = 12;
-            button7.Text = "Delete Stock";
-            button7.TextAlign = ContentAlignment.MiddleRight;
-            button7.TextImageRelation = TextImageRelation.ImageBeforeText;
-            button7.UseVisualStyleBackColor = false;
+            btnDeleteStock.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnDeleteStock.BackColor = Color.Firebrick;
+            btnDeleteStock.FlatStyle = FlatStyle.Flat;
+            btnDeleteStock.Font = new Font("Yu Gothic UI", 11.25F);
+            btnDeleteStock.ForeColor = SystemColors.ButtonHighlight;
+            btnDeleteStock.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnDeleteStock.Location = new Point(0, 196);
+            btnDeleteStock.Name = "btnDeleteStock";
+            btnDeleteStock.Size = new Size(443, 38);
+            btnDeleteStock.TabIndex = 12;
+            btnDeleteStock.Text = "Delete Stock";
+            btnDeleteStock.TextAlign = ContentAlignment.MiddleRight;
+            btnDeleteStock.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnDeleteStock.UseVisualStyleBackColor = false;
+            btnDeleteStock.Click += btnDeleteStock_Click;
             // 
-            // button9
+            // btnAddStock
             // 
-            button9.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            button9.BackColor = Color.MidnightBlue;
-            button9.FlatStyle = FlatStyle.Flat;
-            button9.Font = new Font("Yu Gothic UI", 11.25F);
-            button9.ForeColor = SystemColors.ButtonHighlight;
-            button9.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button9.Location = new Point(3, 209);
-            button9.Name = "button9";
-            button9.Size = new Size(443, 38);
-            button9.TabIndex = 10;
-            button9.Text = "Add Stock";
-            button9.TextAlign = ContentAlignment.MiddleRight;
-            button9.TextImageRelation = TextImageRelation.ImageBeforeText;
-            button9.UseVisualStyleBackColor = false;
+            btnAddStock.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnAddStock.BackColor = Color.MidnightBlue;
+            btnAddStock.FlatStyle = FlatStyle.Flat;
+            btnAddStock.Font = new Font("Yu Gothic UI", 11.25F);
+            btnAddStock.ForeColor = SystemColors.ButtonHighlight;
+            btnAddStock.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnAddStock.Location = new Point(0, 108);
+            btnAddStock.Name = "btnAddStock";
+            btnAddStock.Size = new Size(443, 38);
+            btnAddStock.TabIndex = 10;
+            btnAddStock.Text = "Add Stock";
+            btnAddStock.TextAlign = ContentAlignment.MiddleRight;
+            btnAddStock.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnAddStock.UseVisualStyleBackColor = false;
+            btnAddStock.Click += btnAddStock_Click;
             // 
-            // button8
+            // btnUpdateStock
             // 
-            button8.Anchor = AnchorStyles.Bottom | AnchorStyles.Left | AnchorStyles.Right;
-            button8.BackColor = Color.MidnightBlue;
-            button8.FlatStyle = FlatStyle.Flat;
-            button8.Font = new Font("Yu Gothic UI", 11.25F);
-            button8.ForeColor = SystemColors.ButtonHighlight;
-            button8.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            button8.Location = new Point(3, 253);
-            button8.Name = "button8";
-            button8.Size = new Size(443, 38);
-            button8.TabIndex = 11;
-            button8.Text = "Update Stock";
-            button8.TextAlign = ContentAlignment.MiddleRight;
-            button8.TextImageRelation = TextImageRelation.ImageBeforeText;
-            button8.UseVisualStyleBackColor = false;
+            btnUpdateStock.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
+            btnUpdateStock.BackColor = Color.MidnightBlue;
+            btnUpdateStock.FlatStyle = FlatStyle.Flat;
+            btnUpdateStock.Font = new Font("Yu Gothic UI", 11.25F);
+            btnUpdateStock.ForeColor = SystemColors.ButtonHighlight;
+            btnUpdateStock.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnUpdateStock.Location = new Point(0, 152);
+            btnUpdateStock.Name = "btnUpdateStock";
+            btnUpdateStock.Size = new Size(443, 38);
+            btnUpdateStock.TabIndex = 11;
+            btnUpdateStock.Text = "Update Stock";
+            btnUpdateStock.TextAlign = ContentAlignment.MiddleRight;
+            btnUpdateStock.TextImageRelation = TextImageRelation.ImageBeforeText;
+            btnUpdateStock.UseVisualStyleBackColor = false;
+            btnUpdateStock.Click += btnUpdateStock_Click;
             // 
             // panel31
             // 
@@ -1001,17 +1091,16 @@
             panel6.Dock = DockStyle.Fill;
             panel6.Location = new Point(3, 53);
             panel6.Name = "panel6";
-            panel6.Padding = new Padding(10);
-            panel6.Size = new Size(449, 248);
+            panel6.Size = new Size(449, 346);
             panel6.TabIndex = 10;
             // 
             // ProductListToStockTable
             // 
             ProductListToStockTable.AccessibleName = "Table";
             ProductListToStockTable.Dock = DockStyle.Fill;
-            ProductListToStockTable.Location = new Point(10, 56);
+            ProductListToStockTable.Location = new Point(0, 46);
             ProductListToStockTable.Name = "ProductListToStockTable";
-            ProductListToStockTable.Size = new Size(429, 182);
+            ProductListToStockTable.Size = new Size(449, 300);
             ProductListToStockTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductListToStockTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductListToStockTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -1022,6 +1111,7 @@
             ProductListToStockTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
             ProductListToStockTable.TabIndex = 0;
             ProductListToStockTable.Text = "sfDataGrid3";
+            ProductListToStockTable.SelectionChanged += ProductListToStockTable_SelectionChanged;
             // 
             // panel37
             // 
@@ -1031,9 +1121,9 @@
             panel37.Controls.Add(textBox1);
             panel37.Controls.Add(label2);
             panel37.Dock = DockStyle.Top;
-            panel37.Location = new Point(10, 10);
+            panel37.Location = new Point(0, 0);
             panel37.Name = "panel37";
-            panel37.Size = new Size(429, 46);
+            panel37.Size = new Size(449, 46);
             panel37.TabIndex = 1;
             // 
             // panel38
@@ -1053,7 +1143,7 @@
             textBox1.MaxLength = 0;
             textBox1.MinimumSize = new Size(200, 0);
             textBox1.Name = "textBox1";
-            textBox1.Size = new Size(296, 23);
+            textBox1.Size = new Size(316, 23);
             textBox1.TabIndex = 10;
             // 
             // label2
@@ -1069,20 +1159,20 @@
             // panel36
             // 
             panel36.Controls.Add(StockTable);
+            panel36.Controls.Add(panel39);
             panel36.Dock = DockStyle.Fill;
             panel36.Location = new Point(458, 53);
             panel36.Name = "panel36";
-            panel36.Padding = new Padding(10);
-            panel36.Size = new Size(449, 248);
+            panel36.Size = new Size(449, 346);
             panel36.TabIndex = 11;
             // 
             // StockTable
             // 
             StockTable.AccessibleName = "Table";
             StockTable.Dock = DockStyle.Fill;
-            StockTable.Location = new Point(10, 10);
+            StockTable.Location = new Point(0, 46);
             StockTable.Name = "StockTable";
-            StockTable.Size = new Size(429, 228);
+            StockTable.Size = new Size(449, 300);
             StockTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             StockTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             StockTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -1093,6 +1183,49 @@
             StockTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
             StockTable.TabIndex = 0;
             StockTable.Text = "sfDataGrid2";
+            // 
+            // panel39
+            // 
+            panel39.AutoScroll = true;
+            panel39.BackColor = Color.LightGray;
+            panel39.Controls.Add(panel40);
+            panel39.Controls.Add(textBox4);
+            panel39.Controls.Add(label19);
+            panel39.Dock = DockStyle.Top;
+            panel39.Location = new Point(0, 0);
+            panel39.Name = "panel39";
+            panel39.Size = new Size(449, 46);
+            panel39.TabIndex = 2;
+            // 
+            // panel40
+            // 
+            panel40.BackgroundImage = Properties.Resources.search_24dp_434343_FILL0_wght400_GRAD0_opsz24;
+            panel40.BackgroundImageLayout = ImageLayout.Center;
+            panel40.Location = new Point(9, 6);
+            panel40.Name = "panel40";
+            panel40.Size = new Size(32, 34);
+            panel40.TabIndex = 11;
+            // 
+            // textBox4
+            // 
+            textBox4.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            textBox4.Location = new Point(109, 12);
+            textBox4.MaximumSize = new Size(420, 0);
+            textBox4.MaxLength = 0;
+            textBox4.MinimumSize = new Size(200, 0);
+            textBox4.Name = "textBox4";
+            textBox4.Size = new Size(325, 23);
+            textBox4.TabIndex = 10;
+            // 
+            // label19
+            // 
+            label19.AutoSize = true;
+            label19.Font = new Font("Yu Gothic UI", 11.25F);
+            label19.Location = new Point(47, 13);
+            label19.Name = "label19";
+            label19.Size = new Size(56, 20);
+            label19.TabIndex = 9;
+            label19.Text = "Search:";
             // 
             // tabPage3
             // 
@@ -1323,7 +1456,7 @@
             // 
             panel10.Anchor = AnchorStyles.Left | AnchorStyles.Right;
             panel10.Controls.Add(panel19);
-            panel10.Controls.Add(textBox2);
+            panel10.Controls.Add(txtBoxProductSearch);
             panel10.Controls.Add(label4);
             panel10.Location = new Point(3, 5);
             panel10.Name = "panel10";
@@ -1339,17 +1472,17 @@
             panel19.Size = new Size(32, 34);
             panel19.TabIndex = 7;
             // 
-            // textBox2
+            // txtBoxProductSearch
             // 
-            textBox2.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            textBox2.Location = new Point(102, 16);
-            textBox2.MaximumSize = new Size(420, 0);
-            textBox2.MaxLength = 0;
-            textBox2.MinimumSize = new Size(200, 0);
-            textBox2.Name = "textBox2";
-            textBox2.Size = new Size(289, 23);
-            textBox2.TabIndex = 6;
-            textBox2.TextChanged += textBox2_TextChanged;
+            txtBoxProductSearch.Anchor = AnchorStyles.Left | AnchorStyles.Right;
+            txtBoxProductSearch.Location = new Point(102, 16);
+            txtBoxProductSearch.MaximumSize = new Size(420, 0);
+            txtBoxProductSearch.MaxLength = 0;
+            txtBoxProductSearch.MinimumSize = new Size(200, 0);
+            txtBoxProductSearch.Name = "txtBoxProductSearch";
+            txtBoxProductSearch.Size = new Size(289, 23);
+            txtBoxProductSearch.TabIndex = 6;
+            txtBoxProductSearch.TextChanged += txtBoxProductSearch_TextChanged;
             // 
             // label4
             // 
@@ -1472,7 +1605,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 7, 22, 18, 24, 667);
+            clock1.CustomTime = new DateTime(2026, 3, 8, 12, 33, 19, 13);
             clock1.DigitalRenderer = digitalClockRenderer2;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -1494,27 +1627,6 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
-            // 
-            // textBox3
-            // 
-            textBox3.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            textBox3.Location = new Point(138, 12);
-            textBox3.MaximumSize = new Size(420, 0);
-            textBox3.MaxLength = 0;
-            textBox3.MinimumSize = new Size(200, 0);
-            textBox3.Name = "textBox3";
-            textBox3.Size = new Size(296, 23);
-            textBox3.TabIndex = 12;
-            // 
-            // label18
-            // 
-            label18.AutoSize = true;
-            label18.Font = new Font("Yu Gothic UI", 11.25F, FontStyle.Bold);
-            label18.Location = new Point(14, 13);
-            label18.Name = "label18";
-            label18.Size = new Size(122, 20);
-            label18.TabIndex = 11;
-            label18.Text = "Quantity to Add:";
             // 
             // MainInventory
             // 
@@ -1567,6 +1679,7 @@
             tabPage2.ResumeLayout(false);
             tableLayoutPanel1.ResumeLayout(false);
             panel18.ResumeLayout(false);
+            panel18.PerformLayout();
             panel33.ResumeLayout(false);
             panel33.PerformLayout();
             panel21.ResumeLayout(false);
@@ -1584,6 +1697,8 @@
             panel37.PerformLayout();
             panel36.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)StockTable).EndInit();
+            panel39.ResumeLayout(false);
+            panel39.PerformLayout();
             tabPage3.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SupplierTable).EndInit();
             panel7.ResumeLayout(false);
@@ -1637,7 +1752,7 @@
         private Panel panel5;
         private Panel panel9;
         private Panel panel10;
-        private TextBox textBox2;
+        private TextBox txtBoxProductSearch;
         private Label label4;
         private Syncfusion.Windows.Forms.Tools.GradientPanel gradientPanel2;
         private Syncfusion.Windows.Forms.Tools.Clock clock1;
@@ -1660,9 +1775,9 @@
         private TableLayoutPanel tableLayoutPanel1;
         private Panel panel18;
         private Panel panel21;
-        private Button button7;
-        private Button button9;
-        private Button button8;
+        private Button btnDeleteStock;
+        private Button btnAddStock;
+        private Button btnUpdateStock;
         private Label label13;
         private TableLayoutPanel tableLayoutPanel2;
         private Panel panel22;
@@ -1705,7 +1820,16 @@
         private Label label2;
         private Label label12;
         private Label label17;
-        private TextBox textBox3;
+        private TextBox txtBoxQuantityAdd;
         private Label label18;
+        private Label txtSelectedProductName;
+        private Label txtSelectedProductID;
+        private Label txtSelectedProductPrice;
+        private Label txtSelectedProductSupplier;
+        private Label txtSelectedProductDescription;
+        private Panel panel39;
+        private Panel panel40;
+        private TextBox textBox4;
+        private Label label19;
     }
 }

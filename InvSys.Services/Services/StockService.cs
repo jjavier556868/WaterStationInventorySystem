@@ -1,6 +1,8 @@
 ﻿using InvSys.Domain.Models.InventoryItems;
 using InvSys.Infrastructure;
+using InvSys.Services.DTOs;
 using InvSys.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvSys.Services.Services
 {
@@ -13,7 +15,6 @@ namespace InvSys.Services.Services
             _context = new InventoryDbContext();
         }
 
-        // Updates existing stock quantity for a product, or creates one if none exists
         public void Restock(int productId, int quantity)
         {
             var stock = _context.Stocks.FirstOrDefault(s => s.ProductId == productId);
@@ -34,7 +35,6 @@ namespace InvSys.Services.Services
             _context.SaveChanges();
         }
 
-        // Available = total stocked - total sold
         public int GetAvailableStock(int productId)
         {
             int stocked = _context.Stocks
@@ -48,13 +48,6 @@ namespace InvSys.Services.Services
             return stocked - sold;
         }
 
-        public List<Stock> GetAllStock()
-        {
-            return _context.Stocks
-                .OrderByDescending(s => s.CreatedDate)
-                .ToList();
-        }
-
         public void DeleteStock(int id)
         {
             var stock = _context.Stocks.FirstOrDefault(s => s.Id == id);
@@ -63,6 +56,34 @@ namespace InvSys.Services.Services
                 _context.Stocks.Remove(stock);
                 _context.SaveChanges();
             }
+        }
+
+        public List<StockDTO> GetAllStock()
+        {
+            return _context.Stocks
+                .Include(s => s.Product)
+                .OrderByDescending(s => s.CreatedDate)
+                .Select(s => new StockDTO
+                {
+                    Id = s.Id,
+                    ProductId = s.ProductId,
+                    ProductName = s.Product.Name,
+                    Quantity = s.Quantity,
+                    CreatedDate = s.CreatedDate,
+                    UpdatedDate = s.UpdatedDate
+                })
+                .ToList();
+        }
+
+        public void UpdateStock(int stockId, int quantity)
+        {
+            var stock = _context.Stocks.FirstOrDefault(s => s.Id == stockId);
+            if (stock == null)
+                throw new Exception("Stock entry not found.");
+
+            stock.Quantity = quantity;
+            stock.UpdatedDate = DateTime.Now;
+            _context.SaveChanges();
         }
 
         public void Dispose() => _context?.Dispose();

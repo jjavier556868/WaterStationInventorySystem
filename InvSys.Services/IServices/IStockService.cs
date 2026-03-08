@@ -1,12 +1,11 @@
-﻿using InvSys.Domain.Models.InventoryItems;
+﻿using InvSys.Services.DTOs;
 
-namespace InvSys.Services.Interfaces
+public interface IStockService:IDisposable
 {
-    public interface IStockService : IDisposable
-    {
-        void Restock(int productId, int quantity);
-        int GetAvailableStock(int productId);
-        List<Stock> GetAllStock();
-        void DeleteStock(int id);
-    }
+    void Restock(int productId, int quantity);
+    int GetAvailableStock(int productId);
+    List<StockDTO> GetAllStock();
+    void UpdateStock(int stockId, int quantity);
+    void DeleteStock(int id);
+    void Dispose();
 }
