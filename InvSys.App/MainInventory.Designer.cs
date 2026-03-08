@@ -29,11 +29,11 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
-            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea2 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
-            System.Windows.Forms.DataVisualization.Charting.Legend legend2 = new System.Windows.Forms.DataVisualization.Charting.Legend();
-            System.Windows.Forms.DataVisualization.Charting.Series series2 = new System.Windows.Forms.DataVisualization.Charting.Series();
-            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer2 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
-            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer2 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
+            System.Windows.Forms.DataVisualization.Charting.ChartArea chartArea1 = new System.Windows.Forms.DataVisualization.Charting.ChartArea();
+            System.Windows.Forms.DataVisualization.Charting.Legend legend1 = new System.Windows.Forms.DataVisualization.Charting.Legend();
+            System.Windows.Forms.DataVisualization.Charting.Series series1 = new System.Windows.Forms.DataVisualization.Charting.Series();
+            Syncfusion.Windows.Forms.Tools.DigitalClockRenderer digitalClockRenderer1 = new Syncfusion.Windows.Forms.Tools.DigitalClockRenderer();
+            Syncfusion.Windows.Forms.Tools.ClockRenderer clockRenderer1 = new Syncfusion.Windows.Forms.Tools.ClockRenderer();
             panel1 = new Panel();
             gradientPanel1 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel4 = new Panel();
@@ -55,7 +55,7 @@
             tableLayoutPanel3 = new TableLayoutPanel();
             panel25 = new Panel();
             panel27 = new Panel();
-            chart1 = new System.Windows.Forms.DataVisualization.Charting.Chart();
+            chartMostSold = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panel29 = new Panel();
             label8 = new Label();
             panel26 = new Panel();
@@ -66,18 +66,18 @@
             tableLayoutPanel2 = new TableLayoutPanel();
             panel22 = new Panel();
             panel23 = new Panel();
-            label16 = new Label();
+            txtMonthlySales = new Label();
             panel24 = new Panel();
             label6 = new Label();
             panel15 = new Panel();
             panel16 = new Panel();
-            label15 = new Label();
+            txtTotalProducts = new Label();
             panel17 = new Panel();
             label5 = new Label();
             panel12 = new Panel();
             panel14 = new Panel();
-            label14 = new Label();
-            label10 = new Label();
+            txtMostSoldDescription = new Label();
+            txtNameMostSoldProduct = new Label();
             panel13 = new Panel();
             label1 = new Label();
             tabPage2 = new TabPage();
@@ -178,18 +178,33 @@
             panel58 = new Panel();
             label22 = new Label();
             panel57 = new Panel();
+            tableLayoutPanel7 = new TableLayoutPanel();
+            panel59 = new Panel();
+            panel61 = new Panel();
+            label23 = new Label();
+            txtTotalAmount = new Label();
+            txtChange = new Label();
+            txtAmountPaid = new Label();
+            panel60 = new Panel();
+            tableLayoutPanel8 = new TableLayoutPanel();
+            btnResetTransaction = new Button();
+            button3 = new Button();
+            btnPayTotalAmount = new Button();
             panel42 = new Panel();
             btnPurchaseCheckout = new Button();
             btnManagePurchase = new Button();
             tabPage6 = new TabPage();
+            panel62 = new Panel();
             SalesTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel63 = new Panel();
+            panel64 = new Panel();
+            label24 = new Label();
             tabPage7 = new TabPage();
             panel5 = new Panel();
             gradientPanel2 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
-            label23 = new Label();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -201,7 +216,7 @@
             tableLayoutPanel3.SuspendLayout();
             panel25.SuspendLayout();
             panel27.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)chart1).BeginInit();
+            ((System.ComponentModel.ISupportInitialize)chartMostSold).BeginInit();
             panel29.SuspendLayout();
             panel26.SuspendLayout();
             panel28.SuspendLayout();
@@ -264,9 +279,17 @@
             ((System.ComponentModel.ISupportInitialize)PurchaseTable).BeginInit();
             panel58.SuspendLayout();
             panel57.SuspendLayout();
+            tableLayoutPanel7.SuspendLayout();
+            panel59.SuspendLayout();
+            panel61.SuspendLayout();
+            panel60.SuspendLayout();
+            tableLayoutPanel8.SuspendLayout();
             panel42.SuspendLayout();
             tabPage6.SuspendLayout();
+            panel62.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)SalesTable).BeginInit();
+            panel63.SuspendLayout();
+            panel64.SuspendLayout();
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
@@ -570,7 +593,7 @@
             // panel27
             // 
             panel27.BackColor = SystemColors.Control;
-            panel27.Controls.Add(chart1);
+            panel27.Controls.Add(chartMostSold);
             panel27.Controls.Add(panel29);
             panel27.Dock = DockStyle.Fill;
             panel27.Location = new Point(20, 20);
@@ -578,23 +601,23 @@
             panel27.Size = new Size(409, 281);
             panel27.TabIndex = 0;
             // 
-            // chart1
+            // chartMostSold
             // 
-            chartArea2.Name = "ChartArea1";
-            chart1.ChartAreas.Add(chartArea2);
-            chart1.Dock = DockStyle.Fill;
-            legend2.Name = "Legend1";
-            chart1.Legends.Add(legend2);
-            chart1.Location = new Point(0, 45);
-            chart1.Name = "chart1";
-            chart1.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Excel;
-            series2.ChartArea = "ChartArea1";
-            series2.Legend = "Legend1";
-            series2.Name = "Series1";
-            chart1.Series.Add(series2);
-            chart1.Size = new Size(409, 236);
-            chart1.TabIndex = 3;
-            chart1.Text = "chart1";
+            chartArea1.Name = "ChartArea1";
+            chartMostSold.ChartAreas.Add(chartArea1);
+            chartMostSold.Dock = DockStyle.Fill;
+            legend1.Name = "Legend1";
+            chartMostSold.Legends.Add(legend1);
+            chartMostSold.Location = new Point(0, 45);
+            chartMostSold.Name = "chartMostSold";
+            chartMostSold.Palette = System.Windows.Forms.DataVisualization.Charting.ChartColorPalette.Excel;
+            series1.ChartArea = "ChartArea1";
+            series1.Legend = "Legend1";
+            series1.Name = "Series1";
+            chartMostSold.Series.Add(series1);
+            chartMostSold.Size = new Size(409, 236);
+            chartMostSold.TabIndex = 3;
+            chartMostSold.Text = "chart1";
             // 
             // panel29
             // 
@@ -641,6 +664,8 @@
             // ProductTableLowStock
             // 
             ProductTableLowStock.AccessibleName = "Table";
+            ProductTableLowStock.AllowEditing = false;
+            ProductTableLowStock.AllowFiltering = true;
             ProductTableLowStock.Dock = DockStyle.Fill;
             ProductTableLowStock.Location = new Point(0, 45);
             ProductTableLowStock.Name = "ProductTableLowStock";
@@ -710,7 +735,7 @@
             // panel23
             // 
             panel23.BackColor = Color.WhiteSmoke;
-            panel23.Controls.Add(label16);
+            panel23.Controls.Add(txtMonthlySales);
             panel23.Controls.Add(panel24);
             panel23.Dock = DockStyle.Fill;
             panel23.Location = new Point(20, 20);
@@ -718,16 +743,16 @@
             panel23.Size = new Size(258, 137);
             panel23.TabIndex = 0;
             // 
-            // label16
+            // txtMonthlySales
             // 
-            label16.AutoSize = true;
-            label16.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label16.ForeColor = SystemColors.InactiveCaptionText;
-            label16.Location = new Point(10, 56);
-            label16.Name = "label16";
-            label16.Size = new Size(160, 50);
-            label16.TabIndex = 4;
-            label16.Text = "Php0.00";
+            txtMonthlySales.AutoSize = true;
+            txtMonthlySales.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtMonthlySales.ForeColor = SystemColors.InactiveCaptionText;
+            txtMonthlySales.Location = new Point(10, 56);
+            txtMonthlySales.Name = "txtMonthlySales";
+            txtMonthlySales.Size = new Size(160, 50);
+            txtMonthlySales.TabIndex = 4;
+            txtMonthlySales.Text = "Php0.00";
             // 
             // panel24
             // 
@@ -765,7 +790,7 @@
             // panel16
             // 
             panel16.BackColor = Color.WhiteSmoke;
-            panel16.Controls.Add(label15);
+            panel16.Controls.Add(txtTotalProducts);
             panel16.Controls.Add(panel17);
             panel16.Dock = DockStyle.Fill;
             panel16.Location = new Point(20, 20);
@@ -773,16 +798,16 @@
             panel16.Size = new Size(257, 137);
             panel16.TabIndex = 0;
             // 
-            // label15
+            // txtTotalProducts
             // 
-            label15.AutoSize = true;
-            label15.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label15.ForeColor = SystemColors.InactiveCaptionText;
-            label15.Location = new Point(14, 56);
-            label15.Name = "label15";
-            label15.Size = new Size(43, 50);
-            label15.TabIndex = 3;
-            label15.Text = "0";
+            txtTotalProducts.AutoSize = true;
+            txtTotalProducts.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtTotalProducts.ForeColor = SystemColors.InactiveCaptionText;
+            txtTotalProducts.Location = new Point(14, 56);
+            txtTotalProducts.Name = "txtTotalProducts";
+            txtTotalProducts.Size = new Size(43, 50);
+            txtTotalProducts.TabIndex = 3;
+            txtTotalProducts.Text = "0";
             // 
             // panel17
             // 
@@ -820,8 +845,8 @@
             // panel14
             // 
             panel14.BackColor = Color.WhiteSmoke;
-            panel14.Controls.Add(label14);
-            panel14.Controls.Add(label10);
+            panel14.Controls.Add(txtMostSoldDescription);
+            panel14.Controls.Add(txtNameMostSoldProduct);
             panel14.Controls.Add(panel13);
             panel14.Dock = DockStyle.Fill;
             panel14.Location = new Point(20, 20);
@@ -829,27 +854,27 @@
             panel14.Size = new Size(257, 137);
             panel14.TabIndex = 0;
             // 
-            // label14
+            // txtMostSoldDescription
             // 
-            label14.AutoSize = true;
-            label14.Font = new Font("Yu Gothic UI Semilight", 15F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            label14.ForeColor = SystemColors.InactiveCaptionText;
-            label14.Location = new Point(6, 89);
-            label14.Name = "label14";
-            label14.Size = new Size(202, 28);
-            label14.TabIndex = 3;
-            label14.Text = "0 sold as of this month";
+            txtMostSoldDescription.AutoSize = true;
+            txtMostSoldDescription.Font = new Font("Yu Gothic UI Semilight", 15F, FontStyle.Italic, GraphicsUnit.Point, 0);
+            txtMostSoldDescription.ForeColor = SystemColors.InactiveCaptionText;
+            txtMostSoldDescription.Location = new Point(6, 89);
+            txtMostSoldDescription.Name = "txtMostSoldDescription";
+            txtMostSoldDescription.Size = new Size(202, 28);
+            txtMostSoldDescription.TabIndex = 3;
+            txtMostSoldDescription.Text = "0 sold as of this month";
             // 
-            // label10
+            // txtNameMostSoldProduct
             // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Yu Gothic UI", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label10.ForeColor = SystemColors.InactiveCaptionText;
-            label10.Location = new Point(6, 56);
-            label10.Name = "label10";
-            label10.Size = new Size(83, 28);
-            label10.TabIndex = 2;
-            label10.Text = "Product";
+            txtNameMostSoldProduct.AutoSize = true;
+            txtNameMostSoldProduct.Font = new Font("Yu Gothic UI", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            txtNameMostSoldProduct.ForeColor = SystemColors.InactiveCaptionText;
+            txtNameMostSoldProduct.Location = new Point(6, 56);
+            txtNameMostSoldProduct.Name = "txtNameMostSoldProduct";
+            txtNameMostSoldProduct.Size = new Size(83, 28);
+            txtNameMostSoldProduct.TabIndex = 2;
+            txtNameMostSoldProduct.Text = "Product";
             // 
             // panel13
             // 
@@ -1632,7 +1657,7 @@
             panel54.Dock = DockStyle.Fill;
             panel54.Location = new Point(0, 47);
             panel54.Name = "panel54";
-            panel54.Size = new Size(846, 227);
+            panel54.Size = new Size(846, 230);
             panel54.TabIndex = 0;
             // 
             // StockViewTable
@@ -1641,7 +1666,7 @@
             StockViewTable.Dock = DockStyle.Fill;
             StockViewTable.Location = new Point(0, 0);
             StockViewTable.Name = "StockViewTable";
-            StockViewTable.Size = new Size(846, 227);
+            StockViewTable.Size = new Size(846, 230);
             StockViewTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             StockViewTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             StockViewTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -1659,9 +1684,9 @@
             // 
             panel47.Controls.Add(tableLayoutPanel4);
             panel47.Dock = DockStyle.Bottom;
-            panel47.Location = new Point(0, 274);
+            panel47.Location = new Point(0, 277);
             panel47.Name = "panel47";
-            panel47.Size = new Size(846, 311);
+            panel47.Size = new Size(846, 308);
             panel47.TabIndex = 2;
             // 
             // tableLayoutPanel4
@@ -1676,7 +1701,7 @@
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(846, 311);
+            tableLayoutPanel4.Size = new Size(846, 308);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel48
@@ -1685,7 +1710,7 @@
             panel48.Dock = DockStyle.Fill;
             panel48.Location = new Point(3, 3);
             panel48.Name = "panel48";
-            panel48.Size = new Size(417, 305);
+            panel48.Size = new Size(417, 302);
             panel48.TabIndex = 0;
             // 
             // panel53
@@ -1705,7 +1730,7 @@
             panel53.Dock = DockStyle.Fill;
             panel53.Location = new Point(0, 0);
             panel53.Name = "panel53";
-            panel53.Size = new Size(417, 305);
+            panel53.Size = new Size(417, 302);
             panel53.TabIndex = 7;
             // 
             // txtFromPurchaseProductName
@@ -1723,7 +1748,7 @@
             label27.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
             label27.AutoSize = true;
             label27.Font = new Font("Segoe UI Semibold", 12F, FontStyle.Bold);
-            label27.Location = new Point(6, 226);
+            label27.Location = new Point(6, 223);
             label27.Name = "label27";
             label27.Size = new Size(145, 21);
             label27.TabIndex = 16;
@@ -1732,7 +1757,7 @@
             // txtBoxPurchaseQuantity
             // 
             txtBoxPurchaseQuantity.Anchor = AnchorStyles.Bottom | AnchorStyles.Left;
-            txtBoxPurchaseQuantity.Location = new Point(156, 228);
+            txtBoxPurchaseQuantity.Location = new Point(156, 225);
             txtBoxPurchaseQuantity.MaximumSize = new Size(420, 0);
             txtBoxPurchaseQuantity.MaxLength = 0;
             txtBoxPurchaseQuantity.MinimumSize = new Size(200, 0);
@@ -1768,7 +1793,7 @@
             btnAddPurchase.Font = new Font("Yu Gothic UI", 11.25F);
             btnAddPurchase.ForeColor = SystemColors.ButtonHighlight;
             btnAddPurchase.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnAddPurchase.Location = new Point(0, 257);
+            btnAddPurchase.Location = new Point(0, 254);
             btnAddPurchase.Name = "btnAddPurchase";
             btnAddPurchase.Size = new Size(417, 48);
             btnAddPurchase.TabIndex = 15;
@@ -1838,7 +1863,7 @@
             panel49.Dock = DockStyle.Fill;
             panel49.Location = new Point(426, 3);
             panel49.Name = "panel49";
-            panel49.Size = new Size(417, 305);
+            panel49.Size = new Size(417, 302);
             panel49.TabIndex = 1;
             // 
             // ProductsToPurchaseTable
@@ -1847,7 +1872,7 @@
             ProductsToPurchaseTable.Dock = DockStyle.Fill;
             ProductsToPurchaseTable.Location = new Point(0, 39);
             ProductsToPurchaseTable.Name = "ProductsToPurchaseTable";
-            ProductsToPurchaseTable.Size = new Size(417, 209);
+            ProductsToPurchaseTable.Size = new Size(417, 206);
             ProductsToPurchaseTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -1870,7 +1895,7 @@
             tableLayoutPanel5.Controls.Add(btnUpdatePurchase, 0, 0);
             tableLayoutPanel5.Controls.Add(btnDeletePurchase, 1, 0);
             tableLayoutPanel5.Dock = DockStyle.Bottom;
-            tableLayoutPanel5.Location = new Point(0, 248);
+            tableLayoutPanel5.Location = new Point(0, 245);
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
@@ -2097,12 +2122,160 @@
             // 
             // panel57
             // 
-            panel57.Controls.Add(label23);
+            panel57.Controls.Add(tableLayoutPanel7);
             panel57.Dock = DockStyle.Fill;
             panel57.Location = new Point(3, 310);
             panel57.Name = "panel57";
             panel57.Size = new Size(840, 272);
             panel57.TabIndex = 1;
+            // 
+            // tableLayoutPanel7
+            // 
+            tableLayoutPanel7.ColumnCount = 2;
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Controls.Add(panel59, 0, 0);
+            tableLayoutPanel7.Controls.Add(panel60, 1, 0);
+            tableLayoutPanel7.Dock = DockStyle.Fill;
+            tableLayoutPanel7.Location = new Point(0, 0);
+            tableLayoutPanel7.Name = "tableLayoutPanel7";
+            tableLayoutPanel7.RowCount = 1;
+            tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel7.Size = new Size(840, 272);
+            tableLayoutPanel7.TabIndex = 3;
+            // 
+            // panel59
+            // 
+            panel59.BackColor = Color.DarkGray;
+            panel59.Controls.Add(panel61);
+            panel59.Controls.Add(txtTotalAmount);
+            panel59.Controls.Add(txtChange);
+            panel59.Controls.Add(txtAmountPaid);
+            panel59.Dock = DockStyle.Fill;
+            panel59.Location = new Point(3, 3);
+            panel59.Name = "panel59";
+            panel59.Size = new Size(414, 266);
+            panel59.TabIndex = 0;
+            // 
+            // panel61
+            // 
+            panel61.BackColor = Color.RoyalBlue;
+            panel61.Controls.Add(label23);
+            panel61.Dock = DockStyle.Top;
+            panel61.Location = new Point(0, 0);
+            panel61.Name = "panel61";
+            panel61.Size = new Size(414, 41);
+            panel61.TabIndex = 3;
+            // 
+            // label23
+            // 
+            label23.AutoSize = true;
+            label23.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label23.ForeColor = SystemColors.ButtonHighlight;
+            label23.Location = new Point(15, 8);
+            label23.Name = "label23";
+            label23.Size = new Size(142, 25);
+            label23.TabIndex = 1;
+            label23.Text = "TRANSACTION";
+            // 
+            // txtTotalAmount
+            // 
+            txtTotalAmount.AutoSize = true;
+            txtTotalAmount.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
+            txtTotalAmount.ForeColor = SystemColors.ControlLightLight;
+            txtTotalAmount.Location = new Point(15, 57);
+            txtTotalAmount.Name = "txtTotalAmount";
+            txtTotalAmount.Size = new Size(226, 45);
+            txtTotalAmount.TabIndex = 0;
+            txtTotalAmount.Text = "Total Amount:";
+            // 
+            // txtChange
+            // 
+            txtChange.AutoSize = true;
+            txtChange.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
+            txtChange.ForeColor = SystemColors.ControlLightLight;
+            txtChange.Location = new Point(15, 147);
+            txtChange.Name = "txtChange";
+            txtChange.Size = new Size(139, 45);
+            txtChange.TabIndex = 2;
+            txtChange.Text = "Change:";
+            // 
+            // txtAmountPaid
+            // 
+            txtAmountPaid.AutoSize = true;
+            txtAmountPaid.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
+            txtAmountPaid.ForeColor = SystemColors.ControlLightLight;
+            txtAmountPaid.Location = new Point(15, 102);
+            txtAmountPaid.Name = "txtAmountPaid";
+            txtAmountPaid.Size = new Size(217, 45);
+            txtAmountPaid.TabIndex = 1;
+            txtAmountPaid.Text = "Amount Paid:";
+            // 
+            // panel60
+            // 
+            panel60.Controls.Add(tableLayoutPanel8);
+            panel60.Dock = DockStyle.Fill;
+            panel60.Location = new Point(423, 3);
+            panel60.Name = "panel60";
+            panel60.Size = new Size(414, 266);
+            panel60.TabIndex = 1;
+            // 
+            // tableLayoutPanel8
+            // 
+            tableLayoutPanel8.CellBorderStyle = TableLayoutPanelCellBorderStyle.Single;
+            tableLayoutPanel8.ColumnCount = 3;
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
+            tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
+            tableLayoutPanel8.Controls.Add(btnResetTransaction, 2, 0);
+            tableLayoutPanel8.Controls.Add(button3, 1, 0);
+            tableLayoutPanel8.Controls.Add(btnPayTotalAmount, 0, 0);
+            tableLayoutPanel8.Dock = DockStyle.Fill;
+            tableLayoutPanel8.Location = new Point(0, 0);
+            tableLayoutPanel8.Name = "tableLayoutPanel8";
+            tableLayoutPanel8.RowCount = 3;
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel8.Size = new Size(414, 266);
+            tableLayoutPanel8.TabIndex = 0;
+            // 
+            // btnResetTransaction
+            // 
+            btnResetTransaction.BackColor = Color.Firebrick;
+            btnResetTransaction.Dock = DockStyle.Fill;
+            btnResetTransaction.Font = new Font("Segoe UI", 12F);
+            btnResetTransaction.ForeColor = SystemColors.ButtonHighlight;
+            btnResetTransaction.Location = new Point(278, 4);
+            btnResetTransaction.Name = "btnResetTransaction";
+            btnResetTransaction.Size = new Size(132, 81);
+            btnResetTransaction.TabIndex = 4;
+            btnResetTransaction.Text = "RESET TRANSACTION";
+            btnResetTransaction.UseVisualStyleBackColor = false;
+            btnResetTransaction.Click += btnResetTransaction_Click;
+            // 
+            // button3
+            // 
+            button3.Dock = DockStyle.Fill;
+            button3.Font = new Font("Segoe UI", 12F);
+            button3.Location = new Point(141, 4);
+            button3.Name = "button3";
+            button3.Size = new Size(130, 81);
+            button3.TabIndex = 3;
+            button3.Text = "GENERATE RECEIPT";
+            button3.UseVisualStyleBackColor = true;
+            // 
+            // btnPayTotalAmount
+            // 
+            btnPayTotalAmount.Dock = DockStyle.Fill;
+            btnPayTotalAmount.Font = new Font("Segoe UI", 12F);
+            btnPayTotalAmount.Location = new Point(4, 4);
+            btnPayTotalAmount.Name = "btnPayTotalAmount";
+            btnPayTotalAmount.Size = new Size(130, 81);
+            btnPayTotalAmount.TabIndex = 0;
+            btnPayTotalAmount.Text = "PAY TOTAL AMOUNT";
+            btnPayTotalAmount.UseVisualStyleBackColor = true;
+            btnPayTotalAmount.Click += btnPayTotalAmount_Click;
             // 
             // panel42
             // 
@@ -2153,7 +2326,7 @@
             // 
             // tabPage6
             // 
-            tabPage6.Controls.Add(SalesTable);
+            tabPage6.Controls.Add(panel62);
             tabPage6.Location = new Point(4, 4);
             tabPage6.Name = "tabPage6";
             tabPage6.Padding = new Padding(3);
@@ -2162,12 +2335,23 @@
             tabPage6.Text = "Sales";
             tabPage6.UseVisualStyleBackColor = true;
             // 
+            // panel62
+            // 
+            panel62.Controls.Add(SalesTable);
+            panel62.Controls.Add(panel63);
+            panel62.Dock = DockStyle.Fill;
+            panel62.Location = new Point(3, 3);
+            panel62.Name = "panel62";
+            panel62.Size = new Size(910, 648);
+            panel62.TabIndex = 6;
+            // 
             // SalesTable
             // 
             SalesTable.AccessibleName = "Table";
-            SalesTable.Location = new Point(155, 116);
+            SalesTable.Dock = DockStyle.Fill;
+            SalesTable.Location = new Point(0, 58);
             SalesTable.Name = "SalesTable";
-            SalesTable.Size = new Size(624, 292);
+            SalesTable.Size = new Size(910, 590);
             SalesTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             SalesTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             SalesTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -2178,6 +2362,36 @@
             SalesTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
             SalesTable.TabIndex = 5;
             SalesTable.Text = "SalesTable";
+            // 
+            // panel63
+            // 
+            panel63.Controls.Add(panel64);
+            panel63.Dock = DockStyle.Top;
+            panel63.Location = new Point(0, 0);
+            panel63.Name = "panel63";
+            panel63.Size = new Size(910, 58);
+            panel63.TabIndex = 6;
+            // 
+            // panel64
+            // 
+            panel64.BackColor = Color.RoyalBlue;
+            panel64.Controls.Add(label24);
+            panel64.Dock = DockStyle.Fill;
+            panel64.Location = new Point(0, 0);
+            panel64.Name = "panel64";
+            panel64.Size = new Size(910, 58);
+            panel64.TabIndex = 10;
+            // 
+            // label24
+            // 
+            label24.AutoSize = true;
+            label24.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label24.ForeColor = SystemColors.ButtonHighlight;
+            label24.Location = new Point(18, 17);
+            label24.Name = "label24";
+            label24.Size = new Size(64, 25);
+            label24.TabIndex = 2;
+            label24.Text = "SALES";
             // 
             // tabPage7
             // 
@@ -2232,8 +2446,8 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 8, 18, 40, 16, 733);
-            clock1.DigitalRenderer = digitalClockRenderer2;
+            clock1.CustomTime = new DateTime(2026, 3, 8, 22, 51, 19, 226);
+            clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
             clock1.Location = new Point(784, 4);
@@ -2241,7 +2455,7 @@
             clock1.Name = "clock1";
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
-            clock1.Renderer = clockRenderer2;
+            clock1.Renderer = clockRenderer1;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
             clock1.ShowHourDesignator = false;
@@ -2254,15 +2468,6 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
-            // 
-            // label23
-            // 
-            label23.AutoSize = true;
-            label23.Location = new Point(21, 21);
-            label23.Name = "label23";
-            label23.Size = new Size(114, 15);
-            label23.TabIndex = 0;
-            label23.Text = "Initial Total Amount:";
             // 
             // MainInventory
             // 
@@ -2288,7 +2493,7 @@
             tableLayoutPanel3.ResumeLayout(false);
             panel25.ResumeLayout(false);
             panel27.ResumeLayout(false);
-            ((System.ComponentModel.ISupportInitialize)chart1).EndInit();
+            ((System.ComponentModel.ISupportInitialize)chartMostSold).EndInit();
             panel29.ResumeLayout(false);
             panel29.PerformLayout();
             panel26.ResumeLayout(false);
@@ -2374,10 +2579,20 @@
             panel58.ResumeLayout(false);
             panel58.PerformLayout();
             panel57.ResumeLayout(false);
-            panel57.PerformLayout();
+            tableLayoutPanel7.ResumeLayout(false);
+            panel59.ResumeLayout(false);
+            panel59.PerformLayout();
+            panel61.ResumeLayout(false);
+            panel61.PerformLayout();
+            panel60.ResumeLayout(false);
+            tableLayoutPanel8.ResumeLayout(false);
             panel42.ResumeLayout(false);
             tabPage6.ResumeLayout(false);
+            panel62.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)SalesTable).EndInit();
+            panel63.ResumeLayout(false);
+            panel64.ResumeLayout(false);
+            panel64.PerformLayout();
             panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
@@ -2463,12 +2678,12 @@
         private Panel panel28;
         private Panel panel30;
         private Label label9;
-        private System.Windows.Forms.DataVisualization.Charting.Chart chart1;
+        private System.Windows.Forms.DataVisualization.Charting.Chart chartMostSold;
         private Syncfusion.WinForms.DataGrid.SfDataGrid ProductTableLowStock;
-        private Label label14;
-        private Label label10;
-        private Label label16;
-        private Label label15;
+        private Label txtMostSoldDescription;
+        private Label txtNameMostSoldProduct;
+        private Label txtMonthlySales;
+        private Label txtTotalProducts;
         private Panel panel33;
         private Panel panel35;
         private Panel panel34;
@@ -2542,6 +2757,21 @@
         private Panel panel58;
         private Label label22;
         private Label txtFromPurchaseProductName;
+        private Label txtTotalAmount;
+        private Label txtAmountPaid;
+        private Label txtChange;
+        private TableLayoutPanel tableLayoutPanel7;
+        private Panel panel59;
+        private Panel panel60;
+        private TableLayoutPanel tableLayoutPanel8;
+        private Button btnPayTotalAmount;
+        private Button btnResetTransaction;
+        private Button button3;
+        private Panel panel61;
         private Label label23;
+        private Panel panel62;
+        private Panel panel63;
+        private Panel panel64;
+        private Label label24;
     }
 }

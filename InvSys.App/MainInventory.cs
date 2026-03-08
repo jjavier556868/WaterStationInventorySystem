@@ -10,6 +10,7 @@ using System;
 using System.Drawing;
 using System.Linq;
 using System.Windows.Forms;
+using System.Windows.Forms.DataVisualization.Charting;
 using System.Xml.Serialization;
 
 
@@ -73,6 +74,204 @@ namespace InvSys.App
             UpdateUIForRole();
             RefreshAllTables();
         }
+
+        private void RefreshDashboard()
+        {
+            RefreshMostSoldProduct();
+            RefreshTotalProductsCount();
+            RefreshMonthlySales();
+            RefreshLowStockTable();
+            RefreshSalesChart();
+        }
+
+        private void RefreshTotalProductsCount()
+        {
+            using var service = new InvSys.Services.Services.ProductService();
+            int count = service.GetAllProducts().Count;
+            txtTotalProducts.Text = count.ToString();
+        }
+
+        private void RefreshMonthlySales()
+        {
+            var now = DateTime.Now;
+            int thisMonth = now.Month;
+            int thisYear = now.Year;
+
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+
+            decimal monthlyTotal = context.Sales
+                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
+                .ToList()                          // ← pull to memory first
+                .Sum(s => s.Subtotal);
+
+            txtMonthlySales.Text = $"₱{monthlyTotal:N2}";
+        }
+
+
+        private void RefreshLowStockTable()
+        {
+            using var stockService = new InvSys.Services.Services.StockService();
+            using var productService = new InvSys.Services.Services.ProductService();
+
+            var allStock = stockService.GetAllStock();
+            var products = productService.GetAllProducts();
+
+            var lowStock = allStock
+                .Select(s =>
+                {
+                    int available = stockService.GetAvailableStock(s.ProductId);
+                    var product = products.FirstOrDefault(p => p.Id == s.ProductId);
+                    return new
+                    {
+                        s.ProductId,
+                        s.ProductName,
+                        AvailableQty = available,
+                        Price = product?.Price ?? 0m,
+                        SupplierName = product?.SupplierName ?? "Unknown"
+                    };
+                })
+                .Where(x => x.AvailableQty < 10)
+                .OrderBy(x => x.AvailableQty)
+                .ToList();
+
+            ProductTableLowStock.DataSource = lowStock;
+        }
+
+        private void RefreshSalesChart()
+        {
+            var now = DateTime.Now;
+            int thisMonth = now.Month;
+            int thisYear = now.Year;
+            int daysInMonth = DateTime.DaysInMonth(thisYear, thisMonth);
+
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+
+            // Get all sales for this month
+            var salesThisMonth = context.Sales
+                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
+                .ToList();
+
+            // Get distinct products that were sold this month
+            var soldProductIds = salesThisMonth
+                .Select(s => s.ProductId)
+                .Distinct()
+                .ToList();
+
+            var products = context.Products
+                .Where(p => soldProductIds.Contains(p.Id))
+                .ToList();
+
+            // Setup chart
+            chartMostSold.Series.Clear();
+            chartMostSold.ChartAreas[0].AxisX.Title = "Day of Month";
+            chartMostSold.ChartAreas[0].AxisY.Title = "Qty Sold";
+            chartMostSold.ChartAreas[0].AxisX.Minimum = 1;
+            chartMostSold.ChartAreas[0].AxisX.Maximum = daysInMonth;
+            chartMostSold.ChartAreas[0].AxisX.Interval = 1;
+            chartMostSold.ChartAreas[0].BackColor = Color.White;
+            chartMostSold.BackColor = Color.White;
+            chartMostSold.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
+            chartMostSold.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
+
+            if (!salesThisMonth.Any())
+            {
+                // Show empty state series
+                var emptySeries = new System.Windows.Forms.DataVisualization.Charting.Series
+                {
+                    Name = "No Sales",
+                    ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line,
+                    Color = Color.LightGray
+                };
+                chartMostSold.Series.Add(emptySeries);
+                return;
+            }
+
+            // One line per product
+            var colors = new[]
+            {
+        Color.FromArgb(49,  52,  113),
+        Color.FromArgb(108, 117, 219),
+        Color.FromArgb(220, 80,  80),
+        Color.FromArgb(80,  180, 120),
+        Color.FromArgb(240, 160, 40),
+        Color.FromArgb(80,  180, 220),
+        Color.FromArgb(180, 80,  180),
+        Color.FromArgb(40,  140, 180)
+    };
+
+            int colorIndex = 0;
+            foreach (var product in products)
+            {
+                var series = new System.Windows.Forms.DataVisualization.Charting.Series
+                {
+                    Name = product.Name,
+                    ChartType = System.Windows.Forms.DataVisualization.Charting.SeriesChartType.Line,
+                    Color = colors[colorIndex % colors.Length],
+                    BorderWidth = 2,
+                    IsVisibleInLegend = true,
+                    MarkerStyle = System.Windows.Forms.DataVisualization.Charting.MarkerStyle.Circle,
+                    MarkerSize = 6
+                };
+
+                // Build a point per day (0 if no sales that day)
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    int qtySold = salesThisMonth
+                        .Where(s => s.ProductId == product.Id && s.CreatedDate.Day == day)
+                        .Sum(s => s.Quantity);
+                    series.Points.AddXY(day, qtySold);
+                }
+
+                chartMostSold.Series.Add(series);
+                colorIndex++;
+            }
+
+            // Style the legend
+            chartMostSold.Legends[0].BackColor = Color.White;
+            chartMostSold.Legends[0].Font = new Font("Segoe UI", 8.5f);
+            chartMostSold.Legends[0].Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
+        }
+
+
+
+        private void RefreshMostSoldProduct()
+        {
+            var now = DateTime.Now;
+            int thisMonth = now.Month;
+            int thisYear = now.Year;
+
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+
+            // Group sales by product for this month, pick the top one
+            var topProduct = context.Sales
+                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
+                .ToList()                              // ← pull to memory first
+                .GroupBy(s => s.ProductId)
+                .Select(g => new
+                {
+                    ProductId = g.Key,
+                    TotalSold = g.Sum(s => s.Quantity)
+                })
+                .OrderByDescending(x => x.TotalSold)
+                .FirstOrDefault();
+
+            if (topProduct == null)
+            {
+                txtNameMostSoldProduct.Text = "No sales yet";
+                txtMostSoldDescription.Text = $"0 sold as of {now:MMMM yyyy}";
+                return;
+            }
+
+            var product = context.Products.FirstOrDefault(p => p.Id == topProduct.ProductId);
+            string productName = product?.Name ?? "Unknown";
+
+            txtNameMostSoldProduct.Text = productName;
+            txtMostSoldDescription.Text = $"{topProduct.TotalSold} sold as of {now:MMMM yyyy}";
+        }
+
+
+
+
 
         // ── Column setup ────────────────────────────────────────────────
         private void SetupDataGridColumns()
@@ -150,6 +349,14 @@ namespace InvSys.App
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+
+            ProductTableLowStock.Columns.Clear();
+            ProductTableLowStock.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductId",    HeaderText = "ID"        });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductName",  HeaderText = "Product"   });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left"});
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "Price",        HeaderText = "Price", Format = "C2" });
+            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier"  });
         }
 
         private void InitializeDataGrids()
@@ -216,7 +423,8 @@ namespace InvSys.App
             RefreshProductTable();
             RefreshStockTable();
             RefreshSalesTable();
-            RefreshStockViewTable();
+            RefreshStockViewTable(); 
+            RefreshDashboard();
         }
 
         public void RefreshSupplierTable()
@@ -706,6 +914,13 @@ namespace InvSys.App
             return true;
         }
 
+        private void RefreshTotalAmount()
+        {
+            decimal total = _cart.Sum(c => c.Subtotal);
+            txtTotalAmount.Text = $"Total Amount: ₱{total:N2}";
+        }
+
+
         private void btnAddPurchase_Click(object sender, EventArgs e)
         {
             if (StockViewTable.SelectedItem is not StockViewDTO selected)
@@ -753,6 +968,7 @@ namespace InvSys.App
             txtBoxPurchaseQuantity.Clear();
             RefreshCartTables();
             RefreshStockViewTable();
+            RefreshTotalAmount();
 
             var updatedRow = (StockViewTable.DataSource as List<StockViewDTO>)
                                 ?.FirstOrDefault(v => v.ProductId == selectedProductId);
@@ -827,6 +1043,7 @@ namespace InvSys.App
             RefreshCartTables();
             RefreshStockViewTable();
             SyncPurchaseInfoLabelsToSelection();
+            RefreshTotalAmount();
 
             MessageBox.Show($"'{cartItem.ProductName}' quantity updated to {newQty}.",
                 "Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -851,6 +1068,7 @@ namespace InvSys.App
             RefreshCartTables();
             RefreshStockViewTable();
             SyncPurchaseInfoLabelsToSelection();
+            RefreshTotalAmount();
         }
 
         private void btnResetPurchase_Click(object sender, EventArgs e)
@@ -872,6 +1090,7 @@ namespace InvSys.App
             RefreshCartTables();
             RefreshStockViewTable();
             SyncPurchaseInfoLabelsToSelection();
+            RefreshTotalAmount();
         }
 
         private void RefreshCartTables()
@@ -924,6 +1143,104 @@ namespace InvSys.App
             txtFromPurchaseProductPrice.Text = $"Price: ₱{item.Price:N2}";
             txtFromPurchaseProductDescription.Text = $"Description: {item.Description}";
             txtFromPurchaseProductSupplier.Text = $"Supplier: {item.SupplierName}";
+        }
+
+        private void btnPayTotalAmount_Click(object sender, EventArgs e)
+        {
+            if (_cart.Count == 0)
+            {
+                MessageBox.Show("Your cart is empty. Please add items before paying.",
+                    "Empty Cart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            decimal totalAmount = _cart.Sum(c => c.Subtotal);
+            decimal vatAmount = totalAmount - (totalAmount / (1 + 0.12m));
+            decimal vatableAmount = totalAmount - vatAmount;
+
+            // Show payment dialog
+            using var dialog = new PaymentDialog(totalAmount);
+            if (dialog.ShowDialog(this) != DialogResult.OK)
+                return;
+
+            // Map payment method string → enum
+            PaymentMethod paymentMethod = dialog.SelectedPaymentMethod switch
+            {
+                "Cash" => PaymentMethod.Cash,
+                "GCash" => PaymentMethod.GCash,
+                "Maya" => PaymentMethod.Maya,
+                "Credit/Debit Card" => PaymentMethod.CreditDebitCard,
+                _ => PaymentMethod.Cash
+            };
+
+            try
+            {
+                var saleItems = _cart.Select(c => new InvSys.Services.DTOs.SaleItemRequest
+                {
+                    ProductId = c.ProductId,
+                    Quantity = c.Quantity
+                }).ToList();
+
+                using var service = new InvSys.Services.Services.PurchaseService();
+                var purchase = service.ProcessPurchase(saleItems, paymentMethod);
+
+                // Compute change
+                decimal change = dialog.AmountPaid - totalAmount;
+
+                txtTotalAmount.Text = $"Total Amount: ₱{totalAmount:N2}";
+                txtAmountPaid.Text = $"Amount Paid: ₱{dialog.AmountPaid:N2}";
+                txtChange.Text = dialog.SelectedPaymentMethod == "Cash"
+                    ? $"Change: ₱{(dialog.AmountPaid - totalAmount):N2}"
+                    : "Change: N/A";
+
+                // Refresh sales & stock
+                RefreshSalesTable();
+                RefreshStockTable();
+                RefreshStockViewTable();
+                SyncPurchaseInfoLabelsToSelection();
+
+                MessageBox.Show(
+                    $"✔  Purchase #{purchase.Id} recorded successfully!\n\n" +
+                    $"Vatable Amount : ₱{vatableAmount:N2}\n" +
+                    $"VAT (12%)      : ₱{vatAmount:N2}\n" +
+                    $"Total          : ₱{totalAmount:N2}\n" +
+                    $"Payment        : {dialog.SelectedPaymentMethod}\n" +
+                    $"Amount Paid    : ₱{dialog.AmountPaid:N2}\n" +
+                    (dialog.SelectedPaymentMethod == "Cash" ? $"Change         : ₱{change:N2}" : ""),
+                    "Payment Successful",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Payment failed:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private void btnResetTransaction_Click(object sender, EventArgs e)
+        {
+            if (_cart.Count == 0 &&
+    txtAmountPaid.Text is "Amount Paid: ₱0.00" or "Amount Paid:" &&
+    txtChange.Text is "Change: ₱0.00" or "Change:")
+            {
+                MessageBox.Show("Nothing to reset.", "Already Clear",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            if (MessageBox.Show("Reset the entire transaction? This will clear the cart and all amounts.",
+                "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
+                return;
+
+            _cart.Clear();
+            txtTotalAmount.Text = "Total Amount: ₱0.00";
+            txtAmountPaid.Text = "Amount Paid: ₱0.00";
+            txtChange.Text = "Change: ₱0.00";
+
+            ClearPurchaseInfoLabels();
+            RefreshCartTables();
+            RefreshStockViewTable();
+            txtBoxPurchaseQuantity.Clear();
         }
     }
 }

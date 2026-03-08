@@ -45,6 +45,7 @@
             txtBoxPassword = new TextBox();
             label3 = new Label();
             label2 = new Label();
+            label8 = new Label();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panel1).BeginInit();
@@ -111,6 +112,7 @@
             panel1.BorderColor = Color.Transparent;
             panel1.BorderGap = 10;
             panel1.BorderStyle = BorderStyle.None;
+            panel1.Controls.Add(label8);
             panel1.Controls.Add(label7);
             panel1.Controls.Add(linkLabel1);
             panel1.Controls.Add(panel3);
@@ -275,6 +277,19 @@
             label2.TabIndex = 1;
             label2.Text = "Username/Email:";
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.BackColor = Color.Transparent;
+            label8.Font = new Font("Segoe UI Light", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label8.ForeColor = Color.FromArgb(7, 13, 33);
+            label8.Location = new Point(479, 452);
+            label8.Name = "label8";
+            label8.Size = new Size(34, 20);
+            label8.TabIndex = 19;
+            label8.Text = "v.1.0";
+            label8.Click += label8_Click;
+            // 
             // LoginForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -316,5 +331,6 @@
         private Label label7;
         private LinkLabel linkLabel1;
         private Panel panel3;
+        private Label label8;
     }
 }
