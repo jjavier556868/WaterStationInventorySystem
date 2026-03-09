@@ -35,7 +35,6 @@
             txtBoxEmailRegis = new TextBox();
             txtBoxUserRegis = new TextBox();
             label4 = new Label();
-            label1 = new Label();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             SuspendLayout();
@@ -43,7 +42,6 @@
             // gradientPanel1
             // 
             gradientPanel1.BackgroundColor = new Syncfusion.Drawing.BrushInfo(Syncfusion.Drawing.GradientStyle.Vertical, Color.DarkBlue, Color.FromArgb(26, 88, 166));
-            gradientPanel1.Controls.Add(label1);
             gradientPanel1.Controls.Add(linkLabel1);
             gradientPanel1.Controls.Add(btnRegister);
             gradientPanel1.Controls.Add(textBoxPassRegis);
@@ -128,15 +126,6 @@
             label4.TabIndex = 13;
             label4.Text = "Create Account";
             // 
-            // label1
-            // 
-            label1.AutoSize = true;
-            label1.Location = new Point(31, 402);
-            label1.Name = "label1";
-            label1.Size = new Size(38, 15);
-            label1.TabIndex = 1;
-            label1.Text = "label1";
-            // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
@@ -160,6 +149,5 @@
         private TextBox txtBoxUserRegis;
         private Button btnRegister;
         private LinkLabel linkLabel1;
-        private Label label1;
     }
 }
