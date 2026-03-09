@@ -188,7 +188,7 @@
             panel60 = new Panel();
             tableLayoutPanel8 = new TableLayoutPanel();
             btnResetTransaction = new Button();
-            button3 = new Button();
+            btnGenerateReceipt = new Button();
             btnPayTotalAmount = new Button();
             panel42 = new Panel();
             btnPurchaseCheckout = new Button();
@@ -1044,12 +1044,12 @@
             // txtBoxQuantityAdd
             // 
             txtBoxQuantityAdd.Anchor = AnchorStyles.Left | AnchorStyles.Right;
-            txtBoxQuantityAdd.Location = new Point(138, 12);
+            txtBoxQuantityAdd.Location = new Point(92, 13);
             txtBoxQuantityAdd.MaximumSize = new Size(420, 0);
             txtBoxQuantityAdd.MaxLength = 0;
             txtBoxQuantityAdd.MinimumSize = new Size(200, 0);
             txtBoxQuantityAdd.Name = "txtBoxQuantityAdd";
-            txtBoxQuantityAdd.Size = new Size(296, 23);
+            txtBoxQuantityAdd.Size = new Size(342, 23);
             txtBoxQuantityAdd.TabIndex = 12;
             // 
             // label18
@@ -1058,9 +1058,9 @@
             label18.Font = new Font("Yu Gothic UI", 11.25F, FontStyle.Bold);
             label18.Location = new Point(14, 13);
             label18.Name = "label18";
-            label18.Size = new Size(122, 20);
+            label18.Size = new Size(72, 20);
             label18.TabIndex = 11;
-            label18.Text = "Quantity to Add:";
+            label18.Text = "Quantity:";
             // 
             // panel34
             // 
@@ -2185,7 +2185,7 @@
             // 
             txtTotalAmount.AutoSize = true;
             txtTotalAmount.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
-            txtTotalAmount.ForeColor = SystemColors.ControlLightLight;
+            txtTotalAmount.ForeColor = SystemColors.Desktop;
             txtTotalAmount.Location = new Point(15, 57);
             txtTotalAmount.Name = "txtTotalAmount";
             txtTotalAmount.Size = new Size(226, 45);
@@ -2196,7 +2196,7 @@
             // 
             txtChange.AutoSize = true;
             txtChange.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
-            txtChange.ForeColor = SystemColors.ControlLightLight;
+            txtChange.ForeColor = SystemColors.Desktop;
             txtChange.Location = new Point(15, 147);
             txtChange.Name = "txtChange";
             txtChange.Size = new Size(139, 45);
@@ -2207,7 +2207,7 @@
             // 
             txtAmountPaid.AutoSize = true;
             txtAmountPaid.Font = new Font("Segoe UI Semibold", 24F, FontStyle.Bold);
-            txtAmountPaid.ForeColor = SystemColors.ControlLightLight;
+            txtAmountPaid.ForeColor = SystemColors.Desktop;
             txtAmountPaid.Location = new Point(15, 102);
             txtAmountPaid.Name = "txtAmountPaid";
             txtAmountPaid.Size = new Size(217, 45);
@@ -2231,7 +2231,7 @@
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
             tableLayoutPanel8.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333359F));
             tableLayoutPanel8.Controls.Add(btnResetTransaction, 2, 0);
-            tableLayoutPanel8.Controls.Add(button3, 1, 0);
+            tableLayoutPanel8.Controls.Add(btnGenerateReceipt, 1, 0);
             tableLayoutPanel8.Controls.Add(btnPayTotalAmount, 0, 0);
             tableLayoutPanel8.Dock = DockStyle.Fill;
             tableLayoutPanel8.Location = new Point(0, 0);
@@ -2257,16 +2257,17 @@
             btnResetTransaction.UseVisualStyleBackColor = false;
             btnResetTransaction.Click += btnResetTransaction_Click;
             // 
-            // button3
+            // btnGenerateReceipt
             // 
-            button3.Dock = DockStyle.Fill;
-            button3.Font = new Font("Segoe UI", 12F);
-            button3.Location = new Point(141, 4);
-            button3.Name = "button3";
-            button3.Size = new Size(130, 81);
-            button3.TabIndex = 3;
-            button3.Text = "GENERATE RECEIPT";
-            button3.UseVisualStyleBackColor = true;
+            btnGenerateReceipt.Dock = DockStyle.Fill;
+            btnGenerateReceipt.Font = new Font("Segoe UI", 12F);
+            btnGenerateReceipt.Location = new Point(141, 4);
+            btnGenerateReceipt.Name = "btnGenerateReceipt";
+            btnGenerateReceipt.Size = new Size(130, 81);
+            btnGenerateReceipt.TabIndex = 3;
+            btnGenerateReceipt.Text = "GENERATE RECEIPT";
+            btnGenerateReceipt.UseVisualStyleBackColor = true;
+            btnGenerateReceipt.Click += btnGenerateReceipt_Click;
             // 
             // btnPayTotalAmount
             // 
@@ -2449,7 +2450,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 8, 23, 42, 39, 114);
+            clock1.CustomTime = new DateTime(2026, 3, 9, 21, 24, 24, 652);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2769,7 +2770,7 @@
         private TableLayoutPanel tableLayoutPanel8;
         private Button btnPayTotalAmount;
         private Button btnResetTransaction;
-        private Button button3;
+        private Button btnGenerateReceipt;
         private Panel panel61;
         private Label label23;
         private Panel panel62;

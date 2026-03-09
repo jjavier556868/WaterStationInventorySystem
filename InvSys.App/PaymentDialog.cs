@@ -201,6 +201,7 @@ namespace InvSys.App
             }
 
             this.DialogResult = DialogResult.OK;
+            
         }
     }
 }
