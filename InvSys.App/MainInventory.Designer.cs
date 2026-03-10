@@ -302,7 +302,7 @@
             panel1.Dock = DockStyle.Left;
             panel1.Location = new Point(0, 0);
             panel1.Name = "panel1";
-            panel1.Size = new Size(223, 755);
+            panel1.Size = new Size(223, 749);
             panel1.TabIndex = 1;
             // 
             // gradientPanel1
@@ -313,7 +313,7 @@
             gradientPanel1.Dock = DockStyle.Fill;
             gradientPanel1.Location = new Point(0, 0);
             gradientPanel1.Name = "gradientPanel1";
-            gradientPanel1.Size = new Size(223, 755);
+            gradientPanel1.Size = new Size(223, 749);
             gradientPanel1.TabIndex = 0;
             // 
             // panel4
@@ -331,7 +331,7 @@
             panel4.Dock = DockStyle.Fill;
             panel4.Location = new Point(0, 0);
             panel4.Name = "panel4";
-            panel4.Size = new Size(223, 755);
+            panel4.Size = new Size(223, 749);
             panel4.TabIndex = 2;
             // 
             // btnPurchase
@@ -360,7 +360,7 @@
             btnLogout.Font = new Font("Segoe UI", 14.25F);
             btnLogout.ForeColor = SystemColors.ButtonFace;
             btnLogout.Image = Properties.Resources.logout_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnLogout.Location = new Point(-2, 681);
+            btnLogout.Location = new Point(-2, 675);
             btnLogout.Name = "btnLogout";
             btnLogout.Size = new Size(226, 51);
             btnLogout.TabIndex = 8;
@@ -536,7 +536,7 @@
             PanelControl.Multiline = true;
             PanelControl.Name = "PanelControl";
             PanelControl.SelectedIndex = 0;
-            PanelControl.Size = new Size(974, 662);
+            PanelControl.Size = new Size(974, 656);
             PanelControl.SizeMode = TabSizeMode.Fixed;
             PanelControl.TabIndex = 0;
             // 
@@ -547,7 +547,7 @@
             tabPage1.Location = new Point(4, 4);
             tabPage1.Name = "tabPage1";
             tabPage1.Padding = new Padding(3);
-            tabPage1.Size = new Size(916, 654);
+            tabPage1.Size = new Size(916, 648);
             tabPage1.TabIndex = 0;
             tabPage1.Text = "Dashboard";
             tabPage1.UseVisualStyleBackColor = true;
@@ -561,7 +561,7 @@
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
-            panel2.Size = new Size(910, 648);
+            panel2.Size = new Size(910, 642);
             panel2.TabIndex = 2;
             panel2.Paint += panel2_Paint;
             // 
@@ -2450,7 +2450,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 9, 21, 24, 24, 652);
+            clock1.CustomTime = new DateTime(2026, 3, 10, 9, 39, 18, 356);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2460,9 +2460,11 @@
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
             clock1.Renderer = clockRenderer1;
+            clock1.ShowAMorPM = true;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
-            clock1.ShowHourDesignator = false;
+            clock1.ShowHourDesignator = true;
+            clock1.ShowSecondHand = false;
             clock1.Size = new Size(162, 81);
             clock1.StopTimer = false;
             clock1.TabIndex = 16;
@@ -2477,7 +2479,7 @@
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(1197, 755);
+            ClientSize = new Size(1197, 749);
             Controls.Add(PanelControl);
             Controls.Add(panel5);
             Controls.Add(panel1);
