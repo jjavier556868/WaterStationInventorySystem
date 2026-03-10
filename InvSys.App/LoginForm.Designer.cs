@@ -33,6 +33,7 @@
             label5 = new Label();
             label4 = new Label();
             panel1 = new Syncfusion.Windows.Forms.Tools.GradientPanelExt();
+            label8 = new Label();
             label7 = new Label();
             linkLabel1 = new LinkLabel();
             panel3 = new Panel();
@@ -45,7 +46,6 @@
             txtBoxPassword = new TextBox();
             label3 = new Label();
             label2 = new Label();
-            label8 = new Label();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)panel1).BeginInit();
@@ -132,6 +132,19 @@
             panel1.Size = new Size(562, 501);
             panel1.TabIndex = 0;
             // 
+            // label8
+            // 
+            label8.AutoSize = true;
+            label8.BackColor = Color.Transparent;
+            label8.Font = new Font("Segoe UI Light", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
+            label8.ForeColor = Color.FromArgb(7, 13, 33);
+            label8.Location = new Point(479, 452);
+            label8.Name = "label8";
+            label8.Size = new Size(34, 20);
+            label8.TabIndex = 19;
+            label8.Text = "v.1.0";
+            label8.Click += label8_Click;
+            // 
             // label7
             // 
             label7.AutoSize = true;
@@ -155,6 +168,7 @@
             linkLabel1.TabIndex = 17;
             linkLabel1.TabStop = true;
             linkLabel1.Text = "No account? Register here!";
+            linkLabel1.LinkClicked += linkLabel1_LinkClicked;
             // 
             // panel3
             // 
@@ -276,19 +290,6 @@
             label2.Size = new Size(158, 25);
             label2.TabIndex = 1;
             label2.Text = "Username/Email:";
-            // 
-            // label8
-            // 
-            label8.AutoSize = true;
-            label8.BackColor = Color.Transparent;
-            label8.Font = new Font("Segoe UI Light", 11F, FontStyle.Regular, GraphicsUnit.Point, 0);
-            label8.ForeColor = Color.FromArgb(7, 13, 33);
-            label8.Location = new Point(479, 452);
-            label8.Name = "label8";
-            label8.Size = new Size(34, 20);
-            label8.TabIndex = 19;
-            label8.Text = "v.1.0";
-            label8.Click += label8_Click;
             // 
             // LoginForm
             // 

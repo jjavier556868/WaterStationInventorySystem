@@ -2,6 +2,7 @@
 using InvSys.Domain.Models.Account;
 using InvSys.Domain.Models.Enums;
 using InvSys.Infrastructure;
+using Microsoft.VisualBasic.ApplicationServices;
 using System;
 using System.Linq;
 using System.Windows.Forms;
@@ -150,6 +151,15 @@ namespace InvSys.App
         private void label8_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void linkLabel1_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            this.Hide();
+            var registerForm = new RegisterForm;
+            this.Hide();
+            registerForm.Closed += (s, args) => this.Close();
+            registerForm.Show();
         }
     }
 }
