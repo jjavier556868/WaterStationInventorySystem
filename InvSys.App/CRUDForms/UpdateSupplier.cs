@@ -12,6 +12,9 @@ namespace InvSys.App.CRUDForms
         private readonly MainInventory _parentForm;
         private SupplierDTO _selectedSupplier;
 
+        // ── True when the user is saving with IsActive unchecked (was active before) ──
+        public bool IsMarkingInactive { get; private set; }
+
         public UpdateSupplier(MainInventory parentForm = null)
         {
             InitializeComponent();
@@ -62,7 +65,6 @@ namespace InvSys.App.CRUDForms
 
             using var service = new SupplierService();
 
-            // Optional: check for duplicate email
             if (service.GetAllSuppliers().Any(s =>
                 s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
             {
@@ -72,8 +74,28 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
+            // ── Flag whether this save is deactivating a previously active supplier ──
+            IsMarkingInactive = _selectedSupplier.IsActive && !chkBoxActive.Checked;
+
+            // Set DialogResult before closing so the FormClosing guard in
+            // MainInventory can read IsMarkingInactive and cancel if needed.
+            this.DialogResult = DialogResult.OK;
+
+            // Don't call Close() yet — let FormClosing in the parent decide.
+            // If the parent doesn't cancel, the form will close naturally.
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // Only commit the save if the dialog was accepted and not cancelled by the parent guard.
+            if (this.DialogResult != DialogResult.OK || e.Cancel)
+                return;
+
             try
             {
+                using var service = new SupplierService();
                 service.UpdateSupplier(
                     _selectedSupplier.Id,
                     txtBoxSupplier.Text.Trim(),
@@ -86,20 +108,13 @@ namespace InvSys.App.CRUDForms
                 MessageBox.Show("Supplier updated successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _parentForm?.RefreshSupplierTable();
-
-                this.DialogResult = DialogResult.OK;
-                this.Close();
             }
             catch (Exception ex)
             {
                 MessageBox.Show($"Error: {ex.Message}", "Update Failed",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                e.Cancel = true;
             }
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
         }
 
         private void btnCancel_Click(object sender, EventArgs e)

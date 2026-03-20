@@ -483,7 +483,7 @@
             btnSales.Name = "btnSales";
             btnSales.Size = new Size(225, 52);
             btnSales.TabIndex = 11;
-            btnSales.Text = "Sales";
+            btnSales.Text = "Sales History";
             btnSales.TextImageRelation = TextImageRelation.TextBeforeImage;
             btnSales.UseVisualStyleBackColor = false;
             btnSales.Click += btnSales_Click;
@@ -824,7 +824,7 @@
             label5.AutoSize = true;
             label5.Font = new Font("Yu Gothic UI Semilight", 14.25F);
             label5.ForeColor = SystemColors.ButtonFace;
-            label5.Location = new Point(34, 10);
+            label5.Location = new Point(14, 10);
             label5.Name = "label5";
             label5.Size = new Size(164, 25);
             label5.TabIndex = 0;
@@ -891,7 +891,7 @@
             label1.AutoSize = true;
             label1.Font = new Font("Yu Gothic UI Semilight", 14.25F);
             label1.ForeColor = SystemColors.ButtonFace;
-            label1.Location = new Point(30, 10);
+            label1.Location = new Point(7, 10);
             label1.Name = "label1";
             label1.Size = new Size(201, 25);
             label1.TabIndex = 0;
@@ -2393,9 +2393,9 @@
             label24.ForeColor = SystemColors.ButtonHighlight;
             label24.Location = new Point(18, 17);
             label24.Name = "label24";
-            label24.Size = new Size(64, 25);
+            label24.Size = new Size(145, 25);
             label24.TabIndex = 2;
-            label24.Text = "SALES";
+            label24.Text = "SALES HISTORY";
             // 
             // tabPage7
             // 
@@ -2446,11 +2446,11 @@
             clock1.BeforeTouchSize = new Size(162, 81);
             clock1.BorderColor = Color.Transparent;
             clock1.ClockFormat = "HH:mm:ss";
-            clock1.ClockFrame = Syncfusion.Windows.Forms.Tools.ClockFrames.RectangularFrame;
-            clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.Rectangle;
+            clock1.ClockFrame = Syncfusion.Windows.Forms.Tools.ClockFrames.CircularFrame;
+            clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 9, 21, 24, 24, 652);
+            clock1.CustomTime = new DateTime(2026, 3, 20, 9, 26, 28, 628);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2460,9 +2460,10 @@
             clock1.Now = new DateTime(0L);
             clock1.Remainder = new DateTime(2026, 2, 17, 10, 49, 55, 545);
             clock1.Renderer = clockRenderer1;
+            clock1.ShowAMorPM = true;
             clock1.ShowClockFrame = false;
             clock1.ShowCustomTimeClock = false;
-            clock1.ShowHourDesignator = false;
+            clock1.ShowHourDesignator = true;
             clock1.Size = new Size(162, 81);
             clock1.StopTimer = false;
             clock1.TabIndex = 16;

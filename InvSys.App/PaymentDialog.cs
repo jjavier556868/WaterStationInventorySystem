@@ -1,5 +1,4 @@
-﻿
-using System;
+﻿using System;
 using System.Drawing;
 using System.Windows.Forms;
 
@@ -9,6 +8,7 @@ namespace InvSys.App
     {
         public string SelectedPaymentMethod => cboPayment.SelectedItem?.ToString();
         public decimal AmountPaid { get; private set; }
+        public string ReferenceNumber { get; private set; }
 
         private readonly decimal _totalAmount;
 
@@ -18,6 +18,8 @@ namespace InvSys.App
         private TextBox txtAmount;
         private Label lblChangeLabel;
         private Label lblChangeValue;
+        private Label lblRefLabel;
+        private TextBox txtRef;
         private Button btnOk;
         private Button btnCancel;
 
@@ -78,15 +80,7 @@ namespace InvSys.App
                 "Credit/Debit Card"
             });
             cboPayment.SelectedIndex = 0;
-            cboPayment.SelectedIndexChanged += (s, e) =>
-            {
-                bool isCash = cboPayment.SelectedItem?.ToString() == "Cash";
-                lblAmountLabel.Visible = isCash;
-                txtAmount.Visible = isCash;
-                lblChangeLabel.Visible = isCash;
-                lblChangeValue.Visible = isCash;
-                this.Height = isCash ? 280 : 200;
-            };
+            cboPayment.SelectedIndexChanged += OnPaymentMethodChanged;
 
             // Amount paid (cash only)
             lblAmountLabel = new Label
@@ -119,7 +113,7 @@ namespace InvSys.App
                 }
             };
 
-            // Change
+            // Change (cash only)
             lblChangeLabel = new Label
             {
                 Text = "Change:",
@@ -134,6 +128,25 @@ namespace InvSys.App
                 ForeColor = Color.FromArgb(0, 140, 70),
                 Location = new Point(160, 140),
                 AutoSize = true
+            };
+
+            // Reference number (non-cash only)
+            lblRefLabel = new Label
+            {
+                Text = "Reference No.:",
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                Location = new Point(20, 106),
+                AutoSize = true,
+                Visible = false
+            };
+            txtRef = new TextBox
+            {
+                Font = new Font("Segoe UI", 10f),
+                Location = new Point(160, 102),
+                Width = 200,
+                MaxLength = 50,
+                PlaceholderText = "e.g. 1234567890",
+                Visible = false
             };
 
             // Buttons
@@ -169,8 +182,27 @@ namespace InvSys.App
                 lblPaymentLabel, cboPayment,
                 lblAmountLabel,  txtAmount,
                 lblChangeLabel,  lblChangeValue,
+                lblRefLabel,     txtRef,
                 btnCancel,       btnOk
             });
+        }
+
+        private void OnPaymentMethodChanged(object sender, EventArgs e)
+        {
+            bool isCash = cboPayment.SelectedItem?.ToString() == "Cash";
+
+            // Cash fields
+            lblAmountLabel.Visible = isCash;
+            txtAmount.Visible = isCash;
+            lblChangeLabel.Visible = isCash;
+            lblChangeValue.Visible = isCash;
+
+            // Reference number field for non-cash
+            lblRefLabel.Visible = !isCash;
+            txtRef.Visible = !isCash;
+            txtRef.Text = string.Empty;
+
+            this.Height = isCash ? 280 : 240;
         }
 
         private void BtnOk_Click(object sender, EventArgs e)
@@ -193,15 +225,23 @@ namespace InvSys.App
                     return;
                 }
                 AmountPaid = paid;
+                ReferenceNumber = null;
             }
             else
             {
-                // Non-cash: amount paid = total exactly
+                if (string.IsNullOrWhiteSpace(txtRef.Text))
+                {
+                    MessageBox.Show(
+                        $"Please enter the {cboPayment.SelectedItem} reference number.",
+                        "Reference Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtRef.Focus();
+                    return;
+                }
                 AmountPaid = _totalAmount;
+                ReferenceNumber = txtRef.Text.Trim();
             }
 
             this.DialogResult = DialogResult.OK;
-            
         }
     }
 }

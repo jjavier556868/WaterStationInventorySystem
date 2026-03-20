@@ -8,5 +8,7 @@ public interface IProductService : IDisposable
 
     void UpdateProduct(int id, string name, string description, decimal price, int supplierId);
 
+    ProductDTO? GetProductById(int id);
+
     void DeleteProduct(int id);
 }

@@ -45,6 +45,23 @@ namespace InvSys.Services.Services
                 .ToList();
         }
 
+        public SupplierDTO? GetSupplierById(int id)
+        {
+            return _context.Suppliers
+                .Where(s => s.Id == id)
+                .Select(s => new SupplierDTO
+                {
+                    Id = s.Id,
+                    Name = s.Name,
+                    Email = s.Email,
+                    Location = s.Location,
+                    ContactNo = s.ContactNo,
+                    IsActive = s.IsActive,
+                    CreatedDate = s.CreatedDate
+                })
+                .FirstOrDefault();
+        }
+
         public void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive)
         {
             var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);

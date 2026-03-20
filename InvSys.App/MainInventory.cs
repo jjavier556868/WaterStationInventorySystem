@@ -31,6 +31,7 @@ namespace InvSys.App
             InitializeComponent();
             SetupDataGridColumns();
             InitializeDataGrids();
+
         }
 
         private void CustomizeDataGrid(SfDataGrid grid)
@@ -55,6 +56,80 @@ namespace InvSys.App
                     e.Style.Font.Size = 11f;
                 }
             };
+        }
+
+        // ── Gray-out rows for products whose supplier is inactive ────────
+        // Syncfusion's QueryRowStyleEventArgs does not expose a DataRow property.
+        // Instead we resolve the bound object by mapping RowIndex against the
+        // grid's current DataSource list (accounting for the header offset).
+        private void ApplyInactiveSupplierRowStyle(SfDataGrid grid)
+        {
+            grid.QueryRowStyle += (sender, e) =>
+            {
+                if (e.RowType != RowType.DefaultRow) return;
+
+                // Syncfusion data rows start at index 1 (index 0 is the header row),
+                // so the zero-based data index is RowIndex - 1.
+                int dataIndex = e.RowIndex - 1;
+                if (dataIndex < 0) return;
+
+                bool isInactive = false;
+
+                try
+                {
+                    if (grid.DataSource is System.Collections.IList source && dataIndex < source.Count)
+                    {
+                        var rowData = source[dataIndex];
+                        if (rowData is ProductDTO productDto)
+                            isInactive = IsSupplierInactive(productDto.SupplierId);
+                        else if (rowData is StockViewDTO stockView)
+                            isInactive = IsSupplierInactiveByProductId(stockView.ProductId);
+                    }
+                }
+                catch { /* swallow — never let a style callback crash the grid */ }
+
+                if (isInactive)
+                {
+                    e.Style.BackColor = Color.FromArgb(210, 210, 210);
+                    e.Style.TextColor = Color.FromArgb(140, 140, 140);
+                    e.Style.Font.Italic = true;
+                }
+            };
+        }
+
+        // ── Helpers: check supplier active status ────────────────────────
+        private bool IsSupplierInactive(int supplierId)
+        {
+            try
+            {
+                using var service = new SupplierService();
+                var supplier = service.GetSupplierById(supplierId);
+                return supplier != null && !supplier.IsActive;
+            }
+            catch { return false; }
+        }
+
+        private bool IsSupplierInactiveByProductId(int productId)
+        {
+            try
+            {
+                using var productService = new ProductService();
+                var product = productService.GetProductById(productId);
+                if (product == null) return false;
+                return IsSupplierInactive(product.SupplierId);
+            }
+            catch { return false; }
+        }
+
+        private bool HasInactiveSupplierProducts()
+        {
+            if (_cart.Count == 0) return false;
+            foreach (var item in _cart)
+            {
+                if (IsSupplierInactiveByProductId(item.ProductId))
+                    return true;
+            }
+            return false;
         }
 
         public MainInventory(string username, UserRole userRole) : this()
@@ -111,9 +186,17 @@ namespace InvSys.App
         {
             using var stockService = new InvSys.Services.Services.StockService();
             using var productService = new InvSys.Services.Services.ProductService();
+            using var supplierService = new InvSys.Services.Services.SupplierService();
 
             var allStock = stockService.GetAllStock();
             var products = productService.GetAllProducts();
+            var suppliers = supplierService.GetAllSuppliers();
+
+            // Build a set of supplier IDs that are active
+            var activeSupplierIds = suppliers
+                .Where(s => s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
 
             var lowStock = allStock
                 .Select(s =>
@@ -126,11 +209,20 @@ namespace InvSys.App
                         s.ProductName,
                         AvailableQty = available,
                         Price = product?.Price ?? 0m,
-                        SupplierName = product?.SupplierName ?? "Unknown"
+                        SupplierName = product?.SupplierName ?? "Unknown",
+                        SupplierId = product?.SupplierId ?? 0
                     };
                 })
-                .Where(x => x.AvailableQty < 10)
+                .Where(x => x.AvailableQty < 10 && activeSupplierIds.Contains(x.SupplierId))
                 .OrderBy(x => x.AvailableQty)
+                .Select(x => new
+                {
+                    x.ProductId,
+                    x.ProductName,
+                    x.AvailableQty,
+                    x.Price,
+                    x.SupplierName
+                })
                 .ToList();
 
             ProductTableLowStock.DataSource = lowStock;
@@ -269,7 +361,6 @@ namespace InvSys.App
 
             ProductListToStockTable.Columns.Clear();
             ProductListToStockTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
             ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" });
             ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
             ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Description", HeaderText = "Description" });
@@ -277,15 +368,14 @@ namespace InvSys.App
 
             StockTable.Columns.Clear();
             StockTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            StockTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
-            StockTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            // Id and ProductId columns intentionally omitted
             StockTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
             StockTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Restocked" });
             StockTable.Columns.Add(new GridTextColumn { MappingName = "CreatedDate", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
 
             SalesTable.Columns.Clear();
             SalesTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "SaleId", HeaderText = "Sale #" });
+            // SaleId (Product #) intentionally omitted
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchaseId", HeaderText = "Purchase #" });
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchasedOn", HeaderText = "Date", Format = "MM/dd/yyyy hh:mm tt" });
             SalesTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" });
@@ -297,14 +387,14 @@ namespace InvSys.App
 
             StockViewTable.Columns.Clear();
             StockViewTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            // ProductId intentionally omitted
             StockViewTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
             StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
             StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Available" });
 
             ProductsToPurchaseTable.Columns.Clear();
             ProductsToPurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            // ProductId intentionally omitted
             ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
             ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
             ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
@@ -312,7 +402,7 @@ namespace InvSys.App
 
             PurchaseTable.Columns.Clear();
             PurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "Product ID" });
+            // ProductId intentionally omitted
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
             PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
@@ -347,8 +437,14 @@ namespace InvSys.App
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
 
+            // ── Wire up ProductsToPurchaseTable row click → info labels ──
+            ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
+
             foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable })
                 CustomizeDataGrid(grid);
+
+            // ── Apply inactive-supplier gray-out to relevant grids ───────
+            ApplyInactiveSupplierRowStyle(ProductTable);
         }
 
         // ── Role UI ──────────────────────────────────────────────────────
@@ -394,10 +490,28 @@ namespace InvSys.App
 
         public void RefreshProductTable()
         {
-            using var service = new ProductService();
-            var products = service.GetAllProducts();
+            using var productService = new ProductService();
+            using var supplierService = new SupplierService();
+
+            var products = productService.GetAllProducts();
+            var suppliers = supplierService.GetAllSuppliers();
+
+            // Build inactive supplier ID set
+            var inactiveSupplierIds = suppliers
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            // Active-supplier products go to stock table; inactive ones still show
+            // in ProductTable (grayed out) so admins can see them, but are excluded
+            // from stock/purchase views.
             ProductTable.DataSource = products;
-            ProductListToStockTable.DataSource = products;
+
+            // Only active-supplier products shown in the stock add panel
+            var activeProducts = products
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .ToList();
+            ProductListToStockTable.DataSource = activeProducts;
         }
 
         public void RefreshSalesTable()
@@ -518,13 +632,55 @@ namespace InvSys.App
 
             if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData is SupplierDTO supplierDto)
             {
+                // ── Guard: block deactivation while affected products are in the cart ──
+                if (!supplierDto.IsActive == false) // only check when about to deactivate (IsActive is still true here)
+                {
+                    // We check after the dialog; see UpdateSupplier_OnSave guard below.
+                }
+
                 var form = new UpdateSupplier(this);
                 form.LoadSelectedSupplier(supplierDto);
+
+                // Attach a guard that fires when the user tries to save the supplier as inactive
+                form.FormClosing += (fs, fe) =>
+                {
+                    if (form.DialogResult != DialogResult.OK) return;
+                    if (form.IsMarkingInactive && CartContainsProductsFromSupplier(supplierDto.Id))
+                    {
+                        MessageBox.Show(
+                            "Cannot deactivate this supplier because one or more of their products " +
+                            "are currently in the purchase cart.\n\n" +
+                            "Please reset or complete the current transaction first, then try again.",
+                            "Cannot Deactivate Supplier",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        fe.Cancel = true;
+                    }
+                };
+
                 form.ShowDialog();
 
                 if (form.DialogResult == DialogResult.OK)
-                    RefreshSupplierTable();
+                {
+                    RefreshAllTables();
+                }
             }
+        }
+
+        // ── Check if cart contains products belonging to a supplier ──────
+        private bool CartContainsProductsFromSupplier(int supplierId)
+        {
+            if (_cart.Count == 0) return false;
+            try
+            {
+                using var productService = new ProductService();
+                var supplierProducts = productService.GetAllProducts()
+                    .Where(p => p.SupplierId == supplierId)
+                    .Select(p => p.Id)
+                    .ToHashSet();
+
+                return _cart.Any(c => supplierProducts.Contains(c.ProductId));
+            }
+            catch { return false; }
         }
 
         private void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
@@ -781,18 +937,51 @@ namespace InvSys.App
 
         public void RefreshStockTable()
         {
-            using var service = new StockService();
-            StockTable.DataSource = service.GetAllStock();
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+            using var supplierService = new SupplierService();
+
+            var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            var activeProductIds = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .Select(p => p.Id)
+                .ToHashSet();
+
+            // Get DB stock (already subtracts saved sales per our StockService fix)
+            var allStock = stockService.GetAllStock()
+                .Where(s => activeProductIds.Contains(s.ProductId))
+                .ToList();
+
+            // Also subtract whatever is currently sitting in the cart (not yet in DB)
+            foreach (var entry in allStock)
+            {
+                var inCart = _cart.FirstOrDefault(c => c.ProductId == entry.ProductId);
+                if (inCart != null)
+                    entry.Quantity = Math.Max(0, entry.Quantity - inCart.Quantity);
+            }
+
+            StockTable.DataSource = allStock;
         }
 
         public void RefreshStockViewTable()
         {
             using var stockService = new StockService();
             using var productService = new ProductService();
+            using var supplierService = new SupplierService();
 
-            var products = productService.GetAllProducts();
+            var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
 
-            // One row per product (not per restock entry) — dedup by ProductId
+            var products = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId)) // exclude inactive-supplier products
+                .ToList();
+
             var view = products
                 .Select(product =>
                 {
@@ -801,8 +990,6 @@ namespace InvSys.App
                     int cartQty = inCart?.Quantity ?? 0;
                     int displayed = Math.Max(0, available - cartQty);
 
-                    // Only show products that have ever had stock entries
-                    // (GetAvailableStock returns 0 for unknown products too, so filter by having stock)
                     return new StockViewDTO
                     {
                         ProductId = product.Id,
@@ -1045,7 +1232,43 @@ namespace InvSys.App
             txtFromPurchaseProductSupplier.Text = "Supplier:";
         }
 
-        private void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e) { }
+        // ── ProductsToPurchaseTable row click → update info labels ───────
+        private void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
+            {
+                ClearPurchaseInfoLabels();
+                return;
+            }
+
+            // Look up the live stock view entry for this cart item so we show
+            // the true remaining available quantity (not the quantity in cart)
+            try
+            {
+                using var stockService = new StockService();
+                using var productService = new ProductService();
+
+                int available = stockService.GetAvailableStock(cartItem.ProductId);
+                var product = productService.GetProductById(cartItem.ProductId);
+
+                txtFromPurchaseProductID.Text = $"Product ID: {cartItem.ProductId}";
+                txtFromPurchaseProductName.Text = $"Product Name: {cartItem.ProductName}";
+                txtFromPurchaseProductQuantity.Text = $"Quantity Available: {available}";
+                txtFromPurchaseProductPrice.Text = $"Price: ₱{cartItem.Price:N2}";
+                txtFromPurchaseProductDescription.Text = $"Description: {product?.Description ?? "N/A"}";
+                txtFromPurchaseProductSupplier.Text = $"Supplier: {product?.SupplierName ?? "N/A"}";
+            }
+            catch
+            {
+                // Fallback to cart-only data if service calls fail
+                txtFromPurchaseProductID.Text = $"Product ID: {cartItem.ProductId}";
+                txtFromPurchaseProductName.Text = $"Product Name: {cartItem.ProductName}";
+                txtFromPurchaseProductQuantity.Text = "Quantity Available: N/A";
+                txtFromPurchaseProductPrice.Text = $"Price: ₱{cartItem.Price:N2}";
+                txtFromPurchaseProductDescription.Text = "Description: N/A";
+                txtFromPurchaseProductSupplier.Text = "Supplier: N/A";
+            }
+        }
 
         private void StockViewTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -1082,6 +1305,21 @@ namespace InvSys.App
             {
                 MessageBox.Show("Your cart is empty. Please add items before paying.",
                     "Empty Cart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            // ── Guard: block checkout if any cart product now has an inactive supplier ──
+            var inactiveItems = GetCartItemsWithInactiveSuppliers();
+            if (inactiveItems.Count > 0)
+            {
+                string itemNames = string.Join("\n  • ", inactiveItems.Select(c => c.ProductName));
+                MessageBox.Show(
+                    "Cannot proceed with checkout.\n\n" +
+                    "The following cart item(s) belong to a supplier that has been deactivated:\n\n" +
+                    $"  • {itemNames}\n\n" +
+                    "Please remove these items from the cart before paying.",
+                    "Inactive Supplier — Checkout Blocked",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1141,6 +1379,7 @@ namespace InvSys.App
 
                 // Enable the receipt button now that we have a completed transaction
                 btnGenerateReceipt.Enabled = true;
+                _cart.Clear();
 
                 RefreshSalesTable();
                 RefreshStockTable();
@@ -1164,6 +1403,39 @@ namespace InvSys.App
                 MessageBox.Show($"Payment failed:\n{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        // ── Returns cart items whose supplier is currently inactive ──────
+        private List<CartItem> GetCartItemsWithInactiveSuppliers()
+        {
+            var result = new List<CartItem>();
+            if (_cart.Count == 0) return result;
+
+            try
+            {
+                using var productService = new ProductService();
+                using var supplierService = new SupplierService();
+
+                var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                    .Where(s => !s.IsActive)
+                    .Select(s => s.Id)
+                    .ToHashSet();
+
+                var products = productService.GetAllProducts()
+                    .ToDictionary(p => p.Id);
+
+                foreach (var cartItem in _cart)
+                {
+                    if (products.TryGetValue(cartItem.ProductId, out var product) &&
+                        inactiveSupplierIds.Contains(product.SupplierId))
+                    {
+                        result.Add(cartItem);
+                    }
+                }
+            }
+            catch { /* If the check itself fails, allow checkout and let the service layer handle it */ }
+
+            return result;
         }
 
         // ── Generate Receipt ─────────────────────────────────────────────
@@ -1232,10 +1504,18 @@ namespace InvSys.App
 
             using var stockService = new StockService();
             using var productService = new ProductService();
+            using var supplierService = new SupplierService();
 
-            var products = productService.GetAllProducts();
+            var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
 
-            // Same dedup logic as RefreshStockViewTable — one row per product
+            // Exclude inactive-supplier products from purchase search
+            var products = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .ToList();
+
             var view = products
                 .Select(product =>
                 {
@@ -1271,8 +1551,18 @@ namespace InvSys.App
         private void txtProductListSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtProductListSearch.Text.Trim();
-            using var service = new ProductService();
-            var all = service.GetAllProducts();
+            using var productService = new ProductService();
+            using var supplierService = new SupplierService();
+
+            var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            var all = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .ToList();
+
             var filtered = string.IsNullOrEmpty(search) ? all : all
                 .Where(p =>
                     p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -1287,8 +1577,24 @@ namespace InvSys.App
         private void txtCurrentStockSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtCurrentStockSearch.Text.Trim();
-            using var service = new StockService();
-            var all = service.GetAllStock();
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+            using var supplierService = new SupplierService();
+
+            var inactiveSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            var activeProductIds = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .Select(p => p.Id)
+                .ToHashSet();
+
+            var all = stockService.GetAllStock()
+                .Where(s => activeProductIds.Contains(s.ProductId))
+                .ToList();
+
             var filtered = string.IsNullOrEmpty(search) ? all : all
                 .Where(s =>
                     s.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
