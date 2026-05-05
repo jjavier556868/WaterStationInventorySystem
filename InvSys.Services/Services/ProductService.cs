@@ -68,11 +68,25 @@ namespace InvSys.Services.Services
         public void DeleteProduct(int id)
         {
             var product = _context.Products.FirstOrDefault(p => p.Id == id);
-            if (product != null)
-            {
-                _context.Products.Remove(product);
-                _context.SaveChanges();
-            }
+            if (product == null) return;
+
+            var now = DateTime.Now;
+
+            var stockEntries = _context.Stocks
+                .Where(s => s.ProductId == id)
+                .ToList();
+            foreach (var stock in stockEntries)
+                stock.DeletedDate = now;
+
+            var salesEntries = _context.Sales
+                .Where(s => s.ProductId == id)
+                .ToList();
+            foreach (var sale in salesEntries)
+                sale.DeletedDate = now;
+
+            product.DeletedDate = now;
+
+            _context.SaveChanges();
         }
         public void Dispose() => _context?.Dispose();
     }

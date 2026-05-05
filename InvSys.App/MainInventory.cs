@@ -359,6 +359,14 @@ namespace InvSys.App
             ProductTable.Columns.Add(new GridTextColumn { MappingName = "Description", HeaderText = "Description" });
             ProductTable.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
+            accountsListTable.Columns.Clear();
+            accountsListTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
+            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Username", HeaderText = "Username" });
+            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Email", HeaderText = "Email" });
+            accountsListTable.Columns.Add(new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" });
+            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "CreatedAt", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
+
             ProductListToStockTable.Columns.Clear();
             ProductListToStockTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
             ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" });
@@ -425,7 +433,7 @@ namespace InvSys.App
             SupplierTable.SelectionMode = GridSelectionMode.Extended;
             ProductTable.SelectionMode = GridSelectionMode.Extended;
 
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable })
+            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable, accountsListTable })
             {
                 grid.AutoGenerateColumns = false;
                 grid.AllowEditing = false;
@@ -434,13 +442,15 @@ namespace InvSys.App
                 grid.AllowSorting = true;
             }
 
+            accountsListTable.SelectionMode = GridSelectionMode.Single;
+
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
 
             // ── Wire up ProductsToPurchaseTable row click → info labels ──
             ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
 
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable })
+            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable, accountsListTable })
                 CustomizeDataGrid(grid);
 
             // ── Apply inactive-supplier gray-out to relevant grids ───────
@@ -480,6 +490,12 @@ namespace InvSys.App
             RefreshSalesTable();
             RefreshStockViewTable();
             RefreshDashboard();
+            RefreshAccountsTable();
+        }
+        public void RefreshAccountsTable()
+        {
+            using var service = new AccountService();
+            accountsListTable.DataSource = service.GetAllAccounts();
         }
 
         public void RefreshSupplierTable()

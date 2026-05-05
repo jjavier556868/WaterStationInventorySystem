@@ -205,6 +205,10 @@
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
+            panel65 = new Panel();
+            panel66 = new Panel();
+            label10 = new Label();
+            accountsListTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -290,10 +294,14 @@
             ((System.ComponentModel.ISupportInitialize)SalesTable).BeginInit();
             panel63.SuspendLayout();
             panel64.SuspendLayout();
+            tabPage7.SuspendLayout();
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).BeginInit();
+            panel65.SuspendLayout();
+            panel66.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)accountsListTable).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -2399,6 +2407,7 @@
             // 
             // tabPage7
             // 
+            tabPage7.Controls.Add(panel65);
             tabPage7.Location = new Point(4, 4);
             tabPage7.Name = "tabPage7";
             tabPage7.Padding = new Padding(3);
@@ -2450,7 +2459,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 3, 20, 9, 26, 28, 628);
+            clock1.CustomTime = new DateTime(2026, 5, 5, 11, 58, 36, 807);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2473,6 +2482,55 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
+            // 
+            // panel65
+            // 
+            panel65.Controls.Add(accountsListTable);
+            panel65.Controls.Add(panel66);
+            panel65.Dock = DockStyle.Fill;
+            panel65.Location = new Point(3, 3);
+            panel65.Name = "panel65";
+            panel65.Size = new Size(910, 648);
+            panel65.TabIndex = 0;
+            // 
+            // panel66
+            // 
+            panel66.BackColor = Color.RoyalBlue;
+            panel66.Controls.Add(label10);
+            panel66.Dock = DockStyle.Top;
+            panel66.Location = new Point(0, 0);
+            panel66.Name = "panel66";
+            panel66.Size = new Size(910, 58);
+            panel66.TabIndex = 11;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label10.ForeColor = SystemColors.ButtonHighlight;
+            label10.Location = new Point(18, 17);
+            label10.Name = "label10";
+            label10.Size = new Size(110, 25);
+            label10.TabIndex = 2;
+            label10.Text = "ACCOUNTS";
+            // 
+            // accountsListTable
+            // 
+            accountsListTable.AccessibleName = "Table";
+            accountsListTable.Dock = DockStyle.Fill;
+            accountsListTable.Location = new Point(0, 58);
+            accountsListTable.Name = "accountsListTable";
+            accountsListTable.Size = new Size(910, 590);
+            accountsListTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            accountsListTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            accountsListTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.TabIndex = 12;
+            accountsListTable.Text = "sfDataGrid1";
             // 
             // MainInventory
             // 
@@ -2598,11 +2656,16 @@
             panel63.ResumeLayout(false);
             panel64.ResumeLayout(false);
             panel64.PerformLayout();
+            tabPage7.ResumeLayout(false);
             panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
             gradientPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).EndInit();
+            panel65.ResumeLayout(false);
+            panel66.ResumeLayout(false);
+            panel66.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)accountsListTable).EndInit();
             ResumeLayout(false);
         }
 
@@ -2778,5 +2841,9 @@
         private Panel panel63;
         private Panel panel64;
         private Label label24;
+        private Panel panel65;
+        private Panel panel66;
+        private Label label10;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid accountsListTable;
     }
 }
