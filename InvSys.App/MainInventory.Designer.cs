@@ -76,8 +76,7 @@
             label5 = new Label();
             panel12 = new Panel();
             panel14 = new Panel();
-            txtMostSoldDescription = new Label();
-            txtNameMostSoldProduct = new Label();
+            MostSoldProductsTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel13 = new Panel();
             label1 = new Label();
             tabPage2 = new TabPage();
@@ -200,15 +199,15 @@
             panel64 = new Panel();
             label24 = new Label();
             tabPage7 = new TabPage();
+            panel65 = new Panel();
+            accountsListTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel66 = new Panel();
+            label10 = new Label();
             panel5 = new Panel();
             gradientPanel2 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
-            panel65 = new Panel();
-            panel66 = new Panel();
-            label10 = new Label();
-            accountsListTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -235,6 +234,7 @@
             panel17.SuspendLayout();
             panel12.SuspendLayout();
             panel14.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)MostSoldProductsTable).BeginInit();
             panel13.SuspendLayout();
             tabPage2.SuspendLayout();
             tableLayoutPanel1.SuspendLayout();
@@ -295,13 +295,13 @@
             panel63.SuspendLayout();
             panel64.SuspendLayout();
             tabPage7.SuspendLayout();
+            panel65.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)accountsListTable).BeginInit();
+            panel66.SuspendLayout();
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
             gradientPanel2.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).BeginInit();
-            panel65.SuspendLayout();
-            panel66.SuspendLayout();
-            ((System.ComponentModel.ISupportInitialize)accountsListTable).BeginInit();
             SuspendLayout();
             // 
             // panel1
@@ -571,7 +571,6 @@
             panel2.Name = "panel2";
             panel2.Size = new Size(910, 648);
             panel2.TabIndex = 2;
-            panel2.Paint += panel2_Paint;
             // 
             // tableLayoutPanel3
             // 
@@ -581,11 +580,11 @@
             tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
             tableLayoutPanel3.Controls.Add(panel25, 0, 0);
             tableLayoutPanel3.Controls.Add(panel26, 1, 0);
-            tableLayoutPanel3.Location = new Point(3, 200);
+            tableLayoutPanel3.Location = new Point(3, 220);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Size = new Size(910, 327);
+            tableLayoutPanel3.Size = new Size(910, 307);
             tableLayoutPanel3.TabIndex = 4;
             // 
             // panel25
@@ -595,7 +594,7 @@
             panel25.Location = new Point(3, 3);
             panel25.Name = "panel25";
             panel25.Padding = new Padding(20);
-            panel25.Size = new Size(449, 321);
+            panel25.Size = new Size(449, 301);
             panel25.TabIndex = 0;
             // 
             // panel27
@@ -606,7 +605,7 @@
             panel27.Dock = DockStyle.Fill;
             panel27.Location = new Point(20, 20);
             panel27.Name = "panel27";
-            panel27.Size = new Size(409, 281);
+            panel27.Size = new Size(409, 261);
             panel27.TabIndex = 0;
             // 
             // chartMostSold
@@ -623,7 +622,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chartMostSold.Series.Add(series1);
-            chartMostSold.Size = new Size(409, 236);
+            chartMostSold.Size = new Size(409, 216);
             chartMostSold.TabIndex = 3;
             chartMostSold.Text = "chart1";
             // 
@@ -655,7 +654,7 @@
             panel26.Location = new Point(458, 3);
             panel26.Name = "panel26";
             panel26.Padding = new Padding(20);
-            panel26.Size = new Size(449, 321);
+            panel26.Size = new Size(449, 301);
             panel26.TabIndex = 1;
             // 
             // panel28
@@ -666,7 +665,7 @@
             panel28.Dock = DockStyle.Fill;
             panel28.Location = new Point(20, 20);
             panel28.Name = "panel28";
-            panel28.Size = new Size(409, 281);
+            panel28.Size = new Size(409, 261);
             panel28.TabIndex = 0;
             // 
             // ProductTableLowStock
@@ -677,7 +676,7 @@
             ProductTableLowStock.Dock = DockStyle.Fill;
             ProductTableLowStock.Location = new Point(0, 45);
             ProductTableLowStock.Name = "ProductTableLowStock";
-            ProductTableLowStock.Size = new Size(409, 236);
+            ProductTableLowStock.Size = new Size(409, 216);
             ProductTableLowStock.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -714,8 +713,8 @@
             // 
             tableLayoutPanel2.CausesValidation = false;
             tableLayoutPanel2.ColumnCount = 3;
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 35.4945068F));
+            tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 31.0989017F));
             tableLayoutPanel2.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel2.Controls.Add(panel22, 2, 0);
             tableLayoutPanel2.Controls.Add(panel15, 1, 0);
@@ -725,7 +724,7 @@
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(910, 183);
+            tableLayoutPanel2.Size = new Size(910, 217);
             tableLayoutPanel2.TabIndex = 2;
             // 
             // panel22
@@ -737,7 +736,7 @@
             panel22.Location = new Point(609, 3);
             panel22.Name = "panel22";
             panel22.Padding = new Padding(20);
-            panel22.Size = new Size(298, 177);
+            panel22.Size = new Size(298, 211);
             panel22.TabIndex = 2;
             // 
             // panel23
@@ -748,7 +747,7 @@
             panel23.Dock = DockStyle.Fill;
             panel23.Location = new Point(20, 20);
             panel23.Name = "panel23";
-            panel23.Size = new Size(258, 137);
+            panel23.Size = new Size(258, 171);
             panel23.TabIndex = 0;
             // 
             // txtMonthlySales
@@ -789,10 +788,10 @@
             panel15.CausesValidation = false;
             panel15.Controls.Add(panel16);
             panel15.Dock = DockStyle.Fill;
-            panel15.Location = new Point(306, 3);
+            panel15.Location = new Point(326, 3);
             panel15.Name = "panel15";
             panel15.Padding = new Padding(20);
-            panel15.Size = new Size(297, 177);
+            panel15.Size = new Size(277, 211);
             panel15.TabIndex = 1;
             // 
             // panel16
@@ -803,7 +802,7 @@
             panel16.Dock = DockStyle.Fill;
             panel16.Location = new Point(20, 20);
             panel16.Name = "panel16";
-            panel16.Size = new Size(257, 137);
+            panel16.Size = new Size(237, 171);
             panel16.TabIndex = 0;
             // 
             // txtTotalProducts
@@ -824,7 +823,7 @@
             panel17.Dock = DockStyle.Top;
             panel17.Location = new Point(0, 0);
             panel17.Name = "panel17";
-            panel17.Size = new Size(257, 45);
+            panel17.Size = new Size(237, 45);
             panel17.TabIndex = 1;
             // 
             // label5
@@ -847,42 +846,39 @@
             panel12.Location = new Point(3, 3);
             panel12.Name = "panel12";
             panel12.Padding = new Padding(20);
-            panel12.Size = new Size(297, 177);
+            panel12.Size = new Size(317, 211);
             panel12.TabIndex = 0;
             // 
             // panel14
             // 
             panel14.BackColor = Color.WhiteSmoke;
-            panel14.Controls.Add(txtMostSoldDescription);
-            panel14.Controls.Add(txtNameMostSoldProduct);
+            panel14.Controls.Add(MostSoldProductsTable);
             panel14.Controls.Add(panel13);
             panel14.Dock = DockStyle.Fill;
             panel14.Location = new Point(20, 20);
             panel14.Name = "panel14";
-            panel14.Size = new Size(257, 137);
+            panel14.Size = new Size(277, 171);
             panel14.TabIndex = 0;
             // 
-            // txtMostSoldDescription
+            // MostSoldProductsTable
             // 
-            txtMostSoldDescription.AutoSize = true;
-            txtMostSoldDescription.Font = new Font("Yu Gothic UI Semilight", 15F, FontStyle.Italic, GraphicsUnit.Point, 0);
-            txtMostSoldDescription.ForeColor = SystemColors.InactiveCaptionText;
-            txtMostSoldDescription.Location = new Point(6, 89);
-            txtMostSoldDescription.Name = "txtMostSoldDescription";
-            txtMostSoldDescription.Size = new Size(202, 28);
-            txtMostSoldDescription.TabIndex = 3;
-            txtMostSoldDescription.Text = "0 sold as of this month";
-            // 
-            // txtNameMostSoldProduct
-            // 
-            txtNameMostSoldProduct.AutoSize = true;
-            txtNameMostSoldProduct.Font = new Font("Yu Gothic UI", 15F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            txtNameMostSoldProduct.ForeColor = SystemColors.InactiveCaptionText;
-            txtNameMostSoldProduct.Location = new Point(6, 56);
-            txtNameMostSoldProduct.Name = "txtNameMostSoldProduct";
-            txtNameMostSoldProduct.Size = new Size(83, 28);
-            txtNameMostSoldProduct.TabIndex = 2;
-            txtNameMostSoldProduct.Text = "Product";
+            MostSoldProductsTable.AccessibleName = "Table";
+            MostSoldProductsTable.AllowEditing = false;
+            MostSoldProductsTable.AllowFiltering = true;
+            MostSoldProductsTable.Dock = DockStyle.Fill;
+            MostSoldProductsTable.Location = new Point(0, 45);
+            MostSoldProductsTable.Name = "MostSoldProductsTable";
+            MostSoldProductsTable.Size = new Size(277, 126);
+            MostSoldProductsTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            MostSoldProductsTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            MostSoldProductsTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            MostSoldProductsTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            MostSoldProductsTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            MostSoldProductsTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            MostSoldProductsTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            MostSoldProductsTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            MostSoldProductsTable.TabIndex = 4;
+            MostSoldProductsTable.Text = "sfDataGrid2";
             // 
             // panel13
             // 
@@ -891,7 +887,7 @@
             panel13.Dock = DockStyle.Top;
             panel13.Location = new Point(0, 0);
             panel13.Name = "panel13";
-            panel13.Size = new Size(257, 45);
+            panel13.Size = new Size(277, 45);
             panel13.TabIndex = 1;
             // 
             // label1
@@ -901,9 +897,9 @@
             label1.ForeColor = SystemColors.ButtonFace;
             label1.Location = new Point(7, 10);
             label1.Name = "label1";
-            label1.Size = new Size(201, 25);
+            label1.Size = new Size(211, 25);
             label1.TabIndex = 0;
-            label1.Text = "MOST SOLD PRODUCT";
+            label1.Text = "MOST SOLD PRODUCTS";
             // 
             // tabPage2
             // 
@@ -991,7 +987,6 @@
             txtSelectedProductName.Size = new Size(75, 30);
             txtSelectedProductName.TabIndex = 3;
             txtSelectedProductName.Text = "Name:";
-            txtSelectedProductName.Click += label19_Click;
             // 
             // txtSelectedProductID
             // 
@@ -1047,7 +1042,6 @@
             panel35.Name = "panel35";
             panel35.Size = new Size(449, 46);
             panel35.TabIndex = 14;
-            panel35.Paint += panel35_Paint;
             // 
             // txtBoxQuantityAdd
             // 
@@ -2416,6 +2410,55 @@
             tabPage7.Text = "Accounts";
             tabPage7.UseVisualStyleBackColor = true;
             // 
+            // panel65
+            // 
+            panel65.Controls.Add(accountsListTable);
+            panel65.Controls.Add(panel66);
+            panel65.Dock = DockStyle.Fill;
+            panel65.Location = new Point(3, 3);
+            panel65.Name = "panel65";
+            panel65.Size = new Size(910, 648);
+            panel65.TabIndex = 0;
+            // 
+            // accountsListTable
+            // 
+            accountsListTable.AccessibleName = "Table";
+            accountsListTable.Dock = DockStyle.Fill;
+            accountsListTable.Location = new Point(0, 58);
+            accountsListTable.Name = "accountsListTable";
+            accountsListTable.Size = new Size(910, 590);
+            accountsListTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            accountsListTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            accountsListTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            accountsListTable.TabIndex = 12;
+            accountsListTable.Text = "sfDataGrid1";
+            // 
+            // panel66
+            // 
+            panel66.BackColor = Color.RoyalBlue;
+            panel66.Controls.Add(label10);
+            panel66.Dock = DockStyle.Top;
+            panel66.Location = new Point(0, 0);
+            panel66.Name = "panel66";
+            panel66.Size = new Size(910, 58);
+            panel66.TabIndex = 11;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label10.ForeColor = SystemColors.ButtonHighlight;
+            label10.Location = new Point(18, 17);
+            label10.Name = "label10";
+            label10.Size = new Size(110, 25);
+            label10.TabIndex = 2;
+            label10.Text = "ACCOUNTS";
+            // 
             // panel5
             // 
             panel5.BackColor = SystemColors.ActiveCaption;
@@ -2459,7 +2502,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 5, 11, 58, 36, 807);
+            clock1.CustomTime = new DateTime(2026, 5, 8, 17, 15, 19, 784);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2482,55 +2525,6 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
-            // 
-            // panel65
-            // 
-            panel65.Controls.Add(accountsListTable);
-            panel65.Controls.Add(panel66);
-            panel65.Dock = DockStyle.Fill;
-            panel65.Location = new Point(3, 3);
-            panel65.Name = "panel65";
-            panel65.Size = new Size(910, 648);
-            panel65.TabIndex = 0;
-            // 
-            // panel66
-            // 
-            panel66.BackColor = Color.RoyalBlue;
-            panel66.Controls.Add(label10);
-            panel66.Dock = DockStyle.Top;
-            panel66.Location = new Point(0, 0);
-            panel66.Name = "panel66";
-            panel66.Size = new Size(910, 58);
-            panel66.TabIndex = 11;
-            // 
-            // label10
-            // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label10.ForeColor = SystemColors.ButtonHighlight;
-            label10.Location = new Point(18, 17);
-            label10.Name = "label10";
-            label10.Size = new Size(110, 25);
-            label10.TabIndex = 2;
-            label10.Text = "ACCOUNTS";
-            // 
-            // accountsListTable
-            // 
-            accountsListTable.AccessibleName = "Table";
-            accountsListTable.Dock = DockStyle.Fill;
-            accountsListTable.Location = new Point(0, 58);
-            accountsListTable.Name = "accountsListTable";
-            accountsListTable.Size = new Size(910, 590);
-            accountsListTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
-            accountsListTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
-            accountsListTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
-            accountsListTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
-            accountsListTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
-            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
-            accountsListTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
-            accountsListTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
-            accountsListTable.TabIndex = 12;
-            accountsListTable.Text = "sfDataGrid1";
             // 
             // MainInventory
             // 
@@ -2577,7 +2571,7 @@
             panel17.PerformLayout();
             panel12.ResumeLayout(false);
             panel14.ResumeLayout(false);
-            panel14.PerformLayout();
+            ((System.ComponentModel.ISupportInitialize)MostSoldProductsTable).EndInit();
             panel13.ResumeLayout(false);
             panel13.PerformLayout();
             tabPage2.ResumeLayout(false);
@@ -2657,15 +2651,15 @@
             panel64.ResumeLayout(false);
             panel64.PerformLayout();
             tabPage7.ResumeLayout(false);
+            panel65.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)accountsListTable).EndInit();
+            panel66.ResumeLayout(false);
+            panel66.PerformLayout();
             panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
             gradientPanel2.PerformLayout();
             ((System.ComponentModel.ISupportInitialize)gridLayout1).EndInit();
-            panel65.ResumeLayout(false);
-            panel66.ResumeLayout(false);
-            panel66.PerformLayout();
-            ((System.ComponentModel.ISupportInitialize)accountsListTable).EndInit();
             ResumeLayout(false);
         }
 
@@ -2748,8 +2742,6 @@
         private Label label9;
         private System.Windows.Forms.DataVisualization.Charting.Chart chartMostSold;
         private Syncfusion.WinForms.DataGrid.SfDataGrid ProductTableLowStock;
-        private Label txtMostSoldDescription;
-        private Label txtNameMostSoldProduct;
         private Label txtMonthlySales;
         private Label txtTotalProducts;
         private Panel panel33;
@@ -2845,5 +2837,6 @@
         private Panel panel66;
         private Label label10;
         private Syncfusion.WinForms.DataGrid.SfDataGrid accountsListTable;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid MostSoldProductsTable;
     }
 }

@@ -14,13 +14,24 @@ namespace InvSys.App.Helpers
         {
             QuestPDF.Settings.License = LicenseType.Community;
 
-            string folder = Path.Combine(
+            string defaultFileName = $"Receipt_{data.PurchaseId}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
+            string defaultFolder = Path.Combine(
                 Environment.GetFolderPath(Environment.SpecialFolder.MyDocuments),
                 "InvSys", "Receipts");
-            Directory.CreateDirectory(folder);
+            Directory.CreateDirectory(defaultFolder);
 
-            string fileName = $"Receipt_{data.PurchaseId}_{DateTime.Now:yyyyMMdd_HHmmss}.pdf";
-            string filePath = Path.Combine(folder, fileName);
+            using var dialog = new System.Windows.Forms.SaveFileDialog
+            {
+                Title = "Save Receipt",
+                Filter = "PDF Files (*.pdf)|*.pdf",
+                FileName = defaultFileName,
+                InitialDirectory = defaultFolder
+            };
+
+            if (dialog.ShowDialog() != System.Windows.Forms.DialogResult.OK)
+                return null;
+
+            string filePath = dialog.FileName;
 
             decimal vatAmount = data.TotalAmount - (data.TotalAmount / 1.12m);
             decimal vatableAmt = data.TotalAmount - vatAmount;
@@ -37,14 +48,15 @@ namespace InvSys.App.Helpers
                     {
                         // ── Header ────────────────────────────────────────
                         col.Item().AlignCenter().Text("H2Organizer").Bold().FontSize(14);
-                        col.Item().AlignCenter().Text("Unfficial Receipt").FontSize(8).FontColor(Colors.Grey.Darken2);
+                        col.Item().AlignCenter().Text("Unofficial Receipt").FontSize(8).FontColor(Colors.Grey.Darken2);
                         col.Item().AlignCenter().Text("Tel: (123) 456-7890").FontSize(7).FontColor(Colors.Grey.Darken1);
                         col.Item().PaddingVertical(4).LineHorizontal(0.5f);
 
                         // ── Meta ──────────────────────────────────────────
                         col.Item().Row(row => {
-                            row.RelativeItem().Text("Receipt #:").Bold();
-                            row.RelativeItem().AlignRight().Text($"{data.PurchaseId}");
+                            row.RelativeItem(2).Text("Receipt #:").Bold();
+                            row.RelativeItem(2).Text($"{data.PurchaseId}");
+                            row.RelativeItem(4).AlignRight().Text(data.PurchasedOn.ToString("MM/dd/yyyy hh:mm tt"));
                         });
                         col.Item().Row(row => {
                             row.RelativeItem().Text("Date:").Bold();
@@ -118,7 +130,7 @@ namespace InvSys.App.Helpers
                         // ── Footer ────────────────────────────────────────
                         col.Item().PaddingTop(6).AlignCenter().Text("Thank you for your purchase!").Bold();
                         col.Item().AlignCenter().Text("This receipt is not official.").FontSize(7).FontColor(Colors.Grey.Darken1);
-                        col.Item().AlignCenter().Text("Powered by H2Organizer InvSys").FontSize(7).FontColor(Colors.Grey.Darken1);
+                        col.Item().AlignCenter().Text("Powered by H2Organizer").FontSize(7).FontColor(Colors.Grey.Darken1);
                     });
                 });
             })

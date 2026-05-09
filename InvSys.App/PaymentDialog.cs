@@ -149,6 +149,9 @@ namespace InvSys.App
                 Visible = false
             };
 
+            txtAmount.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) BtnOk_Click(s, e); };
+            txtRef.KeyDown += (s, e) => { if (e.KeyCode == Keys.Enter) BtnOk_Click(s, e); };
+
             // Buttons
             btnCancel = new Button
             {

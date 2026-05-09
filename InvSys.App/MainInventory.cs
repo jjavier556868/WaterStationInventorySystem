@@ -22,18 +22,102 @@ namespace InvSys.App
         private string _currentUsername;
         private UserRole _currentUserRole;
         private List<CartItem> _cart = new List<CartItem>();
-
-        // ── Stores the last completed transaction for receipt generation ──
         private ReceiptData _lastReceiptData = null;
 
+        // ── Constructors ─────────────────────────────────────────────────
         public MainInventory()
         {
             InitializeComponent();
             SetupDataGridColumns();
             InitializeDataGrids();
-
         }
 
+        public MainInventory(string username, UserRole userRole) : this()
+        {
+            _currentUsername = username;
+            _currentUserRole = userRole;
+            lblWelcome.Text = $"Welcome, {username}!";
+            UpdateUIForRole();
+            RefreshAllTables();
+        }
+
+        public MainInventory(string username) : this(username, UserRole.User) { }
+
+        // ── Shared helpers: supplier / product active-state queries ──────
+        private HashSet<int> GetInactiveSupplierIds()
+        {
+            using var service = new SupplierService();
+            return service.GetAllSuppliers()
+                .Where(s => !s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+        }
+
+        private HashSet<int> GetActiveProductIds(HashSet<int> inactiveSupplierIds = null)
+        {
+            inactiveSupplierIds ??= GetInactiveSupplierIds();
+            using var service = new ProductService();
+            return service.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .Select(p => p.Id)
+                .ToHashSet();
+        }
+
+        private bool IsSupplierInactive(int supplierId)
+        {
+            try
+            {
+                using var service = new SupplierService();
+                var supplier = service.GetSupplierById(supplierId);
+                return supplier != null && !supplier.IsActive;
+            }
+            catch { return false; }
+        }
+
+        private bool IsSupplierInactiveByProductId(int productId)
+        {
+            try
+            {
+                using var service = new ProductService();
+                var product = service.GetProductById(productId);
+                return product != null && IsSupplierInactive(product.SupplierId);
+            }
+            catch { return false; }
+        }
+
+        private bool CartContainsProductsFromSupplier(int supplierId)
+        {
+            if (_cart.Count == 0) return false;
+            try
+            {
+                using var service = new ProductService();
+                var supplierProductIds = service.GetAllProducts()
+                    .Where(p => p.SupplierId == supplierId)
+                    .Select(p => p.Id)
+                    .ToHashSet();
+                return _cart.Any(c => supplierProductIds.Contains(c.ProductId));
+            }
+            catch { return false; }
+        }
+
+        private List<CartItem> GetCartItemsWithInactiveSuppliers()
+        {
+            if (_cart.Count == 0) return new List<CartItem>();
+            try
+            {
+                using var productService = new ProductService();
+                var inactiveSupplierIds = GetInactiveSupplierIds();
+                var products = productService.GetAllProducts().ToDictionary(p => p.Id);
+
+                return _cart
+                    .Where(c => products.TryGetValue(c.ProductId, out var p) &&
+                                inactiveSupplierIds.Contains(p.SupplierId))
+                    .ToList();
+            }
+            catch { return new List<CartItem>(); }
+        }
+
+        // ── Grid styling ─────────────────────────────────────────────────
         private void CustomizeDataGrid(SfDataGrid grid)
         {
             grid.RowHeight = 36;
@@ -58,35 +142,31 @@ namespace InvSys.App
             };
         }
 
-        // ── Gray-out rows for products whose supplier is inactive ────────
-        // Syncfusion's QueryRowStyleEventArgs does not expose a DataRow property.
-        // Instead we resolve the bound object by mapping RowIndex against the
-        // grid's current DataSource list (accounting for the header offset).
+        // Gray-out rows for products whose supplier is inactive.
+        // Syncfusion's QueryRowStyleEventArgs exposes no DataRow property, so we
+        // resolve the bound object by mapping RowIndex against the DataSource list.
         private void ApplyInactiveSupplierRowStyle(SfDataGrid grid)
         {
             grid.QueryRowStyle += (sender, e) =>
             {
                 if (e.RowType != RowType.DefaultRow) return;
 
-                // Syncfusion data rows start at index 1 (index 0 is the header row),
-                // so the zero-based data index is RowIndex - 1.
-                int dataIndex = e.RowIndex - 1;
+                int dataIndex = e.RowIndex - 1; // row 0 is the header
                 if (dataIndex < 0) return;
 
                 bool isInactive = false;
-
                 try
                 {
                     if (grid.DataSource is System.Collections.IList source && dataIndex < source.Count)
                     {
-                        var rowData = source[dataIndex];
-                        if (rowData is ProductDTO productDto)
-                            isInactive = IsSupplierInactive(productDto.SupplierId);
-                        else if (rowData is StockViewDTO stockView)
-                            isInactive = IsSupplierInactiveByProductId(stockView.ProductId);
+                        var row = source[dataIndex];
+                        if (row is ProductDTO dto)
+                            isInactive = IsSupplierInactive(dto.SupplierId);
+                        else if (row is StockViewDTO sv)
+                            isInactive = IsSupplierInactiveByProductId(sv.ProductId);
                     }
                 }
-                catch { /* swallow — never let a style callback crash the grid */ }
+                catch { /* never let a style callback crash the grid */ }
 
                 if (isInactive)
                 {
@@ -97,367 +177,131 @@ namespace InvSys.App
             };
         }
 
-        // ── Helpers: check supplier active status ────────────────────────
-        private bool IsSupplierInactive(int supplierId)
-        {
-            try
-            {
-                using var service = new SupplierService();
-                var supplier = service.GetSupplierById(supplierId);
-                return supplier != null && !supplier.IsActive;
-            }
-            catch { return false; }
-        }
-
-        private bool IsSupplierInactiveByProductId(int productId)
-        {
-            try
-            {
-                using var productService = new ProductService();
-                var product = productService.GetProductById(productId);
-                if (product == null) return false;
-                return IsSupplierInactive(product.SupplierId);
-            }
-            catch { return false; }
-        }
-
-        private bool HasInactiveSupplierProducts()
-        {
-            if (_cart.Count == 0) return false;
-            foreach (var item in _cart)
-            {
-                if (IsSupplierInactiveByProductId(item.ProductId))
-                    return true;
-            }
-            return false;
-        }
-
-        public MainInventory(string username, UserRole userRole) : this()
-        {
-            _currentUsername = username;
-            _currentUserRole = userRole;
-            lblWelcome.Text = $"Welcome, {username}!";
-            UpdateUIForRole();
-            RefreshAllTables();
-        }
-
-        public MainInventory(string username) : this()
-        {
-            _currentUsername = username;
-            _currentUserRole = UserRole.User;
-            lblWelcome.Text = $"Welcome, {username}!";
-            UpdateUIForRole();
-            RefreshAllTables();
-        }
-
-        private void RefreshDashboard()
-        {
-            RefreshMostSoldProduct();
-            RefreshTotalProductsCount();
-            RefreshMonthlySales();
-            RefreshLowStockTable();
-            RefreshSalesChart();
-        }
-
-        private void RefreshTotalProductsCount()
-        {
-            using var service = new InvSys.Services.Services.ProductService();
-            int count = service.GetAllProducts().Count;
-            txtTotalProducts.Text = count.ToString();
-        }
-
-        private void RefreshMonthlySales()
-        {
-            var now = DateTime.Now;
-            int thisMonth = now.Month;
-            int thisYear = now.Year;
-
-            using var context = new InvSys.Infrastructure.InventoryDbContext();
-
-            decimal monthlyTotal = context.Sales
-                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
-                .ToList()
-                .Sum(s => s.Subtotal);
-
-            txtMonthlySales.Text = $"₱{monthlyTotal:N2}";
-        }
-
-        private void RefreshLowStockTable()
-        {
-            using var stockService = new InvSys.Services.Services.StockService();
-            using var productService = new InvSys.Services.Services.ProductService();
-            using var supplierService = new InvSys.Services.Services.SupplierService();
-
-            var allStock = stockService.GetAllStock();
-            var products = productService.GetAllProducts();
-            var suppliers = supplierService.GetAllSuppliers();
-
-            // Build a set of supplier IDs that are active
-            var activeSupplierIds = suppliers
-                .Where(s => s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            var lowStock = allStock
-                .Select(s =>
-                {
-                    int available = stockService.GetAvailableStock(s.ProductId);
-                    var product = products.FirstOrDefault(p => p.Id == s.ProductId);
-                    return new
-                    {
-                        s.ProductId,
-                        s.ProductName,
-                        AvailableQty = available,
-                        Price = product?.Price ?? 0m,
-                        SupplierName = product?.SupplierName ?? "Unknown",
-                        SupplierId = product?.SupplierId ?? 0
-                    };
-                })
-                .Where(x => x.AvailableQty < 10 && activeSupplierIds.Contains(x.SupplierId))
-                .OrderBy(x => x.AvailableQty)
-                .Select(x => new
-                {
-                    x.ProductId,
-                    x.ProductName,
-                    x.AvailableQty,
-                    x.Price,
-                    x.SupplierName
-                })
-                .ToList();
-
-            ProductTableLowStock.DataSource = lowStock;
-        }
-
-        private void RefreshSalesChart()
-        {
-            var now = DateTime.Now;
-            int thisMonth = now.Month;
-            int thisYear = now.Year;
-            int daysInMonth = DateTime.DaysInMonth(thisYear, thisMonth);
-
-            using var context = new InvSys.Infrastructure.InventoryDbContext();
-
-            var salesThisMonth = context.Sales
-                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
-                .ToList();
-
-            var soldProductIds = salesThisMonth.Select(s => s.ProductId).Distinct().ToList();
-            var products = context.Products.Where(p => soldProductIds.Contains(p.Id)).ToList();
-
-            chartMostSold.Series.Clear();
-            chartMostSold.ChartAreas[0].AxisX.Title = "Day of Month";
-            chartMostSold.ChartAreas[0].AxisY.Title = "Qty Sold";
-            chartMostSold.ChartAreas[0].AxisX.Minimum = 1;
-            chartMostSold.ChartAreas[0].AxisX.Maximum = daysInMonth;
-            chartMostSold.ChartAreas[0].AxisX.Interval = 1;
-            chartMostSold.ChartAreas[0].BackColor = Color.White;
-            chartMostSold.BackColor = Color.White;
-            chartMostSold.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
-            chartMostSold.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
-
-            if (!salesThisMonth.Any())
-            {
-                var emptySeries = new System.Windows.Forms.DataVisualization.Charting.Series
-                {
-                    Name = "No Sales",
-                    ChartType = SeriesChartType.Line,
-                    Color = Color.LightGray
-                };
-                chartMostSold.Series.Add(emptySeries);
-                return;
-            }
-
-            var colors = new[]
-            {
-                Color.FromArgb(49,  52,  113),
-                Color.FromArgb(108, 117, 219),
-                Color.FromArgb(220, 80,  80),
-                Color.FromArgb(80,  180, 120),
-                Color.FromArgb(240, 160, 40),
-                Color.FromArgb(80,  180, 220),
-                Color.FromArgb(180, 80,  180),
-                Color.FromArgb(40,  140, 180)
-            };
-
-            int colorIndex = 0;
-            foreach (var product in products)
-            {
-                var series = new System.Windows.Forms.DataVisualization.Charting.Series
-                {
-                    Name = product.Name,
-                    ChartType = SeriesChartType.Line,
-                    Color = colors[colorIndex % colors.Length],
-                    BorderWidth = 2,
-                    IsVisibleInLegend = true,
-                    MarkerStyle = MarkerStyle.Circle,
-                    MarkerSize = 6
-                };
-
-                for (int day = 1; day <= daysInMonth; day++)
-                {
-                    int qtySold = salesThisMonth
-                        .Where(s => s.ProductId == product.Id && s.CreatedDate.Day == day)
-                        .Sum(s => s.Quantity);
-                    series.Points.AddXY(day, qtySold);
-                }
-
-                chartMostSold.Series.Add(series);
-                colorIndex++;
-            }
-
-            chartMostSold.Legends[0].BackColor = Color.White;
-            chartMostSold.Legends[0].Font = new Font("Segoe UI", 8.5f);
-            chartMostSold.Legends[0].Docking = System.Windows.Forms.DataVisualization.Charting.Docking.Bottom;
-        }
-
-        private void RefreshMostSoldProduct()
-        {
-            var now = DateTime.Now;
-            int thisMonth = now.Month;
-            int thisYear = now.Year;
-
-            using var context = new InvSys.Infrastructure.InventoryDbContext();
-
-            var topProduct = context.Sales
-                .Where(s => s.CreatedDate.Month == thisMonth && s.CreatedDate.Year == thisYear)
-                .ToList()
-                .GroupBy(s => s.ProductId)
-                .Select(g => new { ProductId = g.Key, TotalSold = g.Sum(s => s.Quantity) })
-                .OrderByDescending(x => x.TotalSold)
-                .FirstOrDefault();
-
-            if (topProduct == null)
-            {
-                txtNameMostSoldProduct.Text = "No sales yet";
-                txtMostSoldDescription.Text = $"0 sold as of {now:MMMM yyyy}";
-                return;
-            }
-
-            var product = context.Products.FirstOrDefault(p => p.Id == topProduct.ProductId);
-            txtNameMostSoldProduct.Text = product?.Name ?? "Unknown";
-            txtMostSoldDescription.Text = $"{topProduct.TotalSold} sold as of {now:MMMM yyyy}";
-        }
-
-        // ── Column setup ─────────────────────────────────────────────────
+        // ── Column definitions ───────────────────────────────────────────
         private void SetupDataGridColumns()
         {
-            SupplierTable.Columns.Clear();
-            SupplierTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "Name", HeaderText = "Supplier Name" });
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "Email", HeaderText = "Email" });
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "Location", HeaderText = "Location" });
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "ContactNo", HeaderText = "Contact" });
-            SupplierTable.Columns.Add(new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" });
-            SupplierTable.Columns.Add(new GridTextColumn { MappingName = "CreatedDate", HeaderText = "Added On", Format = "MM/dd/yyyy hh:mm tt" });
+            ConfigureGrid(SupplierTable,
+                new GridTextColumn { MappingName = "Id", HeaderText = "ID" },
+                new GridTextColumn { MappingName = "Name", HeaderText = "Supplier Name" },
+                new GridTextColumn { MappingName = "Email", HeaderText = "Email" },
+                new GridTextColumn { MappingName = "Location", HeaderText = "Location" },
+                new GridTextColumn { MappingName = "ContactNo", HeaderText = "Contact" },
+                new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" },
+                new GridTextColumn { MappingName = "CreatedDate", HeaderText = "Added On", Format = "MM/dd/yyyy hh:mm tt" });
 
-            ProductTable.Columns.Clear();
-            ProductTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
-            ProductTable.Columns.Add(new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" });
-            ProductTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
-            ProductTable.Columns.Add(new GridTextColumn { MappingName = "Description", HeaderText = "Description" });
-            ProductTable.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
+            ConfigureGrid(ProductTable,
+                new GridTextColumn { MappingName = "Id", HeaderText = "ID" },
+                new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Description", HeaderText = "Description" },
+                new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
-            accountsListTable.Columns.Clear();
-            accountsListTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Id", HeaderText = "ID" });
-            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Username", HeaderText = "Username" });
-            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "Email", HeaderText = "Email" });
-            accountsListTable.Columns.Add(new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" });
-            accountsListTable.Columns.Add(new GridTextColumn { MappingName = "CreatedAt", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
+            ConfigureGrid(accountsListTable,
+                new GridTextColumn { MappingName = "Id", HeaderText = "ID" },
+                new GridTextColumn { MappingName = "Username", HeaderText = "Username" },
+                new GridTextColumn { MappingName = "Email", HeaderText = "Email" },
+                new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" },
+                new GridTextColumn { MappingName = "CreatedAt", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
 
-            ProductListToStockTable.Columns.Clear();
-            ProductListToStockTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" });
-            ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
-            ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "Description", HeaderText = "Description" });
-            ProductListToStockTable.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
+            ConfigureGrid(ProductListToStockTable,
+                new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Description", HeaderText = "Description" },
+                new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
-            StockTable.Columns.Clear();
-            StockTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            // Id and ProductId columns intentionally omitted
-            StockTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
-            StockTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Restocked" });
-            StockTable.Columns.Add(new GridTextColumn { MappingName = "CreatedDate", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
+            ConfigureGrid(StockTable,
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Restocked" },
+                new GridTextColumn { MappingName = "CreatedDate", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
 
-            SalesTable.Columns.Clear();
-            SalesTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            // SaleId (Product #) intentionally omitted
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchaseId", HeaderText = "Purchase #" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchasedOn", HeaderText = "Date", Format = "MM/dd/yyyy hh:mm tt" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "UnitPrice", HeaderText = "Unit Price", Format = "C2" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "C2" });
-            SalesTable.Columns.Add(new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" });
+            ConfigureGrid(SalesTable,
+                new GridTextColumn { MappingName = "PurchaseId", HeaderText = "Purchase #" },
+                new GridTextColumn { MappingName = "PurchasedOn", HeaderText = "Date", Format = "MM/dd/yyyy hh:mm tt" },
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
+                new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty" },
+                new GridTextColumn { MappingName = "UnitPrice", HeaderText = "Unit Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" },
+                new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "C2" },
+                new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" });
 
-            StockViewTable.Columns.Clear();
-            StockViewTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            // ProductId intentionally omitted
-            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
-            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
-            StockViewTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Available" });
+            ConfigureGrid(StockViewTable,
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Available" });
 
-            ProductsToPurchaseTable.Columns.Clear();
-            ProductsToPurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            // ProductId intentionally omitted
-            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
-            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
-            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
-            ProductsToPurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+            ConfigureGrid(ProductsToPurchaseTable,
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" },
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
 
-            PurchaseTable.Columns.Clear();
-            PurchaseTable.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            // ProductId intentionally omitted
-            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" });
-            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" });
-            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" });
-            PurchaseTable.Columns.Add(new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+            ConfigureGrid(PurchaseTable,
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" },
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
 
-            ProductTableLowStock.Columns.Clear();
-            ProductTableLowStock.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductId", HeaderText = "ID" });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left" });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" });
-            ProductTableLowStock.Columns.Add(new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
+            ConfigureGrid(ProductTableLowStock,
+                new GridTextColumn { MappingName = "ProductId", HeaderText = "ID" },
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
+                new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
+
+            ConfigureGrid(MostSoldProductsTable,
+                new GridTextColumn { MappingName = "Rank", HeaderText = "#" },
+                new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
+                new GridTextColumn { MappingName = "TotalSold", HeaderText = "Qty Sold" },
+                new GridTextColumn { MappingName = "Revenue", HeaderText = "Revenue", Format = "C2" });
         }
 
+        // Single place to set AutoSizeColumnsMode and add columns to a grid.
+        private static void ConfigureGrid(SfDataGrid grid, params GridColumn[] columns)
+        {
+            grid.Columns.Clear();
+            grid.AutoSizeColumnsMode = AutoSizeColumnsMode.Fill;
+            foreach (var col in columns)
+                grid.Columns.Add(col);
+        }
+
+        // ── Grid initialization ──────────────────────────────────────────
         private void InitializeDataGrids()
         {
-            foreach (var grid in new[] { ProductListToStockTable, StockTable, SalesTable })
-                grid.SelectionMode = GridSelectionMode.Single;
+            var allGrids = new[]
+            {
+                SupplierTable, ProductTable, ProductListToStockTable, StockTable,
+                SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable,
+                accountsListTable, MostSoldProductsTable
+            };
 
-            SupplierTable.SelectionMode = GridSelectionMode.Extended;
-            ProductTable.SelectionMode = GridSelectionMode.Extended;
-
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable, accountsListTable })
+            foreach (var grid in allGrids)
             {
                 grid.AutoGenerateColumns = false;
                 grid.AllowEditing = false;
                 grid.AllowGrouping = false;
                 grid.AllowFiltering = true;
                 grid.AllowSorting = true;
+                CustomizeDataGrid(grid);
             }
 
-            accountsListTable.SelectionMode = GridSelectionMode.Single;
+            // Selection modes
+            foreach (var grid in new[] { ProductListToStockTable, StockTable, SalesTable,
+                                         accountsListTable, MostSoldProductsTable })
+                grid.SelectionMode = GridSelectionMode.Single;
 
+            SupplierTable.SelectionMode = GridSelectionMode.Extended;
+            ProductTable.SelectionMode = GridSelectionMode.Extended;
+
+            // Event wiring
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
-
-            // ── Wire up ProductsToPurchaseTable row click → info labels ──
             ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
 
-            foreach (var grid in new[] { SupplierTable, ProductTable, ProductListToStockTable, StockTable, SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable, accountsListTable })
-                CustomizeDataGrid(grid);
-
-            // ── Apply inactive-supplier gray-out to relevant grids ───────
+            // Inactive-supplier row styling
             ApplyInactiveSupplierRowStyle(ProductTable);
         }
 
-        // ── Role UI ──────────────────────────────────────────────────────
+        // ── Role-based UI ────────────────────────────────────────────────
         private void UpdateUIForRole()
         {
             bool isAdmin = _currentUserRole == UserRole.Admin;
@@ -469,7 +313,7 @@ namespace InvSys.App
             btnDeleteProduct.Enabled = isAdmin;
             btnAccounts.Enabled = isAdmin;
 
-            if (!isAdmin && _currentUsername != null)
+            if (!isAdmin)
                 lblWelcome.Text += " (Read-Only Mode)";
         }
 
@@ -479,6 +323,41 @@ namespace InvSys.App
             MessageBox.Show("Admin access required.", "Access Denied",
                 MessageBoxButtons.OK, MessageBoxIcon.Warning);
             return false;
+        }
+
+        // ── Navigation ───────────────────────────────────────────────────
+        private void HighlightButton(Button active, params Button[] group)
+        {
+            Color off = Color.FromArgb(49, 52, 113);
+            Color on = Color.FromArgb(108, 117, 219);
+            foreach (var btn in group)
+                btn.BackColor = off;
+            active.BackColor = on;
+        }
+
+        private void btnDashboard_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 0; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+        private void btnStock_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 1; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+        private void btnSupplier_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 2; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+        private void btnProducts_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 3; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+        private void btnPurchase_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 4; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+        private void btnSales_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 5; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
+
+        private void btnManagePurchase_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 0; HighlightButton((Button)sender, btnManagePurchase, btnPurchaseCheckout); }
+        private void btnPurchaseCheckout_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 1; HighlightButton((Button)sender, btnManagePurchase, btnPurchaseCheckout); }
+
+        private void btnAccounts_Click(object sender, EventArgs e)
+        {
+            if (!IsAdmin()) return;
+            PanelControl.SelectedIndex = 6;
+            HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase);
+        }
+
+        private void btnLogout_Click(object sender, EventArgs e)
+        {
+            this.Hide();
+            var login = new LoginForm();
+            login.Closed += (s, args) => this.Close();
+            login.Show();
         }
 
         // ── Refresh ──────────────────────────────────────────────────────
@@ -492,6 +371,16 @@ namespace InvSys.App
             RefreshDashboard();
             RefreshAccountsTable();
         }
+
+        private void RefreshDashboard()
+        {
+            RefreshTotalProductsCount();
+            RefreshMonthlySales();
+            RefreshLowStockTable();
+            RefreshSalesChart();
+            RefreshMostSoldProductsTable();
+        }
+
         public void RefreshAccountsTable()
         {
             using var service = new AccountService();
@@ -510,24 +399,14 @@ namespace InvSys.App
             using var supplierService = new SupplierService();
 
             var products = productService.GetAllProducts();
-            var suppliers = supplierService.GetAllSuppliers();
+            var inactiveSupplierIds = GetInactiveSupplierIds();
 
-            // Build inactive supplier ID set
-            var inactiveSupplierIds = suppliers
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            // Active-supplier products go to stock table; inactive ones still show
-            // in ProductTable (grayed out) so admins can see them, but are excluded
-            // from stock/purchase views.
             ProductTable.DataSource = products;
 
-            // Only active-supplier products shown in the stock add panel
-            var activeProducts = products
+            // Only active-supplier products appear in the stock-add panel
+            ProductListToStockTable.DataSource = products
                 .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
                 .ToList();
-            ProductListToStockTable.DataSource = activeProducts;
         }
 
         public void RefreshSalesTable()
@@ -536,48 +415,223 @@ namespace InvSys.App
             SalesTable.DataSource = service.GetAllSales();
         }
 
-        // ── Navigation ───────────────────────────────────────────────────
-        private void HighlightActiveButton(Button active)
+        public void RefreshStockTable()
         {
-            Color off = Color.FromArgb(49, 52, 113);
-            Color on = Color.FromArgb(108, 117, 219);
-            foreach (var btn in new[] { btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase })
-                btn.BackColor = off;
-            active.BackColor = on;
+            using var stockService = new StockService();
+
+            var activeProductIds = GetActiveProductIds();
+            var allStock = stockService.GetAllStock()
+                .Where(s => activeProductIds.Contains(s.ProductId))
+                .ToList();
+
+            // Subtract whatever is sitting in the cart (not yet persisted)
+            foreach (var entry in allStock)
+            {
+                var inCart = _cart.FirstOrDefault(c => c.ProductId == entry.ProductId);
+                if (inCart != null)
+                    entry.Quantity = Math.Max(0, entry.Quantity - inCart.Quantity);
+            }
+
+            StockTable.DataSource = allStock;
         }
 
-        private void HighlightActiveButtonInPurchases(Button active)
+        public void RefreshStockViewTable()
         {
-            Color off = Color.FromArgb(49, 52, 113);
-            Color on = Color.FromArgb(108, 117, 219);
-            foreach (var btn in new[] { btnManagePurchase, btnPurchaseCheckout })
-                btn.BackColor = off;
-            active.BackColor = on;
+            StockViewTable.DataSource = BuildStockView(filterText: null);
         }
 
-        private void btnDashboard_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 0; HighlightActiveButton((Button)sender); }
-        private void btnStock_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 1; HighlightActiveButton((Button)sender); }
-        private void btnSupplier_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 2; HighlightActiveButton((Button)sender); }
-        private void btnProducts_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 3; HighlightActiveButton((Button)sender); }
-        private void btnPurchase_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 4; HighlightActiveButton((Button)sender); }
-        private void btnSales_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 5; HighlightActiveButton((Button)sender); }
-
-        private void btnManagePurchase_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 0; HighlightActiveButtonInPurchases((Button)sender); }
-        private void btnPurchaseCheckout_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 1; HighlightActiveButtonInPurchases((Button)sender); }
-
-        private void btnAccounts_Click(object sender, EventArgs e)
+        // Builds the purchase-panel stock view, optionally filtered by a search string.
+        private List<StockViewDTO> BuildStockView(string filterText)
         {
-            if (!IsAdmin()) return;
-            PanelControl.SelectedIndex = 6;
-            HighlightActiveButton((Button)sender);
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+
+            var inactiveSupplierIds = GetInactiveSupplierIds();
+            var products = productService.GetAllProducts()
+                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .ToList();
+
+            var view = products
+                .Select(p =>
+                {
+                    int available = stockService.GetAvailableStock(p.Id);
+                    int cartQty = _cart.FirstOrDefault(c => c.ProductId == p.Id)?.Quantity ?? 0;
+                    return new StockViewDTO
+                    {
+                        ProductId = p.Id,
+                        ProductName = p.Name,
+                        Price = p.Price,
+                        Quantity = Math.Max(0, available - cartQty),
+                        Description = p.Description,
+                        SupplierName = p.SupplierName
+                    };
+                })
+                .Where(v => v.Quantity > 0 || _cart.Any(c => c.ProductId == v.ProductId))
+                .OrderBy(v => v.ProductName)
+                .ToList();
+
+            if (string.IsNullOrWhiteSpace(filterText))
+                return view;
+
+            return view
+                .Where(v =>
+                    v.ProductName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    v.ProductId.ToString().Contains(filterText) ||
+                    v.SupplierName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    v.Price.ToString().Contains(filterText))
+                .ToList();
         }
 
-        private void btnLogout_Click(object sender, EventArgs e)
+        // ── Dashboard widgets ────────────────────────────────────────────
+        private void RefreshTotalProductsCount()
         {
-            this.Hide();
-            var loginForm = new LoginForm();
-            loginForm.Closed += (s, args) => this.Close();
-            loginForm.Show();
+            using var service = new ProductService();
+            txtTotalProducts.Text = service.GetAllProducts().Count.ToString();
+        }
+
+        private void RefreshMonthlySales()
+        {
+            var now = DateTime.Now;
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+            decimal total = context.Sales
+                .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
+                .ToList()
+                .Sum(s => s.Subtotal);
+            txtMonthlySales.Text = $"₱{total:N2}";
+        }
+
+        private void RefreshMostSoldProductsTable()
+        {
+            var now = DateTime.Now;
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+
+            var top10 = context.Sales
+                .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
+                .ToList()
+                .GroupBy(s => s.ProductId)
+                .Select(g => new { ProductId = g.Key, TotalSold = g.Sum(s => s.Quantity), Revenue = g.Sum(s => s.Subtotal) })
+                .OrderByDescending(x => x.TotalSold)
+                .Take(10)
+                .ToList();
+
+            var productNames = context.Products
+                .Where(p => top10.Select(t => t.ProductId).Contains(p.Id))
+                .ToDictionary(p => p.Id, p => p.Name);
+
+            MostSoldProductsTable.DataSource = top10
+                .Select((x, i) => new
+                {
+                    Rank = i + 1,
+                    ProductName = productNames.TryGetValue(x.ProductId, out var name) ? name : "Unknown",
+                    TotalSold = x.TotalSold,
+                    Revenue = x.Revenue
+                })
+                .ToList();
+        }
+
+        private void RefreshLowStockTable()
+        {
+            using var stockService = new StockService();
+            using var productService = new ProductService();
+            using var supplierService = new SupplierService();
+
+            var activeSupplierIds = supplierService.GetAllSuppliers()
+                .Where(s => s.IsActive)
+                .Select(s => s.Id)
+                .ToHashSet();
+
+            var products = productService.GetAllProducts();
+
+            var lowStock = stockService.GetAllStock()
+                .Select(s =>
+                {
+                    int available = stockService.GetAvailableStock(s.ProductId);
+                    var product = products.FirstOrDefault(p => p.Id == s.ProductId);
+                    return new
+                    {
+                        s.ProductId,
+                        s.ProductName,
+                        AvailableQty = available,
+                        Price = product?.Price ?? 0m,
+                        SupplierName = product?.SupplierName ?? "Unknown",
+                        SupplierId = product?.SupplierId ?? 0
+                    };
+                })
+                .Where(x => x.AvailableQty < 10 && activeSupplierIds.Contains(x.SupplierId))
+                .OrderBy(x => x.AvailableQty)
+                .Select(x => new { x.ProductId, x.ProductName, x.AvailableQty, x.Price, x.SupplierName })
+                .ToList();
+
+            ProductTableLowStock.DataSource = lowStock;
+        }
+
+        private void RefreshSalesChart()
+        {
+            var now = DateTime.Now;
+            int daysInMonth = DateTime.DaysInMonth(now.Year, now.Month);
+
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+
+            var salesThisMonth = context.Sales
+                .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
+                .ToList();
+
+            chartMostSold.Series.Clear();
+            chartMostSold.ChartAreas[0].AxisX.Title = "Day of Month";
+            chartMostSold.ChartAreas[0].AxisY.Title = "Qty Sold";
+            chartMostSold.ChartAreas[0].AxisX.Minimum = 1;
+            chartMostSold.ChartAreas[0].AxisX.Maximum = daysInMonth;
+            chartMostSold.ChartAreas[0].AxisX.Interval = 1;
+            chartMostSold.ChartAreas[0].BackColor = Color.White;
+            chartMostSold.BackColor = Color.White;
+            chartMostSold.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
+            chartMostSold.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
+
+            if (!salesThisMonth.Any())
+            {
+                chartMostSold.Series.Add(new Series { Name = "No Sales", ChartType = SeriesChartType.Line, Color = Color.LightGray });
+                return;
+            }
+
+            var colors = new[]
+            {
+                Color.FromArgb(49,  52,  113), Color.FromArgb(108, 117, 219),
+                Color.FromArgb(220, 80,  80),  Color.FromArgb(80,  180, 120),
+                Color.FromArgb(240, 160, 40),  Color.FromArgb(80,  180, 220),
+                Color.FromArgb(180, 80,  180), Color.FromArgb(40,  140, 180)
+            };
+
+            var soldProductIds = salesThisMonth.Select(s => s.ProductId).Distinct().ToList();
+            var products = context.Products.Where(p => soldProductIds.Contains(p.Id)).ToList();
+
+            int colorIndex = 0;
+            foreach (var product in products)
+            {
+                var series = new Series
+                {
+                    Name = product.Name,
+                    ChartType = SeriesChartType.Line,
+                    Color = colors[colorIndex++ % colors.Length],
+                    BorderWidth = 2,
+                    IsVisibleInLegend = true,
+                    MarkerStyle = MarkerStyle.Circle,
+                    MarkerSize = 6
+                };
+
+                for (int day = 1; day <= daysInMonth; day++)
+                {
+                    int qty = salesThisMonth
+                        .Where(s => s.ProductId == product.Id && s.CreatedDate.Day == day)
+                        .Sum(s => s.Quantity);
+                    series.Points.AddXY(day, qty);
+                }
+
+                chartMostSold.Series.Add(series);
+            }
+
+            chartMostSold.Legends[0].BackColor = Color.White;
+            chartMostSold.Legends[0].Font = new Font("Segoe UI", 8.5f);
+            chartMostSold.Legends[0].Docking = Docking.Bottom;
         }
 
         // ── Supplier CRUD ────────────────────────────────────────────────
@@ -585,8 +639,7 @@ namespace InvSys.App
         {
             if (!IsAdmin()) return;
             var form = new AddSupplier(this);
-            form.ShowDialog();
-            if (form.DialogResult == DialogResult.OK)
+            if (form.ShowDialog() == DialogResult.OK)
                 RefreshSupplierTable();
         }
 
@@ -594,7 +647,7 @@ namespace InvSys.App
         {
             if (!IsAdmin()) return;
 
-            if (SupplierTable.SelectedItem is not SupplierDTO supplierDto)
+            if (SupplierTable.SelectedItem is not SupplierDTO dto)
             {
                 MessageBox.Show("Please select a supplier to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -602,10 +655,8 @@ namespace InvSys.App
             }
 
             var form = new UpdateSupplier(this);
-            form.LoadSelectedSupplier(supplierDto);
-            form.ShowDialog();
-
-            if (form.DialogResult == DialogResult.OK)
+            form.LoadSelectedSupplier(dto);
+            if (form.ShowDialog() == DialogResult.OK)
                 RefreshSupplierTable();
         }
 
@@ -628,8 +679,8 @@ namespace InvSys.App
             try
             {
                 using var service = new SupplierService();
-                foreach (var supplier in selected)
-                    service.DeleteSupplier(supplier.Id);
+                foreach (var s in selected)
+                    service.DeleteSupplier(s.Id);
 
                 MessageBox.Show($"{selected.Count} supplier(s) deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -645,58 +696,28 @@ namespace InvSys.App
         private void SupplierTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (!IsAdmin()) return;
+            if (e.DataRow.RowType != RowType.DefaultRow || e.DataRow.RowData is not SupplierDTO dto) return;
 
-            if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData is SupplierDTO supplierDto)
+            var form = new UpdateSupplier(this);
+            form.LoadSelectedSupplier(dto);
+
+            form.FormClosing += (fs, fe) =>
             {
-                // ── Guard: block deactivation while affected products are in the cart ──
-                if (!supplierDto.IsActive == false) // only check when about to deactivate (IsActive is still true here)
+                if (form.DialogResult != DialogResult.OK) return;
+                if (form.IsMarkingInactive && CartContainsProductsFromSupplier(dto.Id))
                 {
-                    // We check after the dialog; see UpdateSupplier_OnSave guard below.
+                    MessageBox.Show(
+                        "Cannot deactivate this supplier — one or more of their products " +
+                        "are currently in the purchase cart.\n\n" +
+                        "Please reset or complete the current transaction first.",
+                        "Cannot Deactivate Supplier",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    fe.Cancel = true;
                 }
+            };
 
-                var form = new UpdateSupplier(this);
-                form.LoadSelectedSupplier(supplierDto);
-
-                // Attach a guard that fires when the user tries to save the supplier as inactive
-                form.FormClosing += (fs, fe) =>
-                {
-                    if (form.DialogResult != DialogResult.OK) return;
-                    if (form.IsMarkingInactive && CartContainsProductsFromSupplier(supplierDto.Id))
-                    {
-                        MessageBox.Show(
-                            "Cannot deactivate this supplier because one or more of their products " +
-                            "are currently in the purchase cart.\n\n" +
-                            "Please reset or complete the current transaction first, then try again.",
-                            "Cannot Deactivate Supplier",
-                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                        fe.Cancel = true;
-                    }
-                };
-
-                form.ShowDialog();
-
-                if (form.DialogResult == DialogResult.OK)
-                {
-                    RefreshAllTables();
-                }
-            }
-        }
-
-        // ── Check if cart contains products belonging to a supplier ──────
-        private bool CartContainsProductsFromSupplier(int supplierId)
-        {
-            if (_cart.Count == 0) return false;
-            try
-            {
-                using var productService = new ProductService();
-                var supplierProducts = productService.GetAllProducts()
-                    .Where(p => p.SupplierId == supplierId)
-                    .Select(p => p.Id)
-                    .ToHashSet();
-
-                return _cart.Any(c => supplierProducts.Contains(c.ProductId));
-            }
-            catch { return false; }
+            if (form.ShowDialog() == DialogResult.OK)
+                RefreshAllTables();
         }
 
         private void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
@@ -704,33 +725,33 @@ namespace InvSys.App
             var search = txtBoxSupplierSearch.Text.Trim();
             using var service = new SupplierService();
             var all = service.GetAllSuppliers();
-            var filtered = string.IsNullOrEmpty(search) ? all : all
-                .Where(s => s.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            s.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            s.Location.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            s.ContactNo.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderBy(s => s.Name).ToList();
-            SupplierTable.DataSource = filtered;
+
+            SupplierTable.DataSource = string.IsNullOrEmpty(search) ? all :
+                all.Where(s =>
+                    s.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    s.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    s.Location.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    s.ContactNo.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                .OrderBy(s => s.Name)
+                .ToList();
         }
 
         // ── Product CRUD ─────────────────────────────────────────────────
-        private void AddProductPerform()
+        private void btnAddProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
             var form = new AddProduct(this);
-            form.ShowDialog();
-            if (form.DialogResult == DialogResult.OK)
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 RefreshProductTable();
                 RefreshDashboard();
             }
         }
 
-        private void UpdateProductPerform()
+        private void btnUpdateProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-
-            if (ProductTable.SelectedItem == null)
+            if (ProductTable.SelectedItem is not ProductDTO dto)
             {
                 MessageBox.Show("Please select a product to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -738,17 +759,15 @@ namespace InvSys.App
             }
 
             var form = new UpdateProduct(this);
-            form.LoadSelectedProduct((ProductDTO)ProductTable.SelectedItem);
-            form.ShowDialog();
-
-            if (form.DialogResult == DialogResult.OK)
+            form.LoadSelectedProduct(dto);
+            if (form.ShowDialog() == DialogResult.OK)
             {
                 RefreshProductTable();
                 RefreshDashboard();
             }
         }
 
-        private void DeleteProductPerform()
+        private void btnDeleteProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
 
@@ -767,8 +786,8 @@ namespace InvSys.App
             try
             {
                 using var service = new ProductService();
-                foreach (var product in selected)
-                    service.DeleteProduct(product.Id);
+                foreach (var p in selected)
+                    service.DeleteProduct(p.Id);
 
                 MessageBox.Show($"{selected.Count} product(s) deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -785,16 +804,14 @@ namespace InvSys.App
         private void ProductTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (!IsAdmin()) return;
-            if (e.DataRow.RowType == RowType.DefaultRow && e.DataRow.RowData != null)
+            if (e.DataRow.RowType != RowType.DefaultRow || ProductTable.SelectedItem is not ProductDTO dto) return;
+
+            var form = new UpdateProduct(this);
+            form.LoadSelectedProduct(dto);
+            if (form.ShowDialog() == DialogResult.OK)
             {
-                var form = new UpdateProduct(this);
-                form.LoadSelectedProduct((ProductDTO)ProductTable.SelectedItem);
-                form.ShowDialog();
-                if (form.DialogResult == DialogResult.OK)
-                {
-                    RefreshProductTable();
-                    RefreshDashboard();
-                }
+                RefreshProductTable();
+                RefreshDashboard();
             }
         }
 
@@ -803,62 +820,50 @@ namespace InvSys.App
             var search = txtBoxProductSearch.Text.Trim();
             using var service = new ProductService();
             var all = service.GetAllProducts();
-            var filtered = string.IsNullOrEmpty(search) ? all : all
-                .Where(p => p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                            p.Price.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderBy(p => p.Name).ToList();
-            ProductTable.DataSource = filtered;
+
+            ProductTable.DataSource = string.IsNullOrEmpty(search) ? all :
+                all.Where(p =>
+                    p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                    p.Price.ToString().Contains(search))
+                .OrderBy(p => p.Name)
+                .ToList();
         }
 
-        private void btnAddProduct_Click_1(object sender, EventArgs e) => AddProductPerform();
-        private void btnUpdateProduct_Click_1(object sender, EventArgs e) => UpdateProductPerform();
-        private void btnDeleteProduct_Click_1(object sender, EventArgs e) => DeleteProductPerform();
-
-        private void panel26_Paint(object sender, PaintEventArgs e) { }
-        private void panel2_Paint(object sender, PaintEventArgs e) { }
-        private void panel35_Paint(object sender, PaintEventArgs e) { }
-        private void label19_Click(object sender, EventArgs e) { }
-
+        // ── Stock info panel (left side of stock tab) ────────────────────
         private void ProductListToStockTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
-            if (ProductListToStockTable.SelectedItem is ProductDTO product)
-            {
-                txtSelectedProductID.Text = $"ID: {product.Id}";
-                txtSelectedProductName.Text = $"Name: {product.Name}";
-                txtSelectedProductPrice.Text = $"Price: {product.Price:C2}";
-                txtSelectedProductDescription.Text = $"Description: {product.Description}";
-                txtSelectedProductSupplier.Text = $"Supplier: {product.SupplierName}";
-            }
+            if (ProductListToStockTable.SelectedItem is not ProductDTO p) return;
+            txtSelectedProductID.Text = $"ID: {p.Id}";
+            txtSelectedProductName.Text = $"Name: {p.Name}";
+            txtSelectedProductPrice.Text = $"Price: {p.Price:C2}";
+            txtSelectedProductDescription.Text = $"Description: {p.Description}";
+            txtSelectedProductSupplier.Text = $"Supplier: {p.SupplierName}";
         }
 
         // ── Stock CRUD ───────────────────────────────────────────────────
         private bool TryParseQuantity(string input, out int quantity)
         {
             quantity = 0;
-
             if (string.IsNullOrWhiteSpace(input))
             {
                 MessageBox.Show("Quantity cannot be empty.", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             if (!int.TryParse(input.Trim(), out quantity))
             {
-                MessageBox.Show("Quantity must be a whole number (e.g. 10). No decimals or letters allowed.", "Invalid Input",
+                MessageBox.Show("Quantity must be a whole number (e.g. 10).", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             if (quantity <= 0)
             {
                 MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             return true;
         }
 
@@ -870,15 +875,13 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int quantity))
-                return;
+            if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int qty)) return;
 
             try
             {
                 using var service = new StockService();
-                service.Restock(product.Id, quantity);
-                MessageBox.Show($"Added {quantity} unit(s) to '{product.Name}' successfully.", "Success",
+                service.Restock(product.Id, qty);
+                MessageBox.Show($"Added {qty} unit(s) to '{product.Name}'.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBoxQuantityAdd.Clear();
                 RefreshStockTable();
@@ -900,15 +903,13 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int quantity))
-                return;
+            if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int qty)) return;
 
             try
             {
                 using var service = new StockService();
-                service.UpdateStock(stock.Id, quantity);
-                MessageBox.Show("Stock updated successfully.", "Success",
+                service.UpdateStock(stock.Id, qty);
+                MessageBox.Show("Stock updated.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBoxQuantityAdd.Clear();
                 RefreshStockTable();
@@ -930,8 +931,7 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
-            if (MessageBox.Show($"Are you sure you want to delete this stock entry?", "Confirm Delete",
+            if (MessageBox.Show("Delete this stock entry?", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             try
@@ -951,103 +951,28 @@ namespace InvSys.App
             }
         }
 
-        public void RefreshStockTable()
-        {
-            using var stockService = new StockService();
-            using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            var activeProductIds = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
-                .Select(p => p.Id)
-                .ToHashSet();
-
-            // Get DB stock (already subtracts saved sales per our StockService fix)
-            var allStock = stockService.GetAllStock()
-                .Where(s => activeProductIds.Contains(s.ProductId))
-                .ToList();
-
-            // Also subtract whatever is currently sitting in the cart (not yet in DB)
-            foreach (var entry in allStock)
-            {
-                var inCart = _cart.FirstOrDefault(c => c.ProductId == entry.ProductId);
-                if (inCart != null)
-                    entry.Quantity = Math.Max(0, entry.Quantity - inCart.Quantity);
-            }
-
-            StockTable.DataSource = allStock;
-        }
-
-        public void RefreshStockViewTable()
-        {
-            using var stockService = new StockService();
-            using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            var products = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId)) // exclude inactive-supplier products
-                .ToList();
-
-            var view = products
-                .Select(product =>
-                {
-                    int available = stockService.GetAvailableStock(product.Id);
-                    var inCart = _cart.FirstOrDefault(c => c.ProductId == product.Id);
-                    int cartQty = inCart?.Quantity ?? 0;
-                    int displayed = Math.Max(0, available - cartQty);
-
-                    return new StockViewDTO
-                    {
-                        ProductId = product.Id,
-                        ProductName = product.Name,
-                        Price = product.Price,
-                        Quantity = displayed,
-                        Description = product.Description,
-                        SupplierName = product.SupplierName
-                    };
-                })
-                .Where(v => v.Quantity > 0 || _cart.Any(c => c.ProductId == v.ProductId))
-                .OrderBy(v => v.ProductName)
-                .ToList();
-
-            StockViewTable.DataSource = view;
-        }
-
+        // ── Purchase / Cart ──────────────────────────────────────────────
         private bool TryParsePurchaseQuantity(string input, int availableQty, out int quantity)
         {
             quantity = 0;
-
             if (string.IsNullOrWhiteSpace(input))
             {
                 MessageBox.Show("Please enter a purchase quantity.", "Input Required",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             if (!int.TryParse(input.Trim(), out quantity))
             {
-                MessageBox.Show("Quantity must be a whole number (e.g. 3). No decimals or letters allowed.", "Invalid Input",
+                MessageBox.Show("Quantity must be a whole number (e.g. 3).", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             if (quantity <= 0)
             {
                 MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             if (quantity > availableQty)
             {
                 MessageBox.Show(
@@ -1055,18 +980,34 @@ namespace InvSys.App
                     "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return false;
             }
-
             return true;
         }
 
         private void RefreshTotalAmount()
         {
-            decimal total = _cart.Sum(c => c.Subtotal);
-            txtTotalAmount.Text = $"Total Amount: ₱{total:N2}";
+            txtTotalAmount.Text = $"Total Amount: ₱{_cart.Sum(c => c.Subtotal):N2}";
+        }
+
+        private void RefreshCartTables()
+        {
+            var snapshot = _cart.ToList();
+            ProductsToPurchaseTable.DataSource = null;
+            ProductsToPurchaseTable.DataSource = snapshot;
+            PurchaseTable.DataSource = null;
+            PurchaseTable.DataSource = snapshot;
         }
 
         private void btnAddPurchase_Click(object sender, EventArgs e)
         {
+            if (_lastReceiptData != null)
+            {
+                MessageBox.Show(
+                    "A previous transaction has not been reset yet.\n\n" +
+                    "Please click 'Reset Transaction' before starting a new purchase.",
+                    "Reset Required",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (StockViewTable.SelectedItem is not StockViewDTO selected)
             {
                 MessageBox.Show("Please select a product from the list first.", "No Selection",
@@ -1075,22 +1016,18 @@ namespace InvSys.App
             }
 
             int selectedProductId = selected.ProductId;
-
-            if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty))
-                return;
+            if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty)) return;
 
             var existing = _cart.FirstOrDefault(c => c.ProductId == selected.ProductId);
             if (existing != null)
             {
-                int remainingAvailable = selected.Quantity;
-                if (qty > remainingAvailable)
+                if (qty > selected.Quantity)
                 {
                     MessageBox.Show(
-                        $"Cannot add {qty} more. Only {remainingAvailable} unit(s) still available.",
+                        $"Cannot add {qty} more. Only {selected.Quantity} unit(s) still available.",
                         "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                     return;
                 }
-
                 existing.Quantity += qty;
                 existing.Subtotal = existing.Price * existing.Quantity;
             }
@@ -1112,13 +1049,11 @@ namespace InvSys.App
             RefreshStockTable();
             RefreshTotalAmount();
 
-            var updatedRow = (StockViewTable.DataSource as List<StockViewDTO>)
-                               ?.FirstOrDefault(v => v.ProductId == selectedProductId);
-            if (updatedRow != null)
-            {
-                int rowIndex = (StockViewTable.DataSource as List<StockViewDTO>).IndexOf(updatedRow);
-                StockViewTable.SelectedIndex = rowIndex;
-            }
+            // Re-select the same row so info labels stay in sync
+            var updated = (StockViewTable.DataSource as List<StockViewDTO>)
+                ?.FirstOrDefault(v => v.ProductId == selectedProductId);
+            if (updated != null)
+                StockViewTable.SelectedIndex = (StockViewTable.DataSource as List<StockViewDTO>).IndexOf(updated);
 
             SyncPurchaseInfoLabelsToSelection();
             MessageBox.Show("Cart item added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1133,34 +1068,29 @@ namespace InvSys.App
                 return;
             }
 
-            int dbAvailable;
+            int maxAllowed;
             using (var svc = new StockService())
-                dbAvailable = svc.GetAvailableStock(cartItem.ProductId);
-
-            int maxAllowed = dbAvailable;
+                maxAllowed = svc.GetAvailableStock(cartItem.ProductId);
 
             string input = Microsoft.VisualBasic.Interaction.InputBox(
                 $"Enter new quantity for '{cartItem.ProductName}'.\nAvailable stock: {maxAllowed}",
                 "Update Purchase Quantity",
                 cartItem.Quantity.ToString());
 
-            if (string.IsNullOrWhiteSpace(input))
-                return;
+            if (string.IsNullOrWhiteSpace(input)) return;
 
             if (!int.TryParse(input.Trim(), out int newQty))
             {
-                MessageBox.Show("Quantity must be a whole number (e.g. 3). No decimals or letters allowed.",
-                    "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                MessageBox.Show("Quantity must be a whole number.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             if (newQty <= 0)
             {
                 MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             if (newQty > maxAllowed)
             {
                 MessageBox.Show($"Quantity ({newQty}) exceeds available stock ({maxAllowed}).",
@@ -1180,7 +1110,7 @@ namespace InvSys.App
             SyncPurchaseInfoLabelsToSelection();
             RefreshTotalAmount();
 
-            MessageBox.Show($"'{cartItem.ProductName}' quantity updated to {newQty}.",
+            MessageBox.Show($"'{cartItem.ProductName}' updated to {newQty}.",
                 "Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
@@ -1192,10 +1122,8 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes)
-                return;
+                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             _cart.RemoveAll(c => c.ProductId == cartItem.ProductId);
             txtBoxPurchaseQuantity.Clear();
@@ -1214,10 +1142,8 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 return;
             }
-
             if (MessageBox.Show("Clear all items from the cart?", "Confirm Reset",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
-                return;
+                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
 
             _cart.Clear();
             txtBoxPurchaseQuantity.Clear();
@@ -1225,19 +1151,10 @@ namespace InvSys.App
             RefreshCartTables();
             RefreshStockViewTable();
             RefreshStockTable();
-            SyncPurchaseInfoLabelsToSelection();
             RefreshTotalAmount();
         }
 
-        private void RefreshCartTables()
-        {
-            var snapshot = _cart.ToList();
-            ProductsToPurchaseTable.DataSource = null;
-            ProductsToPurchaseTable.DataSource = snapshot;
-            PurchaseTable.DataSource = null;
-            PurchaseTable.DataSource = snapshot;
-        }
-
+        // ── Purchase info labels ─────────────────────────────────────────
         private void ClearPurchaseInfoLabels()
         {
             txtFromPurchaseProductID.Text = "Product ID:";
@@ -1248,7 +1165,32 @@ namespace InvSys.App
             txtFromPurchaseProductSupplier.Text = "Supplier:";
         }
 
-        // ── ProductsToPurchaseTable row click → update info labels ───────
+        private void UpdatePurchaseInfoLabels(StockViewDTO item)
+        {
+            txtFromPurchaseProductID.Text = $"Product ID: {item.ProductId}";
+            txtFromPurchaseProductName.Text = $"Product Name: {item.ProductName}";
+            txtFromPurchaseProductQuantity.Text = $"Quantity Available: {item.Quantity}";
+            txtFromPurchaseProductPrice.Text = $"Price: ₱{item.Price:N2}";
+            txtFromPurchaseProductDescription.Text = $"Description: {item.Description}";
+            txtFromPurchaseProductSupplier.Text = $"Supplier: {item.SupplierName}";
+        }
+
+        private void SyncPurchaseInfoLabelsToSelection()
+        {
+            if (StockViewTable.SelectedItem is StockViewDTO item)
+                UpdatePurchaseInfoLabels(item);
+            else
+                ClearPurchaseInfoLabels();
+        }
+
+        private void StockViewTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (StockViewTable.SelectedItem is StockViewDTO item)
+                UpdatePurchaseInfoLabels(item);
+            else
+                ClearPurchaseInfoLabels();
+        }
+
         private void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
@@ -1257,8 +1199,6 @@ namespace InvSys.App
                 return;
             }
 
-            // Look up the live stock view entry for this cart item so we show
-            // the true remaining available quantity (not the quantity in cart)
             try
             {
                 using var stockService = new StockService();
@@ -1276,7 +1216,6 @@ namespace InvSys.App
             }
             catch
             {
-                // Fallback to cart-only data if service calls fail
                 txtFromPurchaseProductID.Text = $"Product ID: {cartItem.ProductId}";
                 txtFromPurchaseProductName.Text = $"Product Name: {cartItem.ProductName}";
                 txtFromPurchaseProductQuantity.Text = "Quantity Available: N/A";
@@ -1286,37 +1225,18 @@ namespace InvSys.App
             }
         }
 
-        private void StockViewTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        {
-            if (StockViewTable.SelectedItem is not StockViewDTO item)
-            {
-                ClearPurchaseInfoLabels();
-                return;
-            }
-            UpdatePurchaseInfoLabels(item);
-        }
-
-        private void SyncPurchaseInfoLabelsToSelection()
-        {
-            if (StockViewTable.SelectedItem is StockViewDTO item)
-                UpdatePurchaseInfoLabels(item);
-            else
-                ClearPurchaseInfoLabels();
-        }
-
-        private void UpdatePurchaseInfoLabels(StockViewDTO item)
-        {
-            txtFromPurchaseProductID.Text = $"Product ID: {item.ProductId}";
-            txtFromPurchaseProductName.Text = $"Product Name: {item.ProductName}";
-            txtFromPurchaseProductQuantity.Text = $"Quantity Available: {item.Quantity}";
-            txtFromPurchaseProductPrice.Text = $"Price: ₱{item.Price:N2}";
-            txtFromPurchaseProductDescription.Text = $"Description: {item.Description}";
-            txtFromPurchaseProductSupplier.Text = $"Supplier: {item.SupplierName}";
-        }
-
         // ── Payment ──────────────────────────────────────────────────────
         private void btnPayTotalAmount_Click(object sender, EventArgs e)
         {
+            if (_lastReceiptData != null)
+            {
+                MessageBox.Show(
+                    "A previous transaction is still active.\n\n" +
+                    "Please click 'Reset Transaction' to clear it before processing a new payment.",
+                    "Previous Transaction Pending",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
             if (_cart.Count == 0)
             {
                 MessageBox.Show("Your cart is empty. Please add items before paying.",
@@ -1324,30 +1244,28 @@ namespace InvSys.App
                 return;
             }
 
-            // ── Guard: block checkout if any cart product now has an inactive supplier ──
             var inactiveItems = GetCartItemsWithInactiveSuppliers();
             if (inactiveItems.Count > 0)
             {
-                string itemNames = string.Join("\n  • ", inactiveItems.Select(c => c.ProductName));
+                string names = string.Join("\n  • ", inactiveItems.Select(c => c.ProductName));
                 MessageBox.Show(
                     "Cannot proceed with checkout.\n\n" +
-                    "The following cart item(s) belong to a supplier that has been deactivated:\n\n" +
-                    $"  • {itemNames}\n\n" +
-                    "Please remove these items from the cart before paying.",
+                    "The following item(s) belong to a deactivated supplier:\n\n" +
+                    $"  • {names}\n\n" +
+                    "Please remove them from the cart before paying.",
                     "Inactive Supplier — Checkout Blocked",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            decimal totalAmount = _cart.Sum(c => c.Subtotal);
-            decimal vatAmount = totalAmount - (totalAmount / (1 + 0.12m));
-            decimal vatableAmount = totalAmount - vatAmount;
+            decimal total = _cart.Sum(c => c.Subtotal);
+            decimal vat = total - (total / 1.12m);
+            decimal vatableBase = total - vat;
 
-            using var dialog = new PaymentDialog(totalAmount);
-            if (dialog.ShowDialog(this) != DialogResult.OK)
-                return;
+            using var dialog = new PaymentDialog(total);
+            if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
-            PaymentMethod paymentMethod = dialog.SelectedPaymentMethod switch
+            var paymentMethod = dialog.SelectedPaymentMethod switch
             {
                 "Cash" => PaymentMethod.Cash,
                 "GCash" => PaymentMethod.GCash,
@@ -1358,31 +1276,30 @@ namespace InvSys.App
 
             try
             {
-                var saleItems = _cart.Select(c => new InvSys.Services.DTOs.SaleItemRequest
+                var saleItems = _cart.Select(c => new SaleItemRequest
                 {
                     ProductId = c.ProductId,
                     Quantity = c.Quantity
                 }).ToList();
 
-                using var service = new InvSys.Services.Services.PurchaseService();
+                using var service = new PurchaseService();
                 var purchase = service.ProcessPurchase(saleItems, paymentMethod);
 
-                decimal change = dialog.AmountPaid - totalAmount;
+                decimal change = dialog.AmountPaid - total;
 
-                txtTotalAmount.Text = $"Total Amount: ₱{totalAmount:N2}";
+                txtTotalAmount.Text = $"Total Amount: ₱{total:N2}";
                 txtAmountPaid.Text = $"Amount Paid: ₱{dialog.AmountPaid:N2}";
                 txtChange.Text = dialog.SelectedPaymentMethod == "Cash"
                     ? $"Change: ₱{change:N2}"
                     : "Change: N/A";
 
-                // ── Save receipt data immediately after successful payment ──
                 _lastReceiptData = new ReceiptData
                 {
                     PurchaseId = purchase.Id,
                     PurchasedOn = DateTime.Now,
                     CashierName = _currentUsername ?? "Staff",
                     PaymentMethod = paymentMethod,
-                    TotalAmount = totalAmount,
+                    TotalAmount = total,
                     AmountPaid = dialog.AmountPaid,
                     Items = _cart.Select(c => new ReceiptLineItem
                     {
@@ -1393,21 +1310,16 @@ namespace InvSys.App
                     }).ToList()
                 };
 
-                // Enable the receipt button now that we have a completed transaction
                 btnGenerateReceipt.Enabled = true;
                 _cart.Clear();
-
-                RefreshSalesTable();
-                RefreshStockTable();
-                RefreshStockViewTable();
-                SyncPurchaseInfoLabelsToSelection();
                 RefreshAllTables();
+                SyncPurchaseInfoLabelsToSelection();
 
                 MessageBox.Show(
                     $"✔  Purchase #{purchase.Id} recorded successfully!\n\n" +
-                    $"Vatable Amount : ₱{vatableAmount:N2}\n" +
-                    $"VAT (12%)      : ₱{vatAmount:N2}\n" +
-                    $"Total          : ₱{totalAmount:N2}\n" +
+                    $"Vatable Amount : ₱{vatableBase:N2}\n" +
+                    $"VAT (12%)      : ₱{vat:N2}\n" +
+                    $"Total          : ₱{total:N2}\n" +
                     $"Payment        : {dialog.SelectedPaymentMethod}\n" +
                     $"Amount Paid    : ₱{dialog.AmountPaid:N2}\n" +
                     (dialog.SelectedPaymentMethod == "Cash" ? $"Change         : ₱{change:N2}" : ""),
@@ -1421,60 +1333,27 @@ namespace InvSys.App
             }
         }
 
-        // ── Returns cart items whose supplier is currently inactive ──────
-        private List<CartItem> GetCartItemsWithInactiveSuppliers()
-        {
-            var result = new List<CartItem>();
-            if (_cart.Count == 0) return result;
-
-            try
-            {
-                using var productService = new ProductService();
-                using var supplierService = new SupplierService();
-
-                var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                    .Where(s => !s.IsActive)
-                    .Select(s => s.Id)
-                    .ToHashSet();
-
-                var products = productService.GetAllProducts()
-                    .ToDictionary(p => p.Id);
-
-                foreach (var cartItem in _cart)
-                {
-                    if (products.TryGetValue(cartItem.ProductId, out var product) &&
-                        inactiveSupplierIds.Contains(product.SupplierId))
-                    {
-                        result.Add(cartItem);
-                    }
-                }
-            }
-            catch { /* If the check itself fails, allow checkout and let the service layer handle it */ }
-
-            return result;
-        }
-
-        // ── Generate Receipt ─────────────────────────────────────────────
+        // ── Receipt ──────────────────────────────────────────────────────
         private void btnGenerateReceipt_Click(object sender, EventArgs e)
         {
             if (_lastReceiptData == null)
             {
-                MessageBox.Show(
-                    "No completed transaction found.\nPlease complete a purchase first.",
+                MessageBox.Show("No completed transaction found. Please complete a purchase first.",
                     "No Transaction", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
-                string pdfPath = ReceiptPdfGenerator.Generate(_lastReceiptData);
+                string path = ReceiptPdfGenerator.Generate(_lastReceiptData);
 
-                var result = MessageBox.Show(
-                    $"Receipt saved!\n\n{pdfPath}\n\nOpen it now?",
+                if (path == null) return; // user cancelled the save dialog
+
+                var result = MessageBox.Show($"Receipt saved!\n\n{path}\n\nOpen it now?",
                     "Receipt Generated", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
 
                 if (result == DialogResult.Yes)
-                    Process.Start(new ProcessStartInfo(pdfPath) { UseShellExecute = true });
+                    Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             }
             catch (Exception ex)
             {
@@ -1483,12 +1362,14 @@ namespace InvSys.App
             }
         }
 
-        // ── Reset Transaction ────────────────────────────────────────────
+        // ── Reset transaction ────────────────────────────────────────────
         private void btnResetTransaction_Click(object sender, EventArgs e)
         {
-            if (_cart.Count == 0 &&
+            bool alreadyClear = _cart.Count == 0 &&
                 txtAmountPaid.Text is "Amount Paid: ₱0.00" or "Amount Paid:" &&
-                txtChange.Text is "Change: ₱0.00" or "Change:")
+                txtChange.Text is "Change: ₱0.00" or "Change:";
+
+            if (alreadyClear)
             {
                 MessageBox.Show("Nothing to reset.", "Already Clear",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1496,13 +1377,11 @@ namespace InvSys.App
             }
 
             if (MessageBox.Show("Reset the entire transaction? This will clear the cart and all amounts.",
-                "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes)
-                return;
+                "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
 
             _cart.Clear();
             _lastReceiptData = null;
             btnGenerateReceipt.Enabled = false;
-
             txtTotalAmount.Text = "Total Amount: ₱0.00";
             txtAmountPaid.Text = "Amount Paid: ₱0.00";
             txtChange.Text = "Change: ₱0.00";
@@ -1516,109 +1395,46 @@ namespace InvSys.App
         // ── Search handlers ──────────────────────────────────────────────
         private void txtManagePurchaseSearch_TextChanged(object sender, EventArgs e)
         {
-            var search = txtManagePurchaseSearch.Text.Trim();
-
-            using var stockService = new StockService();
-            using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            // Exclude inactive-supplier products from purchase search
-            var products = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
-                .ToList();
-
-            var view = products
-                .Select(product =>
-                {
-                    int available = stockService.GetAvailableStock(product.Id);
-                    var inCart = _cart.FirstOrDefault(c => c.ProductId == product.Id);
-                    int cartQty = inCart?.Quantity ?? 0;
-
-                    return new StockViewDTO
-                    {
-                        ProductId = product.Id,
-                        ProductName = product.Name,
-                        Price = product.Price,
-                        Quantity = Math.Max(0, available - cartQty),
-                        Description = product.Description,
-                        SupplierName = product.SupplierName
-                    };
-                })
-                .Where(v => v.Quantity > 0 || _cart.Any(c => c.ProductId == v.ProductId))
-                .OrderBy(v => v.ProductName)
-                .ToList();
-
-            var filtered = string.IsNullOrEmpty(search) ? view : view
-                .Where(v =>
-                    v.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    v.ProductId.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    v.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    v.Price.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                .ToList();
-
-            StockViewTable.DataSource = filtered;
+            StockViewTable.DataSource = BuildStockView(txtManagePurchaseSearch.Text.Trim());
         }
 
         private void txtProductListSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtProductListSearch.Text.Trim();
             using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
+            var inactiveSupplierIds = GetInactiveSupplierIds();
 
             var all = productService.GetAllProducts()
                 .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
                 .ToList();
 
-            var filtered = string.IsNullOrEmpty(search) ? all : all
-                .Where(p =>
+            ProductListToStockTable.DataSource = string.IsNullOrEmpty(search) ? all :
+                all.Where(p =>
                     p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    p.Price.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                    p.Price.ToString().Contains(search))
                 .OrderBy(p => p.Name)
                 .ToList();
-            ProductListToStockTable.DataSource = filtered;
         }
 
         private void txtCurrentStockSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtCurrentStockSearch.Text.Trim();
             using var stockService = new StockService();
-            using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var inactiveSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
-
-            var activeProductIds = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
-                .Select(p => p.Id)
-                .ToHashSet();
+            var activeProductIds = GetActiveProductIds();
 
             var all = stockService.GetAllStock()
                 .Where(s => activeProductIds.Contains(s.ProductId))
                 .ToList();
 
-            var filtered = string.IsNullOrEmpty(search) ? all : all
-                .Where(s =>
+            StockTable.DataSource = string.IsNullOrEmpty(search) ? all :
+                all.Where(s =>
                     s.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    s.ProductId.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    s.Quantity.ToString().IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
+                    s.ProductId.ToString().Contains(search) ||
+                    s.Quantity.ToString().Contains(search))
                 .OrderBy(s => s.ProductName)
                 .ToList();
-            StockTable.DataSource = filtered;
         }
     }
 }
