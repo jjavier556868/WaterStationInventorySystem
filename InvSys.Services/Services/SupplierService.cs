@@ -2,6 +2,7 @@
 using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
 using InvSys.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvSys.Services.Services
 {
@@ -14,7 +15,7 @@ namespace InvSys.Services.Services
             _context = new InventoryDbContext();
         }
 
-        public void AddSupplier(string name, string email, string location, string contact, bool isActive = true)
+        public async Task AddSupplierAsync(string name, string email, string location, string contact, bool isActive = true)
         {
             var supplier = new Supplier
             {
@@ -25,13 +26,13 @@ namespace InvSys.Services.Services
                 IsActive = isActive,
                 CreatedDate = DateTime.Now
             };
-            _context.Suppliers.Add(supplier);
-            _context.SaveChanges();
+            await _context.Suppliers.AddAsync(supplier);
+            await _context.SaveChangesAsync();
         }
 
-        public List<SupplierDTO> GetAllSuppliers()
+        public async Task<List<SupplierDTO>> GetAllSuppliersAsync()
         {
-            return _context.Suppliers
+            return await _context.Suppliers
                 .Select(s => new SupplierDTO
                 {
                     Id = s.Id,
@@ -42,12 +43,12 @@ namespace InvSys.Services.Services
                     IsActive = s.IsActive,
                     CreatedDate = s.CreatedDate
                 })
-                .ToList();
+                .ToListAsync();
         }
 
-        public SupplierDTO? GetSupplierById(int id)
+        public async Task<SupplierDTO?> GetSupplierByIdAsync(int id)
         {
-            return _context.Suppliers
+            return await _context.Suppliers
                 .Where(s => s.Id == id)
                 .Select(s => new SupplierDTO
                 {
@@ -59,12 +60,12 @@ namespace InvSys.Services.Services
                     IsActive = s.IsActive,
                     CreatedDate = s.CreatedDate
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
 
-        public void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive)
+        public async Task UpdateSupplierAsync(int id, string name, string email, string location, string contact, bool isActive = true)
         {
-            var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
+            var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id);
             if (supplier != null)
             {
                 supplier.Name = name;
@@ -72,22 +73,22 @@ namespace InvSys.Services.Services
                 supplier.Location = location;
                 supplier.ContactNo = contact;
                 supplier.IsActive = isActive;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 
-        public void DeleteSupplier(int id)
+        public async Task DeleteSupplierAsync(int id)
         {
-            var supplier = _context.Suppliers.FirstOrDefault(s => s.Id == id);
+            var supplier = await _context.Suppliers.FirstOrDefaultAsync(s => s.Id == id);
             if (supplier != null)
             {
-                var productCount = _context.Products.Count(p => p.SupplierId == id);
+                var productCount = await _context.Products.CountAsync(p => p.SupplierId == id);
                 if (productCount > 0)
                     throw new InvalidOperationException(
                         $"Cannot delete supplier with {productCount} product(s). Reassign or delete products first.");
 
                 _context.Suppliers.Remove(supplier);
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
 

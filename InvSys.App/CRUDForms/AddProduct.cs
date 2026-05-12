@@ -1,5 +1,6 @@
 ﻿using InvSys.Services.Services;
 using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InvSys.App.CRUDForms
@@ -12,21 +13,31 @@ namespace InvSys.App.CRUDForms
         {
             InitializeComponent();
             _parentForm = parentForm;
-            LoadSuppliers();
             this.AcceptButton = btnAddProduct;
             this.CancelButton = btnCancel;
+            this.Load += async (s, e) => await LoadSuppliersAsync();
         }
 
-        private void LoadSuppliers()
+        private async Task LoadSuppliersAsync()
         {
-            using var service = new SupplierService();
-            comboBoxSupplier.DataSource = service.GetAllSuppliers();
-            comboBoxSupplier.DisplayMember = "Name";
-            comboBoxSupplier.ValueMember = "Id";
+            try
+            {
+                using var service = new SupplierService();
+                var suppliers = await service.GetAllSuppliersAsync();
+                comboBoxSupplier.DataSource = suppliers;
+                comboBoxSupplier.DisplayMember = "Name";
+                comboBoxSupplier.ValueMember = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load suppliers: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void btnAddProduct_Click(object sender, EventArgs e)
+        private async void btnAddProduct_Click(object sender, EventArgs e)
         {
+            // Validation
             if (string.IsNullOrWhiteSpace(txtBoxProductName.Text))
             {
                 MessageBox.Show("Product Name is required!", "Validation Error",
@@ -53,8 +64,11 @@ namespace InvSys.App.CRUDForms
 
             try
             {
+                // Disable button to prevent double-clicks
+                btnAddProduct.Enabled = false;
+
                 using var service = new ProductService();
-                service.AddProduct(
+                await service.AddProductAsync(
                     txtBoxProductName.Text.Trim(),
                     txtBoxDescription.Text.Trim(),
                     price,
@@ -63,25 +77,25 @@ namespace InvSys.App.CRUDForms
 
                 MessageBox.Show("Product added successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _parentForm?.RefreshProductTable();
+
+                // Refresh parent form tables
+                if (_parentForm != null)
+                {
+                    await _parentForm.RefreshProductTableAsync();
+                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Save Failed",
+                MessageBox.Show($"Error adding product: {ex.Message}", "Save Failed",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnAddProduct.Enabled = true;
             }
         }
 
         private void btnCancel_Click(object sender, EventArgs e)
-        {
-            this.DialogResult = DialogResult.Cancel;
-            this.Close();
-        }
-
-        private void btnCancel_Click_1(object sender, EventArgs e)
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();

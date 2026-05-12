@@ -3,6 +3,7 @@ using InvSys.Services.DTOs;
 using InvSys.Services.Services;
 using System;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 
 namespace InvSys.App.CRUDForms
@@ -11,6 +12,7 @@ namespace InvSys.App.CRUDForms
     {
         private readonly MainInventory _parentForm;
         private SupplierDTO _selectedSupplier;
+        private bool _isSaved = false;
 
         // ── True when the user is saving with IsActive unchecked (was active before) ──
         public bool IsMarkingInactive { get; private set; }
@@ -26,19 +28,24 @@ namespace InvSys.App.CRUDForms
 
         public void LoadSelectedSupplier(SupplierDTO supplier)
         {
-            _selectedSupplier = supplier;
-            if (_selectedSupplier != null)
+            if (supplier == null)
             {
-                txtBoxID.Text = _selectedSupplier.Id.ToString();
-                txtBoxSupplier.Text = _selectedSupplier.Name ?? "";
-                txtBoxEmail.Text = _selectedSupplier.Email ?? "";
-                txtBoxLocation.Text = _selectedSupplier.Location ?? "";
-                txtBoxContact.Text = _selectedSupplier.ContactNo ?? "";
-                chkBoxActive.Checked = _selectedSupplier.IsActive;
+                MessageBox.Show("No supplier selected.", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                this.Close();
+                return;
             }
+
+            _selectedSupplier = supplier;
+            txtBoxID.Text = supplier.Id.ToString();
+            txtBoxSupplier.Text = supplier.Name ?? "";
+            txtBoxEmail.Text = supplier.Email ?? "";
+            txtBoxLocation.Text = supplier.Location ?? "";
+            txtBoxContact.Text = supplier.ContactNo ?? "";
+            chkBoxActive.Checked = supplier.IsActive;
         }
 
-        private void btnUpdate_Click(object sender, EventArgs e)
+        private async void btnUpdate_Click(object sender, EventArgs e)
         {
             if (_selectedSupplier == null)
             {
@@ -47,6 +54,7 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
+            // Validate inputs
             if (string.IsNullOrWhiteSpace(txtBoxSupplier.Text))
             {
                 MessageBox.Show("Supplier Name is required!", "Validation Error",
@@ -55,48 +63,84 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text) || !txtBoxEmail.Text.Contains("@"))
+            if (string.IsNullOrWhiteSpace(txtBoxEmail.Text) || !IsValidEmail(txtBoxEmail.Text))
             {
-                MessageBox.Show("Please enter a valid email!", "Validation Error",
+                MessageBox.Show("Please enter a valid email address!", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 txtBoxEmail.Focus();
                 return;
             }
 
-            using var service = new SupplierService();
-
-            if (service.GetAllSuppliers().Any(s =>
-                s.Email == txtBoxEmail.Text.Trim() && s.Id != _selectedSupplier.Id))
+            if (string.IsNullOrWhiteSpace(txtBoxLocation.Text))
             {
-                MessageBox.Show("A supplier with this email already exists!", "Duplicate",
+                MessageBox.Show("Location is required!", "Validation Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxEmail.Focus();
+                txtBoxLocation.Focus();
                 return;
             }
 
-            // ── Flag whether this save is deactivating a previously active supplier ──
-            IsMarkingInactive = _selectedSupplier.IsActive && !chkBoxActive.Checked;
-
-            // Set DialogResult before closing so the FormClosing guard in
-            // MainInventory can read IsMarkingInactive and cancel if needed.
-            this.DialogResult = DialogResult.OK;
-
-            // Don't call Close() yet — let FormClosing in the parent decide.
-            // If the parent doesn't cancel, the form will close naturally.
-        }
-
-        protected override void OnFormClosing(FormClosingEventArgs e)
-        {
-            base.OnFormClosing(e);
-
-            // Only commit the save if the dialog was accepted and not cancelled by the parent guard.
-            if (this.DialogResult != DialogResult.OK || e.Cancel)
+            if (string.IsNullOrWhiteSpace(txtBoxContact.Text))
+            {
+                MessageBox.Show("Contact number is required!", "Validation Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                txtBoxContact.Focus();
                 return;
+            }
 
             try
             {
+                // Prevent double-clicks
+                btnUpdate.Enabled = false;
+                Cursor = Cursors.WaitCursor;
+
                 using var service = new SupplierService();
-                service.UpdateSupplier(
+
+                // Check for duplicate email (async)
+                var existingSuppliers = await service.GetAllSuppliersAsync();
+                if (existingSuppliers.Any(s =>
+                    s.Email.Equals(txtBoxEmail.Text.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                    s.Id != _selectedSupplier.Id))
+                {
+                    MessageBox.Show("A supplier with this email already exists!", "Duplicate Entry",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtBoxEmail.Focus();
+                    btnUpdate.Enabled = true;
+                    Cursor = Cursors.Default;
+                    return;
+                }
+
+                // Check for duplicate name (async)
+                if (existingSuppliers.Any(s =>
+                    s.Name.Equals(txtBoxSupplier.Text.Trim(), StringComparison.OrdinalIgnoreCase) &&
+                    s.Id != _selectedSupplier.Id))
+                {
+                    MessageBox.Show("A supplier with this name already exists!", "Duplicate Entry",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtBoxSupplier.Focus();
+                    btnUpdate.Enabled = true;
+                    Cursor = Cursors.Default;
+                    return;
+                }
+
+                // Check if anything actually changed
+                if (_selectedSupplier.Name == txtBoxSupplier.Text.Trim() &&
+                    _selectedSupplier.Email == txtBoxEmail.Text.Trim() &&
+                    _selectedSupplier.Location == txtBoxLocation.Text.Trim() &&
+                    _selectedSupplier.ContactNo == txtBoxContact.Text.Trim() &&
+                    _selectedSupplier.IsActive == chkBoxActive.Checked)
+                {
+                    MessageBox.Show("No changes were made.", "No Changes",
+                        MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    btnUpdate.Enabled = true;
+                    Cursor = Cursors.Default;
+                    return;
+                }
+
+                // ── Flag whether this save is deactivating a previously active supplier ──
+                IsMarkingInactive = _selectedSupplier.IsActive && !chkBoxActive.Checked;
+
+                // Perform the update (async)
+                await service.UpdateSupplierAsync(
                     _selectedSupplier.Id,
                     txtBoxSupplier.Text.Trim(),
                     txtBoxEmail.Text.Trim(),
@@ -105,15 +149,48 @@ namespace InvSys.App.CRUDForms
                     chkBoxActive.Checked
                 );
 
+                _isSaved = true;
                 MessageBox.Show("Supplier updated successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _parentForm?.RefreshSupplierTable();
+
+                // Refresh parent form using correct async method
+                if (_parentForm != null)
+                {
+                    await _parentForm.RefreshSupplierTableAsync();
+                    // Also refresh product table since supplier status affects products
+                    await _parentForm.RefreshProductTableAsync();
+                }
+
+                this.DialogResult = DialogResult.OK;
+                this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Update Failed",
+                MessageBox.Show($"Failed to update supplier: {ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
-                e.Cancel = true;
+                btnUpdate.Enabled = true;
+                Cursor = Cursors.Default;
+            }
+        }
+
+        protected override void OnFormClosing(FormClosingEventArgs e)
+        {
+            base.OnFormClosing(e);
+
+            // Prevent accidental close with unsaved changes
+            if (this.DialogResult == DialogResult.OK && !_isSaved)
+            {
+                var result = MessageBox.Show(
+                    "Changes haven't been saved. Close anyway?",
+                    "Unsaved Changes",
+                    MessageBoxButtons.YesNo,
+                    MessageBoxIcon.Warning);
+
+                if (result != DialogResult.No)
+                {
+                    this.DialogResult = DialogResult.Cancel;
+                    e.Cancel = true;
+                }
             }
         }
 
@@ -121,6 +198,19 @@ namespace InvSys.App.CRUDForms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
+        }
+
+        private bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email.Trim());
+                return addr.Address == email.Trim();
+            }
+            catch
+            {
+                return false;
+            }
         }
     }
 }

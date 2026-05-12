@@ -52,6 +52,7 @@
             PanelControl = new TabControl();
             tabPage1 = new TabPage();
             panel2 = new Panel();
+            tableLayoutPanel9 = new TableLayoutPanel();
             tableLayoutPanel3 = new TableLayoutPanel();
             panel25 = new Panel();
             panel27 = new Panel();
@@ -216,6 +217,7 @@
             PanelControl.SuspendLayout();
             tabPage1.SuspendLayout();
             panel2.SuspendLayout();
+            tableLayoutPanel9.SuspendLayout();
             tableLayoutPanel3.SuspendLayout();
             panel25.SuspendLayout();
             panel27.SuspendLayout();
@@ -564,27 +566,41 @@
             // 
             panel2.AutoScroll = true;
             panel2.BackColor = Color.FromArgb(224, 224, 224);
-            panel2.Controls.Add(tableLayoutPanel3);
-            panel2.Controls.Add(tableLayoutPanel2);
+            panel2.Controls.Add(tableLayoutPanel9);
             panel2.Dock = DockStyle.Fill;
             panel2.Location = new Point(3, 3);
             panel2.Name = "panel2";
             panel2.Size = new Size(910, 648);
             panel2.TabIndex = 2;
             // 
+            // tableLayoutPanel9
+            // 
+            tableLayoutPanel9.ColumnCount = 1;
+            tableLayoutPanel9.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 100F));
+            tableLayoutPanel9.Controls.Add(tableLayoutPanel3, 0, 1);
+            tableLayoutPanel9.Controls.Add(tableLayoutPanel2, 0, 0);
+            tableLayoutPanel9.Dock = DockStyle.Fill;
+            tableLayoutPanel9.Location = new Point(0, 0);
+            tableLayoutPanel9.Name = "tableLayoutPanel9";
+            tableLayoutPanel9.RowCount = 2;
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
+            tableLayoutPanel9.Size = new Size(910, 648);
+            tableLayoutPanel9.TabIndex = 5;
+            // 
             // tableLayoutPanel3
             // 
-            tableLayoutPanel3.Anchor = AnchorStyles.Top | AnchorStyles.Left | AnchorStyles.Right;
             tableLayoutPanel3.ColumnCount = 2;
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
-            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 50.54945F));
+            tableLayoutPanel3.ColumnStyles.Add(new ColumnStyle(SizeType.Percent, 49.45055F));
             tableLayoutPanel3.Controls.Add(panel25, 0, 0);
             tableLayoutPanel3.Controls.Add(panel26, 1, 0);
-            tableLayoutPanel3.Location = new Point(3, 220);
+            tableLayoutPanel3.Dock = DockStyle.Fill;
+            tableLayoutPanel3.Location = new Point(3, 327);
             tableLayoutPanel3.Name = "tableLayoutPanel3";
             tableLayoutPanel3.RowCount = 1;
             tableLayoutPanel3.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel3.Size = new Size(910, 307);
+            tableLayoutPanel3.Size = new Size(904, 318);
             tableLayoutPanel3.TabIndex = 4;
             // 
             // panel25
@@ -593,8 +609,8 @@
             panel25.Dock = DockStyle.Fill;
             panel25.Location = new Point(3, 3);
             panel25.Name = "panel25";
-            panel25.Padding = new Padding(20);
-            panel25.Size = new Size(449, 301);
+            panel25.Padding = new Padding(10);
+            panel25.Size = new Size(450, 312);
             panel25.TabIndex = 0;
             // 
             // panel27
@@ -603,9 +619,9 @@
             panel27.Controls.Add(chartMostSold);
             panel27.Controls.Add(panel29);
             panel27.Dock = DockStyle.Fill;
-            panel27.Location = new Point(20, 20);
+            panel27.Location = new Point(10, 10);
             panel27.Name = "panel27";
-            panel27.Size = new Size(409, 261);
+            panel27.Size = new Size(430, 292);
             panel27.TabIndex = 0;
             // 
             // chartMostSold
@@ -622,7 +638,7 @@
             series1.Legend = "Legend1";
             series1.Name = "Series1";
             chartMostSold.Series.Add(series1);
-            chartMostSold.Size = new Size(409, 216);
+            chartMostSold.Size = new Size(430, 247);
             chartMostSold.TabIndex = 3;
             chartMostSold.Text = "chart1";
             // 
@@ -633,7 +649,7 @@
             panel29.Dock = DockStyle.Top;
             panel29.Location = new Point(0, 0);
             panel29.Name = "panel29";
-            panel29.Size = new Size(409, 45);
+            panel29.Size = new Size(430, 45);
             panel29.TabIndex = 2;
             // 
             // label8
@@ -651,10 +667,10 @@
             // 
             panel26.Controls.Add(panel28);
             panel26.Dock = DockStyle.Fill;
-            panel26.Location = new Point(458, 3);
+            panel26.Location = new Point(459, 3);
             panel26.Name = "panel26";
             panel26.Padding = new Padding(20);
-            panel26.Size = new Size(449, 301);
+            panel26.Size = new Size(442, 312);
             panel26.TabIndex = 1;
             // 
             // panel28
@@ -665,7 +681,7 @@
             panel28.Dock = DockStyle.Fill;
             panel28.Location = new Point(20, 20);
             panel28.Name = "panel28";
-            panel28.Size = new Size(409, 261);
+            panel28.Size = new Size(402, 272);
             panel28.TabIndex = 0;
             // 
             // ProductTableLowStock
@@ -676,7 +692,7 @@
             ProductTableLowStock.Dock = DockStyle.Fill;
             ProductTableLowStock.Location = new Point(0, 45);
             ProductTableLowStock.Name = "ProductTableLowStock";
-            ProductTableLowStock.Size = new Size(409, 216);
+            ProductTableLowStock.Size = new Size(402, 227);
             ProductTableLowStock.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductTableLowStock.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -695,7 +711,7 @@
             panel30.Dock = DockStyle.Top;
             panel30.Location = new Point(0, 0);
             panel30.Name = "panel30";
-            panel30.Size = new Size(409, 45);
+            panel30.Size = new Size(402, 45);
             panel30.TabIndex = 2;
             // 
             // label9
@@ -719,12 +735,12 @@
             tableLayoutPanel2.Controls.Add(panel22, 2, 0);
             tableLayoutPanel2.Controls.Add(panel15, 1, 0);
             tableLayoutPanel2.Controls.Add(panel12, 0, 0);
-            tableLayoutPanel2.Dock = DockStyle.Top;
-            tableLayoutPanel2.Location = new Point(0, 0);
+            tableLayoutPanel2.Dock = DockStyle.Fill;
+            tableLayoutPanel2.Location = new Point(3, 3);
             tableLayoutPanel2.Name = "tableLayoutPanel2";
             tableLayoutPanel2.RowCount = 1;
             tableLayoutPanel2.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel2.Size = new Size(910, 217);
+            tableLayoutPanel2.Size = new Size(904, 318);
             tableLayoutPanel2.TabIndex = 2;
             // 
             // panel22
@@ -733,10 +749,10 @@
             panel22.CausesValidation = false;
             panel22.Controls.Add(panel23);
             panel22.Dock = DockStyle.Fill;
-            panel22.Location = new Point(609, 3);
+            panel22.Location = new Point(605, 3);
             panel22.Name = "panel22";
             panel22.Padding = new Padding(20);
-            panel22.Size = new Size(298, 211);
+            panel22.Size = new Size(296, 312);
             panel22.TabIndex = 2;
             // 
             // panel23
@@ -744,10 +760,10 @@
             panel23.BackColor = Color.WhiteSmoke;
             panel23.Controls.Add(txtMonthlySales);
             panel23.Controls.Add(panel24);
-            panel23.Dock = DockStyle.Fill;
+            panel23.Dock = DockStyle.Top;
             panel23.Location = new Point(20, 20);
             panel23.Name = "panel23";
-            panel23.Size = new Size(258, 171);
+            panel23.Size = new Size(256, 172);
             panel23.TabIndex = 0;
             // 
             // txtMonthlySales
@@ -755,7 +771,7 @@
             txtMonthlySales.AutoSize = true;
             txtMonthlySales.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtMonthlySales.ForeColor = SystemColors.InactiveCaptionText;
-            txtMonthlySales.Location = new Point(10, 56);
+            txtMonthlySales.Location = new Point(10, 48);
             txtMonthlySales.Name = "txtMonthlySales";
             txtMonthlySales.Size = new Size(160, 50);
             txtMonthlySales.TabIndex = 4;
@@ -768,7 +784,7 @@
             panel24.Dock = DockStyle.Top;
             panel24.Location = new Point(0, 0);
             panel24.Name = "panel24";
-            panel24.Size = new Size(258, 45);
+            panel24.Size = new Size(256, 45);
             panel24.TabIndex = 1;
             // 
             // label6
@@ -788,10 +804,10 @@
             panel15.CausesValidation = false;
             panel15.Controls.Add(panel16);
             panel15.Dock = DockStyle.Fill;
-            panel15.Location = new Point(326, 3);
+            panel15.Location = new Point(324, 3);
             panel15.Name = "panel15";
             panel15.Padding = new Padding(20);
-            panel15.Size = new Size(277, 211);
+            panel15.Size = new Size(275, 312);
             panel15.TabIndex = 1;
             // 
             // panel16
@@ -799,10 +815,10 @@
             panel16.BackColor = Color.WhiteSmoke;
             panel16.Controls.Add(txtTotalProducts);
             panel16.Controls.Add(panel17);
-            panel16.Dock = DockStyle.Fill;
+            panel16.Dock = DockStyle.Top;
             panel16.Location = new Point(20, 20);
             panel16.Name = "panel16";
-            panel16.Size = new Size(237, 171);
+            panel16.Size = new Size(235, 172);
             panel16.TabIndex = 0;
             // 
             // txtTotalProducts
@@ -810,7 +826,7 @@
             txtTotalProducts.AutoSize = true;
             txtTotalProducts.Font = new Font("Yu Gothic UI", 27.75F, FontStyle.Bold, GraphicsUnit.Point, 0);
             txtTotalProducts.ForeColor = SystemColors.InactiveCaptionText;
-            txtTotalProducts.Location = new Point(14, 56);
+            txtTotalProducts.Location = new Point(14, 48);
             txtTotalProducts.Name = "txtTotalProducts";
             txtTotalProducts.Size = new Size(43, 50);
             txtTotalProducts.TabIndex = 3;
@@ -823,7 +839,7 @@
             panel17.Dock = DockStyle.Top;
             panel17.Location = new Point(0, 0);
             panel17.Name = "panel17";
-            panel17.Size = new Size(237, 45);
+            panel17.Size = new Size(235, 45);
             panel17.TabIndex = 1;
             // 
             // label5
@@ -845,8 +861,8 @@
             panel12.Dock = DockStyle.Fill;
             panel12.Location = new Point(3, 3);
             panel12.Name = "panel12";
-            panel12.Padding = new Padding(20);
-            panel12.Size = new Size(317, 211);
+            panel12.Padding = new Padding(10);
+            panel12.Size = new Size(315, 312);
             panel12.TabIndex = 0;
             // 
             // panel14
@@ -855,9 +871,9 @@
             panel14.Controls.Add(MostSoldProductsTable);
             panel14.Controls.Add(panel13);
             panel14.Dock = DockStyle.Fill;
-            panel14.Location = new Point(20, 20);
+            panel14.Location = new Point(10, 10);
             panel14.Name = "panel14";
-            panel14.Size = new Size(277, 171);
+            panel14.Size = new Size(295, 292);
             panel14.TabIndex = 0;
             // 
             // MostSoldProductsTable
@@ -868,7 +884,7 @@
             MostSoldProductsTable.Dock = DockStyle.Fill;
             MostSoldProductsTable.Location = new Point(0, 45);
             MostSoldProductsTable.Name = "MostSoldProductsTable";
-            MostSoldProductsTable.Size = new Size(277, 126);
+            MostSoldProductsTable.Size = new Size(295, 247);
             MostSoldProductsTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             MostSoldProductsTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             MostSoldProductsTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -887,7 +903,7 @@
             panel13.Dock = DockStyle.Top;
             panel13.Location = new Point(0, 0);
             panel13.Name = "panel13";
-            panel13.Size = new Size(277, 45);
+            panel13.Size = new Size(295, 45);
             panel13.TabIndex = 1;
             // 
             // label1
@@ -2502,7 +2518,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 8, 17, 15, 19, 784);
+            clock1.CustomTime = new DateTime(2026, 5, 12, 14, 10, 26, 373);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2547,6 +2563,7 @@
             PanelControl.ResumeLayout(false);
             tabPage1.ResumeLayout(false);
             panel2.ResumeLayout(false);
+            tableLayoutPanel9.ResumeLayout(false);
             tableLayoutPanel3.ResumeLayout(false);
             panel25.ResumeLayout(false);
             panel27.ResumeLayout(false);
@@ -2838,5 +2855,6 @@
         private Label label10;
         private Syncfusion.WinForms.DataGrid.SfDataGrid accountsListTable;
         private Syncfusion.WinForms.DataGrid.SfDataGrid MostSoldProductsTable;
+        private TableLayoutPanel tableLayoutPanel9;
     }
 }

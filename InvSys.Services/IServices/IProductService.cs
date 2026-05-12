@@ -2,13 +2,9 @@
 
 public interface IProductService : IDisposable
 {
-    void AddProduct(string name, string description, decimal price, int supplierId);
-
-    List<ProductDTO> GetAllProducts();
-
-    void UpdateProduct(int id, string name, string description, decimal price, int supplierId);
-
-    ProductDTO? GetProductById(int id);
-
-    void DeleteProduct(int id);
+    Task AddProductAsync(string name, string description, decimal price, int supplierId);
+    Task<List<ProductDTO>> GetAllProductsAsync();
+    Task UpdateProductAsync(int id, string name, string description, decimal price, int supplierId);
+    Task<ProductDTO?> GetProductByIdAsync(int id);
+    Task DeleteProductAsync(int id);
 }

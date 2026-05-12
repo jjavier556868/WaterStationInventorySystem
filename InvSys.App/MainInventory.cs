@@ -4,6 +4,7 @@ using InvSys.Domain.Models.Enums;
 using InvSys.Domain.Models.InventoryItems;
 using InvSys.Services.DTOs;
 using InvSys.Services.Services;
+using Microsoft.EntityFrameworkCore;
 using Syncfusion.WinForms.DataGrid;
 using Syncfusion.WinForms.DataGrid.Enums;
 using Syncfusion.WinForms.DataGrid.Events;
@@ -12,6 +13,7 @@ using System.Collections.Generic;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Threading.Tasks;
 using System.Windows.Forms;
 using System.Windows.Forms.DataVisualization.Charting;
 
@@ -23,6 +25,9 @@ namespace InvSys.App
         private UserRole _currentUserRole;
         private List<CartItem> _cart = new List<CartItem>();
         private ReceiptData _lastReceiptData = null;
+
+        // Cached so sync callbacks (QueryRowStyle, FormClosing) can use it
+        private HashSet<int> _inactiveSupplierIds = new HashSet<int>();
 
         // ── Constructors ─────────────────────────────────────────────────
         public MainInventory()
@@ -38,77 +43,35 @@ namespace InvSys.App
             _currentUserRole = userRole;
             lblWelcome.Text = $"Welcome, {username}!";
             UpdateUIForRole();
-            RefreshAllTables();
+            this.Load += async (s, e) => await RefreshAllTablesAsync();
         }
 
         public MainInventory(string username) : this(username, UserRole.User) { }
 
-        // ── Shared helpers: supplier / product active-state queries ──────
-        private HashSet<int> GetInactiveSupplierIds()
+        // ── Shared helpers ───────────────────────────────────────────────
+        private async Task<HashSet<int>> GetInactiveSupplierIdsAsync()
         {
             using var service = new SupplierService();
-            return service.GetAllSuppliers()
-                .Where(s => !s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
+            var all = await service.GetAllSuppliersAsync();
+            return all.Where(s => !s.IsActive).Select(s => s.Id).ToHashSet();
         }
 
-        private HashSet<int> GetActiveProductIds(HashSet<int> inactiveSupplierIds = null)
+        private async Task<HashSet<int>> GetActiveProductIdsAsync(HashSet<int> inactiveSupplierIds = null)
         {
-            inactiveSupplierIds ??= GetInactiveSupplierIds();
+            inactiveSupplierIds ??= await GetInactiveSupplierIdsAsync();
             using var service = new ProductService();
-            return service.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
-                .Select(p => p.Id)
-                .ToHashSet();
+            var all = await service.GetAllProductsAsync();
+            return all.Where(p => !inactiveSupplierIds.Contains(p.SupplierId)).Select(p => p.Id).ToHashSet();
         }
 
-        private bool IsSupplierInactive(int supplierId)
-        {
-            try
-            {
-                using var service = new SupplierService();
-                var supplier = service.GetSupplierById(supplierId);
-                return supplier != null && !supplier.IsActive;
-            }
-            catch { return false; }
-        }
-
-        private bool IsSupplierInactiveByProductId(int productId)
-        {
-            try
-            {
-                using var service = new ProductService();
-                var product = service.GetProductById(productId);
-                return product != null && IsSupplierInactive(product.SupplierId);
-            }
-            catch { return false; }
-        }
-
-        private bool CartContainsProductsFromSupplier(int supplierId)
-        {
-            if (_cart.Count == 0) return false;
-            try
-            {
-                using var service = new ProductService();
-                var supplierProductIds = service.GetAllProducts()
-                    .Where(p => p.SupplierId == supplierId)
-                    .Select(p => p.Id)
-                    .ToHashSet();
-                return _cart.Any(c => supplierProductIds.Contains(c.ProductId));
-            }
-            catch { return false; }
-        }
-
-        private List<CartItem> GetCartItemsWithInactiveSuppliers()
+        private async Task<List<CartItem>> GetCartItemsWithInactiveSuppliersAsync()
         {
             if (_cart.Count == 0) return new List<CartItem>();
             try
             {
                 using var productService = new ProductService();
-                var inactiveSupplierIds = GetInactiveSupplierIds();
-                var products = productService.GetAllProducts().ToDictionary(p => p.Id);
-
+                var inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+                var products = (await productService.GetAllProductsAsync()).ToDictionary(p => p.Id);
                 return _cart
                     .Where(c => products.TryGetValue(c.ProductId, out var p) &&
                                 inactiveSupplierIds.Contains(p.SupplierId))
@@ -122,15 +85,12 @@ namespace InvSys.App
         {
             grid.RowHeight = 36;
             grid.HeaderRowHeight = 40;
-
             grid.Style.HeaderStyle.BackColor = Color.FromArgb(49, 52, 113);
             grid.Style.HeaderStyle.TextColor = Color.White;
             grid.Style.HeaderStyle.Font.Bold = true;
             grid.Style.HeaderStyle.Font.Size = 12f;
-
             grid.Style.SelectionStyle.BackColor = Color.FromArgb(108, 117, 219);
             grid.Style.SelectionStyle.TextColor = Color.White;
-
             grid.QueryRowStyle += (sender, e) =>
             {
                 if (e.RowType == RowType.DefaultRow)
@@ -142,38 +102,28 @@ namespace InvSys.App
             };
         }
 
-        // Gray-out rows for products whose supplier is inactive.
-        // Syncfusion's QueryRowStyleEventArgs exposes no DataRow property, so we
-        // resolve the bound object by mapping RowIndex against the DataSource list.
+        // Uses the cached field — no async needed here
         private void ApplyInactiveSupplierRowStyle(SfDataGrid grid)
         {
             grid.QueryRowStyle += (sender, e) =>
             {
                 if (e.RowType != RowType.DefaultRow) return;
-
-                int dataIndex = e.RowIndex - 1; // row 0 is the header
+                int dataIndex = e.RowIndex - 1;
                 if (dataIndex < 0) return;
-
-                bool isInactive = false;
                 try
                 {
                     if (grid.DataSource is System.Collections.IList source && dataIndex < source.Count)
                     {
                         var row = source[dataIndex];
-                        if (row is ProductDTO dto)
-                            isInactive = IsSupplierInactive(dto.SupplierId);
-                        else if (row is StockViewDTO sv)
-                            isInactive = IsSupplierInactiveByProductId(sv.ProductId);
+                        if (row is ProductDTO dto && _inactiveSupplierIds.Contains(dto.SupplierId))
+                        {
+                            e.Style.BackColor = Color.FromArgb(210, 210, 210);
+                            e.Style.TextColor = Color.FromArgb(140, 140, 140);
+                            e.Style.Font.Italic = true;
+                        }
                     }
                 }
-                catch { /* never let a style callback crash the grid */ }
-
-                if (isInactive)
-                {
-                    e.Style.BackColor = Color.FromArgb(210, 210, 210);
-                    e.Style.TextColor = Color.FromArgb(140, 140, 140);
-                    e.Style.Font.Italic = true;
-                }
+                catch { }
             };
         }
 
@@ -255,7 +205,6 @@ namespace InvSys.App
                 new GridTextColumn { MappingName = "Revenue", HeaderText = "Revenue", Format = "C2" });
         }
 
-        // Single place to set AutoSizeColumnsMode and add columns to a grid.
         private static void ConfigureGrid(SfDataGrid grid, params GridColumn[] columns)
         {
             grid.Columns.Clear();
@@ -284,7 +233,6 @@ namespace InvSys.App
                 CustomizeDataGrid(grid);
             }
 
-            // Selection modes
             foreach (var grid in new[] { ProductListToStockTable, StockTable, SalesTable,
                                          accountsListTable, MostSoldProductsTable })
                 grid.SelectionMode = GridSelectionMode.Single;
@@ -292,12 +240,10 @@ namespace InvSys.App
             SupplierTable.SelectionMode = GridSelectionMode.Extended;
             ProductTable.SelectionMode = GridSelectionMode.Extended;
 
-            // Event wiring
             SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
             ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
 
-            // Inactive-supplier row styling
             ApplyInactiveSupplierRowStyle(ProductTable);
         }
 
@@ -312,7 +258,6 @@ namespace InvSys.App
             btnUpdateProduct.Enabled = isAdmin;
             btnDeleteProduct.Enabled = isAdmin;
             btnAccounts.Enabled = isAdmin;
-
             if (!isAdmin)
                 lblWelcome.Text += " (Read-Only Mode)";
         }
@@ -330,8 +275,7 @@ namespace InvSys.App
         {
             Color off = Color.FromArgb(49, 52, 113);
             Color on = Color.FromArgb(108, 117, 219);
-            foreach (var btn in group)
-                btn.BackColor = off;
+            foreach (var btn in group) btn.BackColor = off;
             active.BackColor = on;
         }
 
@@ -341,7 +285,6 @@ namespace InvSys.App
         private void btnProducts_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 3; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
         private void btnPurchase_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 4; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
         private void btnSales_Click(object sender, EventArgs e) { PanelControl.SelectedIndex = 5; HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase); }
-
         private void btnManagePurchase_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 0; HighlightButton((Button)sender, btnManagePurchase, btnPurchaseCheckout); }
         private void btnPurchaseCheckout_Click(object sender, EventArgs e) { PurchaseControl.SelectedIndex = 1; HighlightButton((Button)sender, btnManagePurchase, btnPurchaseCheckout); }
 
@@ -361,70 +304,64 @@ namespace InvSys.App
         }
 
         // ── Refresh ──────────────────────────────────────────────────────
-        private void RefreshAllTables()
+        private async Task RefreshAllTablesAsync()
         {
-            RefreshSupplierTable();
-            RefreshProductTable();
-            RefreshStockTable();
-            RefreshSalesTable();
-            RefreshStockViewTable();
-            RefreshDashboard();
-            RefreshAccountsTable();
+            _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+            await RefreshSupplierTableAsync();
+            await RefreshProductTableAsync();
+            await RefreshStockTableAsync();
+            await RefreshSalesTableAsync();
+            await RefreshStockViewTableAsync();
+            await RefreshDashboardAsync();
+            await RefreshAccountsTableAsync();
         }
 
-        private void RefreshDashboard()
+        private async Task RefreshDashboardAsync()
         {
-            RefreshTotalProductsCount();
-            RefreshMonthlySales();
-            RefreshLowStockTable();
-            RefreshSalesChart();
-            RefreshMostSoldProductsTable();
+            await RefreshTotalProductsCountAsync();
+            await RefreshMonthlySalesAsync();
+            await RefreshLowStockTableAsync();
+            await RefreshSalesChartAsync();
+            await RefreshMostSoldProductsTableAsync();
         }
 
-        public void RefreshAccountsTable()
+        public async Task RefreshAccountsTableAsync()
         {
             using var service = new AccountService();
-            accountsListTable.DataSource = service.GetAllAccounts();
+            accountsListTable.DataSource = await service.GetAllAccountsAsync();
         }
 
-        public void RefreshSupplierTable()
+        public async Task RefreshSupplierTableAsync()
         {
             using var service = new SupplierService();
-            SupplierTable.DataSource = service.GetAllSuppliers().OrderBy(s => s.Id).ToList();
+            var all = await service.GetAllSuppliersAsync();
+            SupplierTable.DataSource = all.OrderBy(s => s.Id).ToList();
         }
 
-        public void RefreshProductTable()
+        public async Task RefreshProductTableAsync()
         {
             using var productService = new ProductService();
-            using var supplierService = new SupplierService();
-
-            var products = productService.GetAllProducts();
-            var inactiveSupplierIds = GetInactiveSupplierIds();
-
+            var products = await productService.GetAllProductsAsync();
             ProductTable.DataSource = products;
-
-            // Only active-supplier products appear in the stock-add panel
             ProductListToStockTable.DataSource = products
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+                .Where(p => !_inactiveSupplierIds.Contains(p.SupplierId))
                 .ToList();
         }
 
-        public void RefreshSalesTable()
+        public async Task RefreshSalesTableAsync()
         {
             using var service = new PurchaseService();
-            SalesTable.DataSource = service.GetAllSales();
+            SalesTable.DataSource = await service.GetAllSalesAsync();
         }
 
-        public void RefreshStockTable()
+        public async Task RefreshStockTableAsync()
         {
             using var stockService = new StockService();
-
-            var activeProductIds = GetActiveProductIds();
-            var allStock = stockService.GetAllStock()
+            var activeProductIds = await GetActiveProductIdsAsync(_inactiveSupplierIds);
+            var allStock = (await stockService.GetAllStockAsync())
                 .Where(s => activeProductIds.Contains(s.ProductId))
                 .ToList();
 
-            // Subtract whatever is sitting in the cart (not yet persisted)
             foreach (var entry in allStock)
             {
                 var inCart = _cart.FirstOrDefault(c => c.ProductId == entry.ProductId);
@@ -435,88 +372,88 @@ namespace InvSys.App
             StockTable.DataSource = allStock;
         }
 
-        public void RefreshStockViewTable()
+        public async Task RefreshStockViewTableAsync()
         {
-            StockViewTable.DataSource = BuildStockView(filterText: null);
+            StockViewTable.DataSource = await BuildStockViewAsync(filterText: null);
         }
 
-        // Builds the purchase-panel stock view, optionally filtered by a search string.
-        private List<StockViewDTO> BuildStockView(string filterText)
+        private async Task<List<StockViewDTO>> BuildStockViewAsync(string filterText)
         {
             using var stockService = new StockService();
             using var productService = new ProductService();
 
-            var inactiveSupplierIds = GetInactiveSupplierIds();
-            var products = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+            var products = (await productService.GetAllProductsAsync())
+                .Where(p => !_inactiveSupplierIds.Contains(p.SupplierId))
                 .ToList();
 
-            var view = products
-                .Select(p =>
+            var availabilities = await Task.WhenAll(
+                products.Select(p => stockService.GetAvailableStockAsync(p.Id)));
+
+            var view = products.Select((p, i) =>
+            {
+                int cartQty = _cart.FirstOrDefault(c => c.ProductId == p.Id)?.Quantity ?? 0;
+                return new StockViewDTO
                 {
-                    int available = stockService.GetAvailableStock(p.Id);
-                    int cartQty = _cart.FirstOrDefault(c => c.ProductId == p.Id)?.Quantity ?? 0;
-                    return new StockViewDTO
-                    {
-                        ProductId = p.Id,
-                        ProductName = p.Name,
-                        Price = p.Price,
-                        Quantity = Math.Max(0, available - cartQty),
-                        Description = p.Description,
-                        SupplierName = p.SupplierName
-                    };
-                })
-                .Where(v => v.Quantity > 0 || _cart.Any(c => c.ProductId == v.ProductId))
-                .OrderBy(v => v.ProductName)
-                .ToList();
+                    ProductId = p.Id,
+                    ProductName = p.Name,
+                    Price = p.Price,
+                    Quantity = Math.Max(0, availabilities[i] - cartQty),
+                    Description = p.Description,
+                    SupplierName = p.SupplierName
+                };
+            })
+            .Where(v => v.Quantity > 0 || _cart.Any(c => c.ProductId == v.ProductId))
+            .OrderBy(v => v.ProductName)
+            .ToList();
 
-            if (string.IsNullOrWhiteSpace(filterText))
-                return view;
+            if (string.IsNullOrWhiteSpace(filterText)) return view;
 
-            return view
-                .Where(v =>
-                    v.ProductName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    v.ProductId.ToString().Contains(filterText) ||
-                    v.SupplierName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
-                    v.Price.ToString().Contains(filterText))
-                .ToList();
+            return view.Where(v =>
+                v.ProductName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.ProductId.ToString().Contains(filterText) ||
+                v.SupplierName.IndexOf(filterText, StringComparison.OrdinalIgnoreCase) >= 0 ||
+                v.Price.ToString().Contains(filterText))
+            .ToList();
         }
 
         // ── Dashboard widgets ────────────────────────────────────────────
-        private void RefreshTotalProductsCount()
+        private async Task RefreshTotalProductsCountAsync()
         {
             using var service = new ProductService();
-            txtTotalProducts.Text = service.GetAllProducts().Count.ToString();
+            var all = await service.GetAllProductsAsync();
+            txtTotalProducts.Text = all.Count.ToString();
         }
 
-        private void RefreshMonthlySales()
+        private async Task RefreshMonthlySalesAsync()
         {
             var now = DateTime.Now;
             using var context = new InvSys.Infrastructure.InventoryDbContext();
-            decimal total = context.Sales
+            var sales = await context.Sales
                 .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
-                .ToList()
-                .Sum(s => s.Subtotal);
-            txtMonthlySales.Text = $"₱{total:N2}";
+                .ToListAsync();
+            txtMonthlySales.Text = $"₱{sales.Sum(s => s.Subtotal):N2}";
         }
 
-        private void RefreshMostSoldProductsTable()
+        private async Task RefreshMostSoldProductsTableAsync()
         {
             var now = DateTime.Now;
             using var context = new InvSys.Infrastructure.InventoryDbContext();
 
-            var top10 = context.Sales
+            var salesThisMonth = await context.Sales
                 .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
-                .ToList()
+                .ToListAsync();
+
+            var top10 = salesThisMonth
                 .GroupBy(s => s.ProductId)
                 .Select(g => new { ProductId = g.Key, TotalSold = g.Sum(s => s.Quantity), Revenue = g.Sum(s => s.Subtotal) })
                 .OrderByDescending(x => x.TotalSold)
                 .Take(10)
                 .ToList();
 
-            var productNames = context.Products
-                .Where(p => top10.Select(t => t.ProductId).Contains(p.Id))
-                .ToDictionary(p => p.Id, p => p.Name);
+            var productIds = top10.Select(t => t.ProductId).ToList();
+            var productNames = await context.Products
+                .Where(p => productIds.Contains(p.Id))
+                .ToDictionaryAsync(p => p.Id, p => p.Name);
 
             MostSoldProductsTable.DataSource = top10
                 .Select((x, i) => new
@@ -529,52 +466,56 @@ namespace InvSys.App
                 .ToList();
         }
 
-        private void RefreshLowStockTable()
+        private async Task RefreshLowStockTableAsync()
         {
             using var stockService = new StockService();
             using var productService = new ProductService();
             using var supplierService = new SupplierService();
 
-            var activeSupplierIds = supplierService.GetAllSuppliers()
-                .Where(s => s.IsActive)
-                .Select(s => s.Id)
-                .ToHashSet();
+            var activeSupplierIds = (await supplierService.GetAllSuppliersAsync())
+                .Where(s => s.IsActive).Select(s => s.Id).ToHashSet();
 
-            var products = productService.GetAllProducts();
+            var products = await productService.GetAllProductsAsync();
+            var allStock = await stockService.GetAllStockAsync();
 
-            var lowStock = stockService.GetAllStock()
-                .Select(s =>
+            var availabilities = await Task.WhenAll(
+                allStock.Select(s => stockService.GetAvailableStockAsync(s.ProductId)));
+
+            var lowStock = allStock.Select((s, i) =>
+            {
+                var product = products.FirstOrDefault(p => p.Id == s.ProductId);
+                return new
                 {
-                    int available = stockService.GetAvailableStock(s.ProductId);
-                    var product = products.FirstOrDefault(p => p.Id == s.ProductId);
-                    return new
-                    {
-                        s.ProductId,
-                        s.ProductName,
-                        AvailableQty = available,
-                        Price = product?.Price ?? 0m,
-                        SupplierName = product?.SupplierName ?? "Unknown",
-                        SupplierId = product?.SupplierId ?? 0
-                    };
-                })
-                .Where(x => x.AvailableQty < 10 && activeSupplierIds.Contains(x.SupplierId))
-                .OrderBy(x => x.AvailableQty)
-                .Select(x => new { x.ProductId, x.ProductName, x.AvailableQty, x.Price, x.SupplierName })
-                .ToList();
+                    s.ProductId,
+                    s.ProductName,
+                    AvailableQty = availabilities[i],
+                    Price = product?.Price ?? 0m,
+                    SupplierName = product?.SupplierName ?? "Unknown",
+                    SupplierId = product?.SupplierId ?? 0
+                };
+            })
+            .Where(x => x.AvailableQty < 10 && activeSupplierIds.Contains(x.SupplierId))
+            .OrderBy(x => x.AvailableQty)
+            .Select(x => new { x.ProductId, x.ProductName, x.AvailableQty, x.Price, x.SupplierName })
+            .ToList();
 
             ProductTableLowStock.DataSource = lowStock;
         }
 
-        private void RefreshSalesChart()
+        private async Task RefreshSalesChartAsync()
         {
             var now = DateTime.Now;
             int daysInMonth = DateTime.DaysInMonth(now.Year, now.Month);
-
             using var context = new InvSys.Infrastructure.InventoryDbContext();
 
-            var salesThisMonth = context.Sales
+            var salesThisMonth = await context.Sales
                 .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
-                .ToList();
+                .ToListAsync();
+
+            var soldProductIds = salesThisMonth.Select(s => s.ProductId).Distinct().ToList();
+            var products = await context.Products
+                .Where(p => soldProductIds.Contains(p.Id))
+                .ToListAsync();
 
             chartMostSold.Series.Clear();
             chartMostSold.ChartAreas[0].AxisX.Title = "Day of Month";
@@ -601,9 +542,6 @@ namespace InvSys.App
                 Color.FromArgb(180, 80,  180), Color.FromArgb(40,  140, 180)
             };
 
-            var soldProductIds = salesThisMonth.Select(s => s.ProductId).Distinct().ToList();
-            var products = context.Products.Where(p => soldProductIds.Contains(p.Id)).ToList();
-
             int colorIndex = 0;
             foreach (var product in products)
             {
@@ -617,7 +555,6 @@ namespace InvSys.App
                     MarkerStyle = MarkerStyle.Circle,
                     MarkerSize = 6
                 };
-
                 for (int day = 1; day <= daysInMonth; day++)
                 {
                     int qty = salesThisMonth
@@ -625,7 +562,6 @@ namespace InvSys.App
                         .Sum(s => s.Quantity);
                     series.Points.AddXY(day, qty);
                 }
-
                 chartMostSold.Series.Add(series);
             }
 
@@ -635,35 +571,38 @@ namespace InvSys.App
         }
 
         // ── Supplier CRUD ────────────────────────────────────────────────
-        private void btnAddSupplier_Click(object sender, EventArgs e)
+        private async void btnAddSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
             var form = new AddSupplier(this);
             if (form.ShowDialog() == DialogResult.OK)
-                RefreshSupplierTable();
+            {
+                _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+                await RefreshSupplierTableAsync();
+            }
         }
 
-        private void btnUpdateSupplier_Click(object sender, EventArgs e)
+        private async void btnUpdateSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-
             if (SupplierTable.SelectedItem is not SupplierDTO dto)
             {
                 MessageBox.Show("Please select a supplier to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             var form = new UpdateSupplier(this);
             form.LoadSelectedSupplier(dto);
             if (form.ShowDialog() == DialogResult.OK)
-                RefreshSupplierTable();
+            {
+                _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+                await RefreshSupplierTableAsync();
+            }
         }
 
-        private void btnDeleteSupplier_Click(object sender, EventArgs e)
+        private async void btnDeleteSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-
             var selected = SupplierTable.SelectedItems?.Cast<SupplierDTO>().ToList();
             if (selected == null || selected.Count == 0)
             {
@@ -671,7 +610,6 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             string names = string.Join(", ", selected.Select(s => s.Name));
             if (MessageBox.Show($"Delete {selected.Count} supplier(s)?\n\n{names}", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
@@ -680,11 +618,11 @@ namespace InvSys.App
             {
                 using var service = new SupplierService();
                 foreach (var s in selected)
-                    service.DeleteSupplier(s.Id);
-
+                    await service.DeleteSupplierAsync(s.Id);
                 MessageBox.Show($"{selected.Count} supplier(s) deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                RefreshSupplierTable();
+                _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+                await RefreshSupplierTableAsync();
             }
             catch (Exception ex)
             {
@@ -693,7 +631,7 @@ namespace InvSys.App
             }
         }
 
-        private void SupplierTable_CellDoubleClick(object sender, CellClickEventArgs e)
+        private async void SupplierTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (!IsAdmin()) return;
             if (e.DataRow.RowType != RowType.DefaultRow || e.DataRow.RowData is not SupplierDTO dto) return;
@@ -701,10 +639,16 @@ namespace InvSys.App
             var form = new UpdateSupplier(this);
             form.LoadSelectedSupplier(dto);
 
+            // FormClosing is sync — check cart against cached product list
             form.FormClosing += (fs, fe) =>
             {
-                if (form.DialogResult != DialogResult.OK) return;
-                if (form.IsMarkingInactive && CartContainsProductsFromSupplier(dto.Id))
+                if (form.DialogResult != DialogResult.OK || !form.IsMarkingInactive) return;
+                var supplierProductIds = new ProductService()
+                    .GetAllProductsAsync().GetAwaiter().GetResult()
+                    .Where(p => p.SupplierId == dto.Id)
+                    .Select(p => p.Id)
+                    .ToHashSet();
+                if (_cart.Any(c => supplierProductIds.Contains(c.ProductId)))
                 {
                     MessageBox.Show(
                         "Cannot deactivate this supplier — one or more of their products " +
@@ -717,38 +661,40 @@ namespace InvSys.App
             };
 
             if (form.ShowDialog() == DialogResult.OK)
-                RefreshAllTables();
+            {
+                _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
+                await RefreshAllTablesAsync();
+            }
         }
 
-        private void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
+        private async void txtBoxSupplierSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtBoxSupplierSearch.Text.Trim();
             using var service = new SupplierService();
-            var all = service.GetAllSuppliers();
-
-            SupplierTable.DataSource = string.IsNullOrEmpty(search) ? all :
-                all.Where(s =>
+            var all = await service.GetAllSuppliersAsync();
+            SupplierTable.DataSource = string.IsNullOrEmpty(search)
+                ? all.OrderBy(s => s.Id).ToList()
+                : all.Where(s =>
                     s.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     s.Email.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     s.Location.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     s.ContactNo.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0)
-                .OrderBy(s => s.Name)
-                .ToList();
+                  .OrderBy(s => s.Name).ToList();
         }
 
         // ── Product CRUD ─────────────────────────────────────────────────
-        private void btnAddProduct_Click_1(object sender, EventArgs e)
+        private async void btnAddProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
             var form = new AddProduct(this);
             if (form.ShowDialog() == DialogResult.OK)
             {
-                RefreshProductTable();
-                RefreshDashboard();
+                await RefreshProductTableAsync();
+                await RefreshDashboardAsync();
             }
         }
 
-        private void btnUpdateProduct_Click_1(object sender, EventArgs e)
+        private async void btnUpdateProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
             if (ProductTable.SelectedItem is not ProductDTO dto)
@@ -757,20 +703,18 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             var form = new UpdateProduct(this);
             form.LoadSelectedProduct(dto);
             if (form.ShowDialog() == DialogResult.OK)
             {
-                RefreshProductTable();
-                RefreshDashboard();
+                await RefreshProductTableAsync();
+                await RefreshDashboardAsync();
             }
         }
 
-        private void btnDeleteProduct_Click_1(object sender, EventArgs e)
+        private async void btnDeleteProduct_Click_1(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-
             var selected = ProductTable.SelectedItems?.Cast<ProductDTO>().ToList();
             if (selected == null || selected.Count == 0)
             {
@@ -778,7 +722,6 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-
             string names = string.Join(", ", selected.Select(p => p.Name));
             if (MessageBox.Show($"Delete {selected.Count} product(s)?\n\n{names}", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
@@ -787,12 +730,11 @@ namespace InvSys.App
             {
                 using var service = new ProductService();
                 foreach (var p in selected)
-                    service.DeleteProduct(p.Id);
-
+                    await service.DeleteProductAsync(p.Id);
                 MessageBox.Show($"{selected.Count} product(s) deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                RefreshProductTable();
-                RefreshDashboard();
+                await RefreshProductTableAsync();
+                await RefreshDashboardAsync();
             }
             catch (Exception ex)
             {
@@ -801,37 +743,35 @@ namespace InvSys.App
             }
         }
 
-        private void ProductTable_CellDoubleClick(object sender, CellClickEventArgs e)
+        private async void ProductTable_CellDoubleClick(object sender, CellClickEventArgs e)
         {
             if (!IsAdmin()) return;
             if (e.DataRow.RowType != RowType.DefaultRow || ProductTable.SelectedItem is not ProductDTO dto) return;
-
             var form = new UpdateProduct(this);
             form.LoadSelectedProduct(dto);
             if (form.ShowDialog() == DialogResult.OK)
             {
-                RefreshProductTable();
-                RefreshDashboard();
+                await RefreshProductTableAsync();
+                await RefreshDashboardAsync();
             }
         }
 
-        private void txtBoxProductSearch_TextChanged(object sender, EventArgs e)
+        private async void txtBoxProductSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtBoxProductSearch.Text.Trim();
             using var service = new ProductService();
-            var all = service.GetAllProducts();
-
-            ProductTable.DataSource = string.IsNullOrEmpty(search) ? all :
-                all.Where(p =>
+            var all = await service.GetAllProductsAsync();
+            ProductTable.DataSource = string.IsNullOrEmpty(search)
+                ? all
+                : all.Where(p =>
                     p.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.Price.ToString().Contains(search))
-                .OrderBy(p => p.Name)
-                .ToList();
+                  .OrderBy(p => p.Name).ToList();
         }
 
-        // ── Stock info panel (left side of stock tab) ────────────────────
+        // ── Stock info panel ─────────────────────────────────────────────
         private void ProductListToStockTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ProductListToStockTable.SelectedItem is not ProductDTO p) return;
@@ -847,108 +787,65 @@ namespace InvSys.App
         {
             quantity = 0;
             if (string.IsNullOrWhiteSpace(input))
-            {
-                MessageBox.Show("Quantity cannot be empty.", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Quantity cannot be empty.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             if (!int.TryParse(input.Trim(), out quantity))
-            {
-                MessageBox.Show("Quantity must be a whole number (e.g. 10).", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Quantity must be a whole number (e.g. 10).", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             if (quantity <= 0)
-            {
-                MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Quantity must be greater than zero.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             return true;
         }
 
-        private void btnAddStock_Click(object sender, EventArgs e)
+        private async void btnAddStock_Click(object sender, EventArgs e)
         {
             if (ProductListToStockTable.SelectedItem is not ProductDTO product)
-            {
-                MessageBox.Show("Please select a product first.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Please select a product first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int qty)) return;
-
             try
             {
                 using var service = new StockService();
-                service.Restock(product.Id, qty);
-                MessageBox.Show($"Added {qty} unit(s) to '{product.Name}'.", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await service.RestockAsync(product.Id, qty);
+                MessageBox.Show($"Added {qty} unit(s) to '{product.Name}'.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBoxQuantityAdd.Clear();
-                RefreshStockTable();
-                RefreshStockViewTable();
-                RefreshDashboard();
+                await RefreshStockTableAsync();
+                await RefreshStockViewTableAsync();
+                await RefreshDashboardAsync();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to add stock: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Failed to add stock: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        private void btnUpdateStock_Click(object sender, EventArgs e)
+        private async void btnUpdateStock_Click(object sender, EventArgs e)
         {
             if (StockTable.SelectedItem is not StockDTO stock)
-            {
-                MessageBox.Show("Please select a stock entry to update.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Please select a stock entry to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int qty)) return;
-
             try
             {
                 using var service = new StockService();
-                service.UpdateStock(stock.Id, qty);
-                MessageBox.Show("Stock updated.", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await service.UpdateStockAsync(stock.Id, qty);
+                MessageBox.Show("Stock updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
                 txtBoxQuantityAdd.Clear();
-                RefreshStockTable();
-                RefreshStockViewTable();
-                RefreshDashboard();
+                await RefreshStockTableAsync();
+                await RefreshStockViewTableAsync();
+                await RefreshDashboardAsync();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to update stock: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Failed to update stock: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
-        private void btnDeleteStock_Click(object sender, EventArgs e)
+        private async void btnDeleteStock_Click(object sender, EventArgs e)
         {
             if (StockTable.SelectedItem is not StockDTO stock)
-            {
-                MessageBox.Show("Please select a stock entry to delete.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-            if (MessageBox.Show("Delete this stock entry?", "Confirm Delete",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
-
+            { MessageBox.Show("Please select a stock entry to delete.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+            if (MessageBox.Show("Delete this stock entry?", "Confirm Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
             try
             {
                 using var service = new StockService();
-                service.DeleteStock(stock.Id);
-                MessageBox.Show("Stock entry deleted.", "Success",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                RefreshStockTable();
-                RefreshStockViewTable();
-                RefreshDashboard();
+                await service.DeleteStockAsync(stock.Id);
+                MessageBox.Show("Stock entry deleted.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await RefreshStockTableAsync();
+                await RefreshStockViewTableAsync();
+                await RefreshDashboardAsync();
             }
-            catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to delete stock: {ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            catch (Exception ex) { MessageBox.Show($"Failed to delete stock: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         // ── Purchase / Cart ──────────────────────────────────────────────
@@ -956,30 +853,13 @@ namespace InvSys.App
         {
             quantity = 0;
             if (string.IsNullOrWhiteSpace(input))
-            {
-                MessageBox.Show("Please enter a purchase quantity.", "Input Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Please enter a purchase quantity.", "Input Required", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             if (!int.TryParse(input.Trim(), out quantity))
-            {
-                MessageBox.Show("Quantity must be a whole number (e.g. 3).", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Quantity must be a whole number (e.g. 3).", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             if (quantity <= 0)
-            {
-                MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show("Quantity must be greater than zero.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             if (quantity > availableQty)
-            {
-                MessageBox.Show(
-                    $"Requested quantity ({quantity}) exceeds available stock ({availableQty}).",
-                    "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return false;
-            }
+            { MessageBox.Show($"Requested quantity ({quantity}) exceeds available stock ({availableQty}).", "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning); return false; }
             return true;
         }
 
@@ -997,23 +877,12 @@ namespace InvSys.App
             PurchaseTable.DataSource = snapshot;
         }
 
-        private void btnAddPurchase_Click(object sender, EventArgs e)
+        private async void btnAddPurchase_Click(object sender, EventArgs e)
         {
             if (_lastReceiptData != null)
-            {
-                MessageBox.Show(
-                    "A previous transaction has not been reset yet.\n\n" +
-                    "Please click 'Reset Transaction' before starting a new purchase.",
-                    "Reset Required",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("A previous transaction has not been reset yet.\n\nPlease click 'Reset Transaction' before starting a new purchase.", "Reset Required", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (StockViewTable.SelectedItem is not StockViewDTO selected)
-            {
-                MessageBox.Show("Please select a product from the list first.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Please select a product from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             int selectedProductId = selected.ProductId;
             if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty)) return;
@@ -1022,12 +891,7 @@ namespace InvSys.App
             if (existing != null)
             {
                 if (qty > selected.Quantity)
-                {
-                    MessageBox.Show(
-                        $"Cannot add {qty} more. Only {selected.Quantity} unit(s) still available.",
-                        "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                    return;
-                }
+                { MessageBox.Show($"Cannot add {qty} more. Only {selected.Quantity} unit(s) still available.", "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
                 existing.Quantity += qty;
                 existing.Subtotal = existing.Price * existing.Quantity;
             }
@@ -1045,11 +909,10 @@ namespace InvSys.App
 
             txtBoxPurchaseQuantity.Clear();
             RefreshCartTables();
-            RefreshStockViewTable();
-            RefreshStockTable();
+            await RefreshStockViewTableAsync();
+            await RefreshStockTableAsync();
             RefreshTotalAmount();
 
-            // Re-select the same row so info labels stay in sync
             var updated = (StockViewTable.DataSource as List<StockViewDTO>)
                 ?.FirstOrDefault(v => v.ProductId == selectedProductId);
             if (updated != null)
@@ -1059,89 +922,59 @@ namespace InvSys.App
             MessageBox.Show("Cart item added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnUpdatePurchase_Click(object sender, EventArgs e)
+        private async void btnUpdatePurchase_Click(object sender, EventArgs e)
         {
             if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
-            {
-                MessageBox.Show("Please select an item in the cart to update.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Please select an item in the cart to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-            int maxAllowed;
-            using (var svc = new StockService())
-                maxAllowed = svc.GetAvailableStock(cartItem.ProductId);
+            using var svc = new StockService();
+            int maxAllowed = await svc.GetAvailableStockAsync(cartItem.ProductId);
 
             string input = Microsoft.VisualBasic.Interaction.InputBox(
                 $"Enter new quantity for '{cartItem.ProductName}'.\nAvailable stock: {maxAllowed}",
-                "Update Purchase Quantity",
-                cartItem.Quantity.ToString());
+                "Update Purchase Quantity", cartItem.Quantity.ToString());
 
             if (string.IsNullOrWhiteSpace(input)) return;
-
             if (!int.TryParse(input.Trim(), out int newQty))
-            {
-                MessageBox.Show("Quantity must be a whole number.", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Quantity must be a whole number.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (newQty <= 0)
-            {
-                MessageBox.Show("Quantity must be greater than zero.", "Invalid Input",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Quantity must be greater than zero.", "Invalid Input", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (newQty > maxAllowed)
-            {
-                MessageBox.Show($"Quantity ({newQty}) exceeds available stock ({maxAllowed}).",
-                    "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show($"Quantity ({newQty}) exceeds available stock ({maxAllowed}).", "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             var item = _cart.FirstOrDefault(c => c.ProductId == cartItem.ProductId);
             if (item == null) return;
-
             item.Quantity = newQty;
             item.Subtotal = item.Price * newQty;
 
             RefreshCartTables();
-            RefreshStockViewTable();
-            RefreshStockTable();
+            await RefreshStockViewTableAsync();
+            await RefreshStockTableAsync();
             SyncPurchaseInfoLabelsToSelection();
             RefreshTotalAmount();
-
-            MessageBox.Show($"'{cartItem.ProductName}' updated to {newQty}.",
-                "Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            MessageBox.Show($"'{cartItem.ProductName}' updated to {newQty}.", "Updated", MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
 
-        private void btnDeletePurchase_Click(object sender, EventArgs e)
+        private async void btnDeletePurchase_Click(object sender, EventArgs e)
         {
             if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
-            {
-                MessageBox.Show("Please select an item in the cart to remove.", "No Selection",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Please select an item in the cart to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
             _cart.RemoveAll(c => c.ProductId == cartItem.ProductId);
             txtBoxPurchaseQuantity.Clear();
             RefreshCartTables();
-            RefreshStockViewTable();
-            RefreshStockTable();
+            await RefreshStockViewTableAsync();
+            await RefreshStockTableAsync();
             SyncPurchaseInfoLabelsToSelection();
             RefreshTotalAmount();
         }
 
-        private void btnResetPurchase_Click(object sender, EventArgs e)
+        private async void btnResetPurchase_Click(object sender, EventArgs e)
         {
             if (_cart.Count == 0)
-            {
-                MessageBox.Show("The cart is already empty.", "Nothing to Reset",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
+            { MessageBox.Show("The cart is already empty.", "Nothing to Reset", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
             if (MessageBox.Show("Clear all items from the cart?", "Confirm Reset",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
 
@@ -1149,8 +982,8 @@ namespace InvSys.App
             txtBoxPurchaseQuantity.Clear();
             ClearPurchaseInfoLabels();
             RefreshCartTables();
-            RefreshStockViewTable();
-            RefreshStockTable();
+            await RefreshStockViewTableAsync();
+            await RefreshStockTableAsync();
             RefreshTotalAmount();
         }
 
@@ -1191,21 +1024,17 @@ namespace InvSys.App
                 ClearPurchaseInfoLabels();
         }
 
-        private void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        private async void ProductsToPurchaseTable_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
             if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
-            {
-                ClearPurchaseInfoLabels();
-                return;
-            }
+            { ClearPurchaseInfoLabels(); return; }
 
             try
             {
                 using var stockService = new StockService();
                 using var productService = new ProductService();
-
-                int available = stockService.GetAvailableStock(cartItem.ProductId);
-                var product = productService.GetProductById(cartItem.ProductId);
+                int available = await stockService.GetAvailableStockAsync(cartItem.ProductId);
+                var product = await productService.GetProductByIdAsync(cartItem.ProductId);
 
                 txtFromPurchaseProductID.Text = $"Product ID: {cartItem.ProductId}";
                 txtFromPurchaseProductName.Text = $"Product Name: {cartItem.ProductName}";
@@ -1226,25 +1055,14 @@ namespace InvSys.App
         }
 
         // ── Payment ──────────────────────────────────────────────────────
-        private void btnPayTotalAmount_Click(object sender, EventArgs e)
+        private async void btnPayTotalAmount_Click(object sender, EventArgs e)
         {
             if (_lastReceiptData != null)
-            {
-                MessageBox.Show(
-                    "A previous transaction is still active.\n\n" +
-                    "Please click 'Reset Transaction' to clear it before processing a new payment.",
-                    "Previous Transaction Pending",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("A previous transaction is still active.\n\nPlease click 'Reset Transaction' to clear it before processing a new payment.", "Previous Transaction Pending", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             if (_cart.Count == 0)
-            {
-                MessageBox.Show("Your cart is empty. Please add items before paying.",
-                    "Empty Cart", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
+            { MessageBox.Show("Your cart is empty. Please add items before paying.", "Empty Cart", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
-            var inactiveItems = GetCartItemsWithInactiveSuppliers();
+            var inactiveItems = await GetCartItemsWithInactiveSuppliersAsync();
             if (inactiveItems.Count > 0)
             {
                 string names = string.Join("\n  • ", inactiveItems.Select(c => c.ProductName));
@@ -1253,8 +1071,7 @@ namespace InvSys.App
                     "The following item(s) belong to a deactivated supplier:\n\n" +
                     $"  • {names}\n\n" +
                     "Please remove them from the cart before paying.",
-                    "Inactive Supplier — Checkout Blocked",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    "Inactive Supplier — Checkout Blocked", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
@@ -1283,15 +1100,13 @@ namespace InvSys.App
                 }).ToList();
 
                 using var service = new PurchaseService();
-                var purchase = service.ProcessPurchase(saleItems, paymentMethod);
+                var purchase = await service.ProcessPurchaseAsync(saleItems, paymentMethod);
 
                 decimal change = dialog.AmountPaid - total;
-
                 txtTotalAmount.Text = $"Total Amount: ₱{total:N2}";
                 txtAmountPaid.Text = $"Amount Paid: ₱{dialog.AmountPaid:N2}";
                 txtChange.Text = dialog.SelectedPaymentMethod == "Cash"
-                    ? $"Change: ₱{change:N2}"
-                    : "Change: N/A";
+                    ? $"Change: ₱{change:N2}" : "Change: N/A";
 
                 _lastReceiptData = new ReceiptData
                 {
@@ -1312,7 +1127,7 @@ namespace InvSys.App
 
                 btnGenerateReceipt.Enabled = true;
                 _cart.Clear();
-                RefreshAllTables();
+                await RefreshAllTablesAsync();
                 SyncPurchaseInfoLabelsToSelection();
 
                 MessageBox.Show(
@@ -1323,13 +1138,11 @@ namespace InvSys.App
                     $"Payment        : {dialog.SelectedPaymentMethod}\n" +
                     $"Amount Paid    : ₱{dialog.AmountPaid:N2}\n" +
                     (dialog.SelectedPaymentMethod == "Cash" ? $"Change         : ₱{change:N2}" : ""),
-                    "Payment Successful",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    "Payment Successful", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Payment failed:\n{ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+                MessageBox.Show($"Payment failed:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
 
@@ -1337,45 +1150,29 @@ namespace InvSys.App
         private void btnGenerateReceipt_Click(object sender, EventArgs e)
         {
             if (_lastReceiptData == null)
-            {
-                MessageBox.Show("No completed transaction found. Please complete a purchase first.",
-                    "No Transaction", MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                return;
-            }
-
+            { MessageBox.Show("No completed transaction found. Please complete a purchase first.", "No Transaction", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
             try
             {
                 string path = ReceiptPdfGenerator.Generate(_lastReceiptData);
-
-                if (path == null) return; // user cancelled the save dialog
-
+                if (path == null) return;
                 var result = MessageBox.Show($"Receipt saved!\n\n{path}\n\nOpen it now?",
                     "Receipt Generated", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
-
                 if (result == DialogResult.Yes)
                     Process.Start(new ProcessStartInfo(path) { UseShellExecute = true });
             }
             catch (Exception ex)
-            {
-                MessageBox.Show($"Failed to generate receipt:\n{ex.Message}", "Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Error);
-            }
+            { MessageBox.Show($"Failed to generate receipt:\n{ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
         }
 
         // ── Reset transaction ────────────────────────────────────────────
-        private void btnResetTransaction_Click(object sender, EventArgs e)
+        private async void btnResetTransaction_Click(object sender, EventArgs e)
         {
             bool alreadyClear = _cart.Count == 0 &&
                 txtAmountPaid.Text is "Amount Paid: ₱0.00" or "Amount Paid:" &&
                 txtChange.Text is "Change: ₱0.00" or "Change:";
 
             if (alreadyClear)
-            {
-                MessageBox.Show("Nothing to reset.", "Already Clear",
-                    MessageBoxButtons.OK, MessageBoxIcon.Information);
-                return;
-            }
-
+            { MessageBox.Show("Nothing to reset.", "Already Clear", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
             if (MessageBox.Show("Reset the entire transaction? This will clear the cart and all amounts.",
                 "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
 
@@ -1388,24 +1185,22 @@ namespace InvSys.App
 
             ClearPurchaseInfoLabels();
             RefreshCartTables();
-            RefreshStockViewTable();
+            await RefreshStockViewTableAsync();
             txtBoxPurchaseQuantity.Clear();
         }
 
         // ── Search handlers ──────────────────────────────────────────────
-        private void txtManagePurchaseSearch_TextChanged(object sender, EventArgs e)
+        private async void txtManagePurchaseSearch_TextChanged(object sender, EventArgs e)
         {
-            StockViewTable.DataSource = BuildStockView(txtManagePurchaseSearch.Text.Trim());
+            StockViewTable.DataSource = await BuildStockViewAsync(txtManagePurchaseSearch.Text.Trim());
         }
 
-        private void txtProductListSearch_TextChanged(object sender, EventArgs e)
+        private async void txtProductListSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtProductListSearch.Text.Trim();
             using var productService = new ProductService();
-            var inactiveSupplierIds = GetInactiveSupplierIds();
-
-            var all = productService.GetAllProducts()
-                .Where(p => !inactiveSupplierIds.Contains(p.SupplierId))
+            var all = (await productService.GetAllProductsAsync())
+                .Where(p => !_inactiveSupplierIds.Contains(p.SupplierId))
                 .ToList();
 
             ProductListToStockTable.DataSource = string.IsNullOrEmpty(search) ? all :
@@ -1414,17 +1209,15 @@ namespace InvSys.App
                     p.Description.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.SupplierName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     p.Price.ToString().Contains(search))
-                .OrderBy(p => p.Name)
-                .ToList();
+                .OrderBy(p => p.Name).ToList();
         }
 
-        private void txtCurrentStockSearch_TextChanged(object sender, EventArgs e)
+        private async void txtCurrentStockSearch_TextChanged(object sender, EventArgs e)
         {
             var search = txtCurrentStockSearch.Text.Trim();
             using var stockService = new StockService();
-            var activeProductIds = GetActiveProductIds();
-
-            var all = stockService.GetAllStock()
+            var activeProductIds = await GetActiveProductIdsAsync(_inactiveSupplierIds);
+            var all = (await stockService.GetAllStockAsync())
                 .Where(s => activeProductIds.Contains(s.ProductId))
                 .ToList();
 
@@ -1433,8 +1226,7 @@ namespace InvSys.App
                     s.ProductName.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
                     s.ProductId.ToString().Contains(search) ||
                     s.Quantity.ToString().Contains(search))
-                .OrderBy(s => s.ProductName)
-                .ToList();
+                .OrderBy(s => s.ProductName).ToList();
         }
     }
 }

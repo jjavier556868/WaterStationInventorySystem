@@ -2,16 +2,20 @@
 using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
 using InvSys.Services.Interfaces;
+using Microsoft.EntityFrameworkCore;
+
 namespace InvSys.Services.Services
 {
     public class ProductService : IProductService
     {
         private readonly InventoryDbContext _context;
+
         public ProductService()
         {
             _context = new InventoryDbContext();
         }
-        public void AddProduct(string name, string description, decimal price, int supplierId)
+
+        public async Task AddProductAsync(string name, string description, decimal price, int supplierId)
         {
             var product = new Product
             {
@@ -21,12 +25,13 @@ namespace InvSys.Services.Services
                 SupplierId = supplierId,
                 CreatedDate = DateTime.Now
             };
-            _context.Products.Add(product);
-            _context.SaveChanges();
+            await _context.Products.AddAsync(product);
+            await _context.SaveChangesAsync();
         }
-        public List<ProductDTO> GetAllProducts()
+
+        public async Task<List<ProductDTO>> GetAllProductsAsync()
         {
-            return _context.Products
+            return await _context.Products
                 .Select(p => new ProductDTO
                 {
                     Id = p.Id,
@@ -36,11 +41,12 @@ namespace InvSys.Services.Services
                     SupplierId = p.SupplierId,
                     SupplierName = p.Supplier.Name
                 })
-                .ToList();
+                .ToListAsync();
         }
-        public ProductDTO? GetProductById(int id)
+
+        public async Task<ProductDTO?> GetProductByIdAsync(int id)
         {
-            return _context.Products
+            return await _context.Products
                 .Where(p => p.Id == id)
                 .Select(p => new ProductDTO
                 {
@@ -51,43 +57,41 @@ namespace InvSys.Services.Services
                     SupplierId = p.SupplierId,
                     SupplierName = p.Supplier.Name
                 })
-                .FirstOrDefault();
+                .FirstOrDefaultAsync();
         }
-        public void UpdateProduct(int id, string name, string description, decimal price, int supplierId)
+
+        public async Task UpdateProductAsync(int id, string name, string description, decimal price, int supplierId)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (product != null)
             {
                 product.Name = name;
                 product.Description = description;
                 product.Price = price;
                 product.SupplierId = supplierId;
-                _context.SaveChanges();
+                await _context.SaveChangesAsync();
             }
         }
-        public void DeleteProduct(int id)
+
+        public async Task DeleteProductAsync(int id)
         {
-            var product = _context.Products.FirstOrDefault(p => p.Id == id);
+            var product = await _context.Products.FirstOrDefaultAsync(p => p.Id == id);
             if (product == null) return;
 
             var now = DateTime.Now;
 
-            var stockEntries = _context.Stocks
-                .Where(s => s.ProductId == id)
-                .ToList();
+            var stockEntries = await _context.Stocks.Where(s => s.ProductId == id).ToListAsync();
             foreach (var stock in stockEntries)
                 stock.DeletedDate = now;
 
-            var salesEntries = _context.Sales
-                .Where(s => s.ProductId == id)
-                .ToList();
+            var salesEntries = await _context.Sales.Where(s => s.ProductId == id).ToListAsync();
             foreach (var sale in salesEntries)
                 sale.DeletedDate = now;
 
             product.DeletedDate = now;
-
-            _context.SaveChanges();
+            await _context.SaveChangesAsync();
         }
+
         public void Dispose() => _context?.Dispose();
     }
 }

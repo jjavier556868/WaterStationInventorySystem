@@ -1,11 +1,10 @@
 ﻿using InvSys.Services.DTOs;
 
-public interface IStockService:IDisposable
+public interface IStockService : IDisposable
 {
-    void Restock(int productId, int quantity);
-    int GetAvailableStock(int productId);
-    List<StockDTO> GetAllStock();
-    void UpdateStock(int stockId, int quantity);
-    void DeleteStock(int id);
-    void Dispose();
+    Task RestockAsync(int productId, int quantity);
+    Task<int> GetAvailableStockAsync(int productId);
+    Task<List<StockDTO>> GetAllStockAsync();
+    Task UpdateStockAsync(int stockId, int quantity);
+    Task DeleteStockAsync(int id);
 }

@@ -2,11 +2,9 @@
 
 public interface ISupplierService : IDisposable
 {
-    void AddSupplier(string name, string email, string location, string contact, bool isActive = true);
-
-    List<SupplierDTO> GetAllSuppliers();
-
-    void UpdateSupplier(int id, string name, string email, string location, string contact, bool isActive = true);
-
-    void DeleteSupplier(int id);
+    Task AddSupplierAsync(string name, string email, string location, string contact, bool isActive = true);
+    Task<List<SupplierDTO>> GetAllSuppliersAsync();
+    Task<SupplierDTO?> GetSupplierByIdAsync(int id);
+    Task UpdateSupplierAsync(int id, string name, string email, string location, string contact, bool isActive = true);
+    Task DeleteSupplierAsync(int id);
 }

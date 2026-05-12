@@ -1,8 +1,6 @@
 ﻿using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
-using System;
-using System.Collections.Generic;
-using System.Linq;
+using Microsoft.EntityFrameworkCore;
 
 namespace InvSys.Services.Services
 {
@@ -15,9 +13,9 @@ namespace InvSys.Services.Services
             _context = new AccountsDbContext();
         }
 
-        public List<AccountDisplayDTO> GetAllAccounts()
+        public async Task<List<AccountDisplayDTO>> GetAllAccountsAsync()
         {
-            return _context.UserAccounts
+            return await _context.UserAccounts
                 .OrderBy(u => u.Id)
                 .Select(u => new AccountDisplayDTO
                 {
@@ -27,12 +25,9 @@ namespace InvSys.Services.Services
                     IsActive = u.IsActive,
                     CreatedAt = u.CreatedAt
                 })
-                .ToList();
+                .ToListAsync();
         }
 
-        public void Dispose()
-        {
-            _context?.Dispose();
-        }
+        public void Dispose() => _context?.Dispose();
     }
 }
