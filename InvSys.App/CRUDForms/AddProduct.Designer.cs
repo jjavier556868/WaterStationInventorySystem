@@ -142,6 +142,8 @@
             // 
             // comboBoxSupplier
             // 
+            comboBoxSupplier.AutoCompleteMode = AutoCompleteMode.SuggestAppend;
+            comboBoxSupplier.AutoCompleteSource = AutoCompleteSource.ListItems;
             comboBoxSupplier.FormattingEnabled = true;
             comboBoxSupplier.Location = new Point(32, 238);
             comboBoxSupplier.Name = "comboBoxSupplier";

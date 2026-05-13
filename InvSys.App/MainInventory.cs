@@ -614,11 +614,63 @@ namespace InvSys.App
             if (MessageBox.Show($"Delete {selected.Count} supplier(s)?\n\n{names}", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
+            using var productService = new ProductService();
+            var allProducts = await productService.GetAllProductsAsync();
+            var blockedSuppliers = selected
+                .Where(s => allProducts.Any(p => p.SupplierId == s.Id))
+                .ToList();
+
+            if (blockedSuppliers.Count > 0)
+            {
+                string blockedNames = string.Join(", ", blockedSuppliers.Select(s => s.Name));
+                MessageBox.Show(
+                    $"The following supplier(s) cannot be deleted because they still have associated products:\n\n{blockedNames}\n\nPlease delete or reassign their products first, or consider deactivating the supplier instead.",
+                    "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             try
             {
-                using var service = new SupplierService();
+                using var context = new InvSys.Infrastructure.InventoryDbContext();
+
                 foreach (var s in selected)
-                    await service.DeleteSupplierAsync(s.Id);
+                {
+                    var productIds = await context.Products
+                        .IgnoreQueryFilters()
+                        .Where(p => p.SupplierId == s.Id)
+                        .Select(p => p.Id)
+                        .ToListAsync();
+
+                    if (productIds.Any())
+                    {
+                        var sales = await context.Sales
+                            .IgnoreQueryFilters()
+                            .Where(sale => productIds.Contains(sale.ProductId))
+                            .ToListAsync();
+                        context.Sales.RemoveRange(sales);
+
+                        var stocks = await context.Stocks
+                            .IgnoreQueryFilters()
+                            .Where(st => productIds.Contains(st.ProductId))
+                            .ToListAsync();
+                        context.Stocks.RemoveRange(stocks);
+
+                        var products = await context.Products
+                            .IgnoreQueryFilters()
+                            .Where(p => p.SupplierId == s.Id)
+                            .ToListAsync();
+                        context.Products.RemoveRange(products);
+                    }
+
+                    var supplier = await context.Suppliers
+                        .IgnoreQueryFilters()
+                        .FirstOrDefaultAsync(sup => sup.Id == s.Id);
+                    if (supplier != null)
+                        context.Suppliers.Remove(supplier);
+                }
+
+                await context.SaveChangesAsync();
+
                 MessageBox.Show($"{selected.Count} supplier(s) deleted.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
@@ -626,7 +678,10 @@ namespace InvSys.App
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Delete failed: {ex.Message}", "Error",
+                var innerMessage = ex.InnerException?.InnerException?.Message
+                                ?? ex.InnerException?.Message
+                                ?? ex.Message;
+                MessageBox.Show($"Delete failed:\n\n{innerMessage}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
         }
