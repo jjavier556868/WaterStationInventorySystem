@@ -45,6 +45,13 @@ namespace InvSys.App
                 return;
             }
 
+            if (!IsValidEmail(email))
+            {
+                MessageBox.Show("Please enter a valid email address.", "Invalid Email",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (password != retypePassword)
             {
                 MessageBox.Show("Passwords do not match.", "Validation Error",
@@ -88,6 +95,16 @@ namespace InvSys.App
                 MessageBoxButtons.OK, MessageBoxIcon.Information);
 
             this.Close();
+        }
+
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch { return false; }
         }
 
         private void linkLabelGoToLogin_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)

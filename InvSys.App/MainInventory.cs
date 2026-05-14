@@ -227,6 +227,17 @@ namespace InvSys.App
                     accountsListTable, MostSoldProductsTable, ProductTableLowStock
                 };
 
+            comboBoxSales.Items.AddRange(new object[]
+            {
+                "Today", "This Week", "This Month",
+                "3 Months", "6 Months", "12 Months", "All Time"
+            });
+                        comboBoxSales.SelectedIndex = 2; // defaults to This Month
+                        comboBoxSales.SelectedIndexChanged += async (s, e) =>
+                        {
+                            await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
+            };
+
             foreach (var grid in allGrids)
             {
                 grid.AutoGenerateColumns = false;
@@ -407,6 +418,7 @@ namespace InvSys.App
             await RefreshLowStockTableAsync();
             await RefreshSalesChartAsync();
             await RefreshMostSoldProductsTableAsync();
+            await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
         }
 
         public async Task RefreshAccountsTableAsync()
@@ -591,45 +603,71 @@ namespace InvSys.App
             ProductTableLowStock.DataSource = lowStock;
         }
 
-        private async Task RefreshSalesChartAsync()
+        private async Task RefreshSalesChartAsync(string filter = "This Month")
         {
             var now = DateTime.Now;
-            int daysInMonth = DateTime.DaysInMonth(now.Year, now.Month);
             using var context = new InvSys.Infrastructure.InventoryDbContext();
 
-            var salesThisMonth = await context.Sales
-                .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
-                .ToListAsync();
+            var query = context.Sales.AsQueryable();
 
-            var soldProductIds = salesThisMonth.Select(s => s.ProductId).Distinct().ToList();
+            query = filter switch
+            {
+                "Today" => query.Where(s => s.CreatedDate.Date == now.Date),
+                "This Week" => query.Where(s => s.CreatedDate >= now.Date.AddDays(-(int)now.DayOfWeek) && s.CreatedDate <= now),
+                "This Month" => query.Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year),
+                "3 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-3)),
+                "6 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-6)),
+                "12 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-12)),
+                _ => query // All Time
+            };
+
+            var salesData = await query.ToListAsync();
+
+            var soldProductIds = salesData.Select(s => s.ProductId).Distinct().ToList();
             var products = await context.Products
                 .Where(p => soldProductIds.Contains(p.Id))
                 .ToListAsync();
 
             chartMostSold.Series.Clear();
-            chartMostSold.ChartAreas[0].AxisX.Title = "Day of Month";
+            chartMostSold.ChartAreas[0].AxisX.Title = "Day";
             chartMostSold.ChartAreas[0].AxisY.Title = "Qty Sold";
-            chartMostSold.ChartAreas[0].AxisX.Minimum = 1;
-            chartMostSold.ChartAreas[0].AxisX.Maximum = daysInMonth;
-            chartMostSold.ChartAreas[0].AxisX.Interval = 1;
             chartMostSold.ChartAreas[0].BackColor = Color.White;
             chartMostSold.BackColor = Color.White;
             chartMostSold.ChartAreas[0].AxisX.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
             chartMostSold.ChartAreas[0].AxisY.MajorGrid.LineColor = Color.FromArgb(220, 220, 220);
 
-            if (!salesThisMonth.Any())
+            if (!salesData.Any())
             {
                 chartMostSold.Series.Add(new Series { Name = "No Sales", ChartType = SeriesChartType.Line, Color = Color.LightGray });
                 return;
             }
 
+            // Determine X axis grouping based on filter
+            DateTime minDate = salesData.Min(s => s.CreatedDate).Date;
+            DateTime maxDate = salesData.Max(s => s.CreatedDate).Date;
+
+            chartMostSold.ChartAreas[0].AxisX.Minimum = minDate.ToOADate();
+            chartMostSold.ChartAreas[0].AxisX.Maximum = maxDate.ToOADate();
+            chartMostSold.ChartAreas[0].AxisX.LabelStyle.Format = filter == "Today" ? "hh tt" : "MM/dd";
+            chartMostSold.ChartAreas[0].AxisX.IntervalType = filter == "Today"
+                ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days;
+            chartMostSold.ChartAreas[0].AxisX.Interval = filter switch
+            {
+                "Today" => 2,
+                "This Week" => 1,
+                "12 Months" => 30,
+                "6 Months" => 15,
+                "3 Months" => 7,
+                _ => 1
+            };
+
             var colors = new[]
             {
-                Color.FromArgb(49,  52,  113), Color.FromArgb(108, 117, 219),
-                Color.FromArgb(220, 80,  80),  Color.FromArgb(80,  180, 120),
-                Color.FromArgb(240, 160, 40),  Color.FromArgb(80,  180, 220),
-                Color.FromArgb(180, 80,  180), Color.FromArgb(40,  140, 180)
-            };
+        Color.FromArgb(49,  52,  113), Color.FromArgb(108, 117, 219),
+        Color.FromArgb(220, 80,  80),  Color.FromArgb(80,  180, 120),
+        Color.FromArgb(240, 160, 40),  Color.FromArgb(80,  180, 220),
+        Color.FromArgb(180, 80,  180), Color.FromArgb(40,  140, 180)
+    };
 
             int colorIndex = 0;
             foreach (var product in products)
@@ -642,15 +680,31 @@ namespace InvSys.App
                     BorderWidth = 2,
                     IsVisibleInLegend = true,
                     MarkerStyle = MarkerStyle.Circle,
-                    MarkerSize = 6
+                    MarkerSize = 6,
+                    XValueType = ChartValueType.DateTime
                 };
-                for (int day = 1; day <= daysInMonth; day++)
+
+                if (filter == "Today")
                 {
-                    int qty = salesThisMonth
-                        .Where(s => s.ProductId == product.Id && s.CreatedDate.Day == day)
-                        .Sum(s => s.Quantity);
-                    series.Points.AddXY(day, qty);
+                    for (int hour = 0; hour < 24; hour++)
+                    {
+                        int qty = salesData
+                            .Where(s => s.ProductId == product.Id && s.CreatedDate.Hour == hour)
+                            .Sum(s => s.Quantity);
+                        series.Points.AddXY(now.Date.AddHours(hour).ToOADate(), qty);
+                    }
                 }
+                else
+                {
+                    for (DateTime d = minDate; d <= maxDate; d = d.AddDays(1))
+                    {
+                        int qty = salesData
+                            .Where(s => s.ProductId == product.Id && s.CreatedDate.Date == d)
+                            .Sum(s => s.Quantity);
+                        series.Points.AddXY(d.ToOADate(), qty);
+                    }
+                }
+
                 chartMostSold.Series.Add(series);
             }
 

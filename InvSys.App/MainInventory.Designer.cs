@@ -59,6 +59,7 @@
             panel27 = new Panel();
             chartMostSold = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panel29 = new Panel();
+            comboBoxSales = new ComboBox();
             label8 = new Label();
             panel26 = new Panel();
             panel28 = new Panel();
@@ -668,12 +669,22 @@
             // panel29
             // 
             panel29.BackColor = Color.CadetBlue;
+            panel29.Controls.Add(comboBoxSales);
             panel29.Controls.Add(label8);
             panel29.Dock = DockStyle.Top;
             panel29.Location = new Point(0, 0);
             panel29.Name = "panel29";
             panel29.Size = new Size(426, 45);
             panel29.TabIndex = 2;
+            // 
+            // comboBoxSales
+            // 
+            comboBoxSales.Anchor = AnchorStyles.Right;
+            comboBoxSales.FormattingEnabled = true;
+            comboBoxSales.Location = new Point(183, 10);
+            comboBoxSales.Name = "comboBoxSales";
+            comboBoxSales.Size = new Size(230, 23);
+            comboBoxSales.TabIndex = 1;
             // 
             // label8
             // 
@@ -682,9 +693,9 @@
             label8.ForeColor = SystemColors.ButtonFace;
             label8.Location = new Point(3, 10);
             label8.Name = "label8";
-            label8.Size = new Size(152, 25);
+            label8.Size = new Size(126, 25);
             label8.TabIndex = 0;
-            label8.Text = "MONTHLY SALES";
+            label8.Text = "SALES CHART";
             // 
             // panel26
             // 
@@ -2578,7 +2589,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 13, 21, 39, 9, 468);
+            clock1.CustomTime = new DateTime(2026, 5, 14, 18, 21, 29, 694);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2919,5 +2930,6 @@
         private TableLayoutPanel tableLayoutPanel10;
         private Button btnDeleteAccount;
         private Button btnUpdateAccount;
+        private ComboBox comboBoxSales;
     }
 }

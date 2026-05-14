@@ -141,12 +141,29 @@ namespace InvSys.App.CRUDForms
             CancelButton = btnCancel;
         }
 
+        private static bool IsValidEmail(string email)
+        {
+            try
+            {
+                var addr = new System.Net.Mail.MailAddress(email);
+                return addr.Address == email;
+            }
+            catch { return false; }
+        }
+
         private void BtnConfirm_Click(object sender, EventArgs e)
         {
             if (string.IsNullOrWhiteSpace(txtUsername.Text))
             {
                 DialogResult = DialogResult.None;
                 MessageBox.Show("Username cannot be empty.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (!IsValidEmail(txtEmail.Text.Trim()))
+            {
+                DialogResult = DialogResult.None;
+                MessageBox.Show("Please enter a valid email address.", "Invalid Email",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
