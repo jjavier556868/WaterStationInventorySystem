@@ -24,6 +24,7 @@ namespace InvSys.App
         private string _currentUsername;
         private UserRole _currentUserRole;
         private List<CartItem> _cart = new List<CartItem>();
+        private AccountDisplayDTO _selectedAccount = null;
         private ReceiptData _lastReceiptData = null;
 
         // Cached so sync callbacks (QueryRowStyle, FormClosing) can use it
@@ -130,7 +131,7 @@ namespace InvSys.App
         // ── Column definitions ───────────────────────────────────────────
         private void SetupDataGridColumns()
         {
-            ConfigureGrid(SupplierTable,
+            ConfigureGrid(UserAccount,
                 new GridTextColumn { MappingName = "Id", HeaderText = "ID" },
                 new GridTextColumn { MappingName = "Name", HeaderText = "Supplier Name" },
                 new GridTextColumn { MappingName = "Email", HeaderText = "Email" },
@@ -151,6 +152,7 @@ namespace InvSys.App
                 new GridTextColumn { MappingName = "Username", HeaderText = "Username" },
                 new GridTextColumn { MappingName = "Email", HeaderText = "Email" },
                 new GridCheckBoxColumn { MappingName = "IsActive", HeaderText = "Active" },
+                new GridTextColumn { MappingName = "Role", HeaderText = "Role" },
                 new GridTextColumn { MappingName = "CreatedAt", HeaderText = "Date Added", Format = "MM/dd/yyyy hh:mm tt" });
 
             ConfigureGrid(ProductListToStockTable,
@@ -172,7 +174,9 @@ namespace InvSys.App
                 new GridTextColumn { MappingName = "UnitPrice", HeaderText = "Unit Price", Format = "C2" },
                 new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" },
                 new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "C2" },
-                new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" });
+                new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" },
+                new GridTextColumn { MappingName = "CashierName", HeaderText = "Cashier" },
+                new GridTextColumn { MappingName = "CashierRole", HeaderText = "Role" });
 
             ConfigureGrid(StockViewTable,
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
@@ -216,12 +220,12 @@ namespace InvSys.App
         // ── Grid initialization ──────────────────────────────────────────
         private void InitializeDataGrids()
         {
-            var allGrids = new[]
-            {
-                SupplierTable, ProductTable, ProductListToStockTable, StockTable,
-                SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable,
-                accountsListTable, MostSoldProductsTable
-            };
+                var allGrids = new[]
+                {
+                    UserAccount, ProductTable, ProductListToStockTable, StockTable,
+                    SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable,
+                    accountsListTable, MostSoldProductsTable, ProductTableLowStock
+                };
 
             foreach (var grid in allGrids)
             {
@@ -233,33 +237,113 @@ namespace InvSys.App
                 CustomizeDataGrid(grid);
             }
 
+            MostSoldProductsTable.CellDoubleClick += MostSoldProductsTable_CellDoubleClick;
+            ProductTableLowStock.CellDoubleClick += ProductTableLowStock_CellDoubleClick;
+
+            SalesTable.CellDoubleClick += SalesTable_CellDoubleClick;
+
             foreach (var grid in new[] { ProductListToStockTable, StockTable, SalesTable,
                                          accountsListTable, MostSoldProductsTable })
                 grid.SelectionMode = GridSelectionMode.Single;
 
-            SupplierTable.SelectionMode = GridSelectionMode.Extended;
+            accountsListTable.SelectionChanged += (s, e) =>
+            {
+                _selectedAccount = accountsListTable.SelectedItem as AccountDisplayDTO;
+            };
+
+            UserAccount.SelectionMode = GridSelectionMode.Extended;
             ProductTable.SelectionMode = GridSelectionMode.Extended;
 
-            SupplierTable.CellDoubleClick += SupplierTable_CellDoubleClick;
+            UserAccount.CellDoubleClick += SupplierTable_CellDoubleClick;
             ProductTable.CellDoubleClick += ProductTable_CellDoubleClick;
+
             ProductsToPurchaseTable.SelectionChanged += ProductsToPurchaseTable_SelectionChanged;
 
             ApplyInactiveSupplierRowStyle(ProductTable);
+
+            MostSoldProductsTable.RowHeight = 28;
+            MostSoldProductsTable.HeaderRowHeight = 32;
+            MostSoldProductsTable.Style.HeaderStyle.Font.Size = 10f;
+            MostSoldProductsTable.QueryRowStyle += (sender, e) =>
+            {
+                if (e.RowType == RowType.DefaultRow)
+                    e.Style.Font.Size = 9f;
+            };
+        }
+
+        private void SalesTable_CellDoubleClick(object sender, CellClickEventArgs e)
+        {
+            if (e.DataRow.RowType != RowType.DefaultRow) return;
+            if (e.DataRow.RowData is not SalesLineItemDto dto) return;
+
+            string refLine = dto.PaymentMethod == "Cash"
+                ? ""
+                : $"\nReference No.: {dto.ReferenceNumber ?? "N/A"}";
+
+            MessageBox.Show(
+                $"Purchase #:    {dto.PurchaseId}\n" +
+                $"Date:          {dto.PurchasedOn:MM/dd/yyyy hh:mm tt}\n" +
+                $"Product:       {dto.ProductName}\n" +
+                $"Qty:           {dto.Quantity}\n" +
+                $"Unit Price:    ₱{dto.UnitPrice:N2}\n" +
+                $"Subtotal:      ₱{dto.Subtotal:N2}\n" +
+                $"Total:         ₱{dto.PurchaseTotal:N2}\n" +
+                $"Payment:       {dto.PaymentMethod}" +
+                refLine + "\n" +
+                $"Cashier:       {dto.CashierName}\n" +
+                $"Role:          {dto.CashierRole}",
+                "Sale Details",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void MostSoldProductsTable_CellDoubleClick(object sender, CellClickEventArgs e)
+        {
+            if (e.DataRow.RowType != RowType.DefaultRow) return;
+            var row = e.DataRow.RowData;
+            var type = row.GetType();
+            var rank = type.GetProperty("Rank")?.GetValue(row);
+            var productName = type.GetProperty("ProductName")?.GetValue(row);
+            var totalSold = type.GetProperty("TotalSold")?.GetValue(row);
+            var revenue = type.GetProperty("Revenue")?.GetValue(row);
+            MessageBox.Show(
+                $"Rank:        #{rank}\n" +
+                $"Product:     {productName}\n" +
+                $"Qty Sold:    {totalSold}\n" +
+                $"Revenue:     ₱{revenue:N2}",
+                "Top Product Details",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Information);
+        }
+
+        private void ProductTableLowStock_CellDoubleClick(object sender, CellClickEventArgs e)
+        {
+            if (e.DataRow.RowType != RowType.DefaultRow) return;
+            var row = e.DataRow.RowData;
+            var type = row.GetType();
+            var productId = type.GetProperty("ProductId")?.GetValue(row);
+            var productName = type.GetProperty("ProductName")?.GetValue(row);
+            var availableQty = type.GetProperty("AvailableQty")?.GetValue(row);
+            var price = type.GetProperty("Price")?.GetValue(row);
+            var supplierName = type.GetProperty("SupplierName")?.GetValue(row);
+            MessageBox.Show(
+                $"Product ID:  {productId}\n" +
+                $"Product:     {productName}\n" +
+                $"Stock Left:  {availableQty}\n" +
+                $"Price:       ₱{price:N2}\n" +
+                $"Supplier:    {supplierName}",
+                "Low Stock Details",
+                MessageBoxButtons.OK,
+                MessageBoxIcon.Warning);
         }
 
         // ── Role-based UI ────────────────────────────────────────────────
         private void UpdateUIForRole()
         {
             bool isAdmin = _currentUserRole == UserRole.Admin;
-            btnAddSupplier.Enabled = isAdmin;
-            btnUpdateSupplier.Enabled = isAdmin;
-            btnDeleteSupplier.Enabled = isAdmin;
-            btnAddProduct.Enabled = isAdmin;
-            btnUpdateProduct.Enabled = isAdmin;
-            btnDeleteProduct.Enabled = isAdmin;
             btnAccounts.Enabled = isAdmin;
-            if (!isAdmin)
-                lblWelcome.Text += " (Read-Only Mode)";
+            btnAccounts.Visible = isAdmin;
+            btnYourAccount.Visible = isAdmin;
         }
 
         private bool IsAdmin()
@@ -335,7 +419,7 @@ namespace InvSys.App
         {
             using var service = new SupplierService();
             var all = await service.GetAllSuppliersAsync();
-            SupplierTable.DataSource = all.OrderBy(s => s.Id).ToList();
+            UserAccount.DataSource = all.OrderBy(s => s.Id).ToList();
         }
 
         public async Task RefreshProductTableAsync()
@@ -360,14 +444,19 @@ namespace InvSys.App
             var activeProductIds = await GetActiveProductIdsAsync(_inactiveSupplierIds);
             var allStock = (await stockService.GetAllStockAsync())
                 .Where(s => activeProductIds.Contains(s.ProductId))
+                .Select(s =>
+                {
+                    int cartQty = _cart.FirstOrDefault(c => c.ProductId == s.ProductId)?.Quantity ?? 0;
+                    return new StockDTO
+                    {
+                        Id = s.Id,
+                        ProductId = s.ProductId,
+                        ProductName = s.ProductName,
+                        Quantity = Math.Max(0, s.Quantity - cartQty),
+                        CreatedDate = s.CreatedDate
+                    };
+                })
                 .ToList();
-
-            foreach (var entry in allStock)
-            {
-                var inCart = _cart.FirstOrDefault(c => c.ProductId == entry.ProductId);
-                if (inCart != null)
-                    entry.Quantity = Math.Max(0, entry.Quantity - inCart.Quantity);
-            }
 
             StockTable.DataSource = allStock;
         }
@@ -585,7 +674,7 @@ namespace InvSys.App
         private async void btnUpdateSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-            if (SupplierTable.SelectedItem is not SupplierDTO dto)
+            if (UserAccount.SelectedItem is not SupplierDTO dto)
             {
                 MessageBox.Show("Please select a supplier to update.", "No Selection",
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
@@ -603,7 +692,7 @@ namespace InvSys.App
         private async void btnDeleteSupplier_Click(object sender, EventArgs e)
         {
             if (!IsAdmin()) return;
-            var selected = SupplierTable.SelectedItems?.Cast<SupplierDTO>().ToList();
+            var selected = UserAccount.SelectedItems?.Cast<SupplierDTO>().ToList();
             if (selected == null || selected.Count == 0)
             {
                 MessageBox.Show("Please select at least one supplier to delete.", "No Selection",
@@ -616,15 +705,15 @@ namespace InvSys.App
 
             using var productService = new ProductService();
             var allProducts = await productService.GetAllProductsAsync();
-            var blockedSuppliers = selected
-                .Where(s => allProducts.Any(p => p.SupplierId == s.Id))
+            var blockedProducts = allProducts
+                .Where(p => selected.Any(s => s.Id == p.SupplierId))
                 .ToList();
 
-            if (blockedSuppliers.Count > 0)
+            if (blockedProducts.Count > 0)
             {
-                string blockedNames = string.Join(", ", blockedSuppliers.Select(s => s.Name));
+                string productNames = string.Join("\n  • ", blockedProducts.Select(p => p.Name));
                 MessageBox.Show(
-                    $"The following supplier(s) cannot be deleted because they still have associated products:\n\n{blockedNames}\n\nPlease delete or reassign their products first, or consider deactivating the supplier instead.",
+                    $"Cannot delete the selected supplier(s) because the following products are still associated:\n\n  • {productNames}\n\nPlease delete those products first, or consider deactivating the supplier instead.",
                     "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -635,33 +724,6 @@ namespace InvSys.App
 
                 foreach (var s in selected)
                 {
-                    var productIds = await context.Products
-                        .IgnoreQueryFilters()
-                        .Where(p => p.SupplierId == s.Id)
-                        .Select(p => p.Id)
-                        .ToListAsync();
-
-                    if (productIds.Any())
-                    {
-                        var sales = await context.Sales
-                            .IgnoreQueryFilters()
-                            .Where(sale => productIds.Contains(sale.ProductId))
-                            .ToListAsync();
-                        context.Sales.RemoveRange(sales);
-
-                        var stocks = await context.Stocks
-                            .IgnoreQueryFilters()
-                            .Where(st => productIds.Contains(st.ProductId))
-                            .ToListAsync();
-                        context.Stocks.RemoveRange(stocks);
-
-                        var products = await context.Products
-                            .IgnoreQueryFilters()
-                            .Where(p => p.SupplierId == s.Id)
-                            .ToListAsync();
-                        context.Products.RemoveRange(products);
-                    }
-
                     var supplier = await context.Suppliers
                         .IgnoreQueryFilters()
                         .FirstOrDefaultAsync(sup => sup.Id == s.Id);
@@ -727,7 +789,7 @@ namespace InvSys.App
             var search = txtBoxSupplierSearch.Text.Trim();
             using var service = new SupplierService();
             var all = await service.GetAllSuppliersAsync();
-            SupplierTable.DataSource = string.IsNullOrEmpty(search)
+            UserAccount.DataSource = string.IsNullOrEmpty(search)
                 ? all.OrderBy(s => s.Id).ToList()
                 : all.Where(s =>
                     s.Name.IndexOf(search, StringComparison.OrdinalIgnoreCase) >= 0 ||
@@ -871,19 +933,42 @@ namespace InvSys.App
         private async void btnUpdateStock_Click(object sender, EventArgs e)
         {
             if (StockTable.SelectedItem is not StockDTO stock)
-            { MessageBox.Show("Please select a stock entry to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-            if (!TryParseQuantity(txtBoxQuantityAdd.Text, out int qty)) return;
+            {
+                MessageBox.Show("Please select a stock entry to update.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            using var inputDialog = new CRUDForms.UpdateStockDialog(stock.ProductName, stock.Quantity);
+            if (inputDialog.ShowDialog(this) != DialogResult.OK) return;
+            int desiredAvailable = inputDialog.EnteredQuantity;
+
             try
             {
+                // Find out how many have been sold for this product
+                using var context = new InvSys.Infrastructure.InventoryDbContext();
+                int sold = await context.Sales
+                    .Where(s => s.ProductId == stock.ProductId)
+                    .SumAsync(s => (int?)s.Quantity) ?? 0;
+
+                // Desired available = raw stock - sold  →  raw stock = desired + sold
+                int rawStockToSet = desiredAvailable + sold;
+
                 using var service = new StockService();
-                await service.UpdateStockAsync(stock.Id, qty);
-                MessageBox.Show("Stock updated.", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
-                txtBoxQuantityAdd.Clear();
+                await service.UpdateStockAsync(stock.Id, rawStockToSet);
+
+                MessageBox.Show("Stock updated.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+
                 await RefreshStockTableAsync();
                 await RefreshStockViewTableAsync();
                 await RefreshDashboardAsync();
             }
-            catch (Exception ex) { MessageBox.Show($"Failed to update stock: {ex.Message}", "Error", MessageBoxButtons.OK, MessageBoxIcon.Error); }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to update stock: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async void btnDeleteStock_Click(object sender, EventArgs e)
@@ -934,48 +1019,57 @@ namespace InvSys.App
 
         private async void btnAddPurchase_Click(object sender, EventArgs e)
         {
-            if (_lastReceiptData != null)
-            { MessageBox.Show("A previous transaction has not been reset yet.\n\nPlease click 'Reset Transaction' before starting a new purchase.", "Reset Required", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-            if (StockViewTable.SelectedItem is not StockViewDTO selected)
-            { MessageBox.Show("Please select a product from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-
-            int selectedProductId = selected.ProductId;
-            if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty)) return;
-
-            var existing = _cart.FirstOrDefault(c => c.ProductId == selected.ProductId);
-            if (existing != null)
+            try
             {
-                if (qty > selected.Quantity)
-                { MessageBox.Show($"Cannot add {qty} more. Only {selected.Quantity} unit(s) still available.", "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-                existing.Quantity += qty;
-                existing.Subtotal = existing.Price * existing.Quantity;
-            }
-            else
-            {
-                _cart.Add(new CartItem
+                if (_lastReceiptData != null)
+                { MessageBox.Show("A previous transaction has not been reset yet.\n\nPlease click 'Reset Transaction' before starting a new purchase.", "Reset Required", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                if (StockViewTable.SelectedItem is not StockViewDTO selected)
+                { MessageBox.Show("Please select a product from the list first.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+
+                int selectedProductId = selected.ProductId;
+                if (!TryParsePurchaseQuantity(txtBoxPurchaseQuantity.Text, selected.Quantity, out int qty)) return;
+
+                var existing = _cart.FirstOrDefault(c => c.ProductId == selected.ProductId);
+                if (existing != null)
                 {
-                    ProductId = selected.ProductId,
-                    ProductName = selected.ProductName,
-                    Price = selected.Price,
-                    Quantity = qty,
-                    Subtotal = selected.Price * qty
-                });
+                    if (qty > selected.Quantity)
+                    { MessageBox.Show($"Cannot add {qty} more. Only {selected.Quantity} unit(s) still available.", "Insufficient Stock", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                    existing.Quantity += qty;
+                    existing.Subtotal = existing.Price * existing.Quantity;
+                }
+                else
+                {
+                    _cart.Add(new CartItem
+                    {
+                        ProductId = selected.ProductId,
+                        ProductName = selected.ProductName,
+                        Price = selected.Price,
+                        Quantity = qty,
+                        Subtotal = selected.Price * qty
+                    });
+                }
+
+                txtBoxPurchaseQuantity.Clear();
+                RefreshCartTables();
+                await RefreshStockViewTableAsync();
+                await RefreshStockTableAsync();
+                RefreshTotalAmount();
+
+                var updated = (StockViewTable.DataSource as List<StockViewDTO>)
+                    ?.FirstOrDefault(v => v.ProductId == selectedProductId);
+                if (updated != null)
+                    StockViewTable.SelectedIndex = (StockViewTable.DataSource as List<StockViewDTO>).IndexOf(updated);
+
+                SyncPurchaseInfoLabelsToSelection();
+                MessageBox.Show("Cart item added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
             }
-
-            txtBoxPurchaseQuantity.Clear();
-            RefreshCartTables();
-            await RefreshStockViewTableAsync();
-            await RefreshStockTableAsync();
-            RefreshTotalAmount();
-
-            var updated = (StockViewTable.DataSource as List<StockViewDTO>)
-                ?.FirstOrDefault(v => v.ProductId == selectedProductId);
-            if (updated != null)
-                StockViewTable.SelectedIndex = (StockViewTable.DataSource as List<StockViewDTO>).IndexOf(updated);
-
-            SyncPurchaseInfoLabelsToSelection();
-            MessageBox.Show("Cart item added!", "Success", MessageBoxButtons.OK, MessageBoxIcon.Information);
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to add item to cart:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
+
 
         private async void btnUpdatePurchase_Click(object sender, EventArgs e)
         {
@@ -983,7 +1077,9 @@ namespace InvSys.App
             { MessageBox.Show("Please select an item in the cart to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
             using var svc = new StockService();
-            int maxAllowed = await svc.GetAvailableStockAsync(cartItem.ProductId);
+            int rawAvailable = await svc.GetAvailableStockAsync(cartItem.ProductId);
+            int cartAlready = _cart.FirstOrDefault(c => c.ProductId == cartItem.ProductId)?.Quantity ?? 0;
+            int maxAllowed = rawAvailable + cartAlready; // add back what's already reserved
 
             string input = Microsoft.VisualBasic.Interaction.InputBox(
                 $"Enter new quantity for '{cartItem.ProductName}'.\nAvailable stock: {maxAllowed}",
@@ -1012,18 +1108,26 @@ namespace InvSys.App
 
         private async void btnDeletePurchase_Click(object sender, EventArgs e)
         {
-            if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
-            { MessageBox.Show("Please select an item in the cart to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
-            if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+            try
+            {
+                if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
+                { MessageBox.Show("Please select an item in the cart to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
+                if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
 
-            _cart.RemoveAll(c => c.ProductId == cartItem.ProductId);
-            txtBoxPurchaseQuantity.Clear();
-            RefreshCartTables();
-            await RefreshStockViewTableAsync();
-            await RefreshStockTableAsync();
-            SyncPurchaseInfoLabelsToSelection();
-            RefreshTotalAmount();
+                _cart.RemoveAll(c => c.ProductId == cartItem.ProductId);
+                txtBoxPurchaseQuantity.Clear();
+                RefreshCartTables();
+                await RefreshStockViewTableAsync();
+                await RefreshStockTableAsync();
+                SyncPurchaseInfoLabelsToSelection();
+                RefreshTotalAmount();
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to remove cart item:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
         private async void btnResetPurchase_Click(object sender, EventArgs e)
@@ -1155,7 +1259,12 @@ namespace InvSys.App
                 }).ToList();
 
                 using var service = new PurchaseService();
-                var purchase = await service.ProcessPurchaseAsync(saleItems, paymentMethod);
+                var purchase = await service.ProcessPurchaseAsync(
+                    saleItems,
+                    paymentMethod,
+                    _currentUsername ?? "Staff",
+                    _currentUserRole.ToString(),
+                    dialog.ReferenceNumber);
 
                 decimal change = dialog.AmountPaid - total;
                 txtTotalAmount.Text = $"Total Amount: ₱{total:N2}";
@@ -1283,5 +1392,185 @@ namespace InvSys.App
                     s.Quantity.ToString().Contains(search))
                 .OrderBy(s => s.ProductName).ToList();
         }
+        private async void btnUpdateAccount_Click_1(object sender, EventArgs e)
+        {
+            if (!IsAdmin()) return;
+
+            var selected = _selectedAccount;
+            if (selected == null)
+            {
+                MessageBox.Show("Please select an account to update.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using var service = new AccountService();
+                var account = await service.GetAccountByIdAsync(selected.Id);
+                if (account == null)
+                {
+                    MessageBox.Show("Account not found.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using var dialog = new CRUDForms.UpdateAccountDialog(
+                    account.Id, account.Username, account.Email, account.PasswordHash);
+
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                await service.UpdateAccountAsync(
+                    account.Id,
+                    dialog.NewUsername,
+                    dialog.NewEmail,
+                    dialog.NewPassword);
+
+                MessageBox.Show("Account updated successfully.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await RefreshAccountsTableAsync();
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.InnerException?.Message ?? ex.Message;
+                MessageBox.Show($"Update failed:\n{msg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+        private async void btnDeleteAccount_Click_1(object sender, EventArgs e)
+        {
+            if (!IsAdmin()) return;
+
+            var selected = _selectedAccount;
+            if (selected == null)
+            {
+                MessageBox.Show("Please select an account to delete.", "No Selection",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (selected.Username == _currentUsername)
+            {
+                MessageBox.Show(
+                    "You cannot delete your own account from here.\n\nUse the 'Your Account' button instead.",
+                    "Not Allowed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            try
+            {
+                using var service = new AccountService();
+
+                if (await service.IsLastAdminAsync(selected.Id))
+                {
+                    MessageBox.Show(
+                        "Cannot delete this account.\n\nAt least one Admin account must remain in the system.",
+                        "Cannot Delete Last Admin",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                using var pwdDialog = new CRUDForms.ConfirmPasswordDialog();
+                if (pwdDialog.ShowDialog(this) != DialogResult.OK) return;
+
+                var currentAccount = await service.GetAccountByUsernameAsync(_currentUsername);
+                if (currentAccount == null ||
+                    !VerifyPassword(pwdDialog.EnteredPassword, currentAccount.PasswordHash))
+                {
+                    MessageBox.Show("Incorrect password. Account deletion cancelled.",
+                        "Authentication Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (MessageBox.Show($"Delete account '{selected.Username}'?", "Confirm Delete",
+                    MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
+
+                await service.DeleteAccountAsync(selected.Id);
+
+                MessageBox.Show("Account deleted.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                await RefreshAccountsTableAsync();
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.InnerException?.InnerException?.Message
+                        ?? ex.InnerException?.Message
+                        ?? ex.Message;
+                MessageBox.Show($"Delete failed:\n\n{msg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private async void btnYourAccount_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                using var service = new AccountService();
+                var account = await service.GetAccountByUsernameAsync(_currentUsername);
+                if (account == null)
+                {
+                    MessageBox.Show("Could not load your account.", "Error",
+                        MessageBoxButtons.OK, MessageBoxIcon.Error);
+                    return;
+                }
+
+                using var dialog = new CRUDForms.YourAccountDialog(
+                    account.Username, account.Email, account.PasswordHash);
+
+                if (dialog.ShowDialog(this) != DialogResult.OK) return;
+
+                if (dialog.WantsToDeleteAccount)
+                {
+                    if (await service.IsLastAdminAsync(account.Id))
+                    {
+                        MessageBox.Show(
+                            "You are the last Admin. Your account cannot be deleted.\n\n" +
+                            "Assign another Admin first before removing this account.",
+                            "Cannot Delete Last Admin",
+                            MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+
+                    if (MessageBox.Show(
+                        "Are you sure you want to permanently delete your account?\n\nThis cannot be undone.",
+                        "Confirm Account Deletion",
+                        MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+                    await service.DeleteAccountAsync(account.Id);
+                    MessageBox.Show("Your account has been deleted. You will now be logged out.",
+                        "Account Deleted", MessageBoxButtons.OK, MessageBoxIcon.Information);
+                    this.Hide();
+                    var login = new LoginForm();
+                    login.Closed += (s, args) => this.Close();
+                    login.Show();
+                    return;
+                }
+
+                await service.UpdateAccountAsync(
+                    account.Id,
+                    dialog.NewUsername,
+                    dialog.NewEmail,
+                    dialog.NewPassword);
+
+                _currentUsername = dialog.NewUsername;
+                lblWelcome.Text = $"Welcome, {_currentUsername}!";
+                MessageBox.Show("Your account has been updated.", "Success",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+            }
+            catch (Exception ex)
+            {
+                var msg = ex.InnerException?.InnerException?.Message
+                        ?? ex.InnerException?.Message
+                        ?? ex.Message;
+                MessageBox.Show($"Operation failed:\n\n{msg}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
+
+        private static bool VerifyPassword(string plaintext, string hash)
+        {
+            return BCrypt.Net.BCrypt.Verify(plaintext, hash);
+        }
+
     }
 }

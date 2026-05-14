@@ -6,7 +6,7 @@ namespace InvSys.Services.Interfaces
 {
     public interface IPurchaseService : IDisposable
     {
-        Task<Purchase> ProcessPurchaseAsync(List<SaleItemRequest> items, PaymentMethod paymentMethod);
+        Task<Purchase> ProcessPurchaseAsync(List<SaleItemRequest> items, PaymentMethod paymentMethod, string cashierName, string cashierRole, string? referenceNumber = null);
         Task<List<SalesLineItemDto>> GetAllSalesAsync();
     }
 }

@@ -16,7 +16,7 @@ namespace InvSys.Services.Services
             _context = new InventoryDbContext();
         }
 
-        public async Task<Purchase> ProcessPurchaseAsync(List<SaleItemRequest> items, PaymentMethod paymentMethod)
+        public async Task<Purchase> ProcessPurchaseAsync(List<SaleItemRequest> items, PaymentMethod paymentMethod, string cashierName, string cashierRole, string? referenceNumber = null)
         {
             foreach (var item in items)
             {
@@ -42,7 +42,8 @@ namespace InvSys.Services.Services
             {
                 PaymentMethod = paymentMethod,
                 TotalAmount = 0,
-                CreatedDate = DateTime.Now
+                CreatedDate = DateTime.Now,
+                ReferenceNumber = referenceNumber
             };
             await _context.Purchases.AddAsync(purchase);
             await _context.SaveChangesAsync();
@@ -62,7 +63,9 @@ namespace InvSys.Services.Services
                     Quantity = item.Quantity,
                     UnitPrice = unitPrice,
                     Subtotal = subtotal,
-                    CreatedDate = DateTime.Now
+                    CreatedDate = DateTime.Now,
+                    CashierName = cashierName,
+                    CashierRole = cashierRole
                 });
             }
 
@@ -92,11 +95,16 @@ namespace InvSys.Services.Services
                         UnitPrice = sp.Sale.UnitPrice,
                         Subtotal = sp.Sale.Subtotal,
                         PurchaseTotal = pu.TotalAmount,
-                        PaymentMethod = pu.PaymentMethod.ToString()
+                        PaymentMethod = pu.PaymentMethod.ToString(),
+                        CashierName = sp.Sale.CashierName,
+                        CashierRole = sp.Sale.CashierRole,
+                        ReferenceNumber = pu.ReferenceNumber
                     })
                 .OrderByDescending(s => s.PurchasedOn)
                 .ToListAsync();
         }
+
+
 
         public void Dispose() => _context?.Dispose();
     }

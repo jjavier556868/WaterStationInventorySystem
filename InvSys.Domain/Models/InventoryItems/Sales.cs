@@ -24,5 +24,7 @@ namespace InvSys.Domain.Models.InventoryItems
 
         [Column(TypeName = "DECIMAL(18,2)")]
         public decimal Subtotal { get; set; }
+        public string CashierName { get; set; } = string.Empty;
+        public string CashierRole { get; set; } = string.Empty;
     }
 }

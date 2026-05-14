@@ -10,6 +10,8 @@ namespace InvSys.Domain.Models.InventoryItems
 
         public PaymentMethod PaymentMethod { get; set; }
 
+        public string? ReferenceNumber { get; set; }
+
         public virtual ICollection<Sales> SalesItems { get; set; } = new List<Sales>();
     }
 }

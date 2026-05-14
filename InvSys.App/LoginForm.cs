@@ -132,6 +132,7 @@ namespace InvSys.App
             }
         }
 
+
         private void txtBoxPassword_KeyDown(object sender, KeyEventArgs e)
         {
             if (e.KeyCode == Keys.Enter)
@@ -150,6 +151,12 @@ namespace InvSys.App
         private void label8_Click(object sender, EventArgs e)
         {
 
+        }
+
+        private void linkLabelGoToRegister_LinkClicked(object sender, LinkLabelLinkClickedEventArgs e)
+        {
+            var registerForm = new RegisterForm();
+            registerForm.ShowDialog();
         }
     }
 }

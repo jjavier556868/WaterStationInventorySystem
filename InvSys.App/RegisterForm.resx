@@ -117,13 +117,14 @@
   <resheader name="writer">
     <value>System.Resources.ResXResourceWriter, System.Windows.Forms, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089</value>
   </resheader>
-  <metadata name="tabPage7.Locked" type="System.Boolean, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>True</value>
-  </metadata>
-  <metadata name="gridLayout1.TrayLocation" type="System.Drawing.Point, System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a">
-    <value>-10, 20</value>
-  </metadata>
-  <metadata name="$this.TrayHeight" type="System.Int32, mscorlib, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b77a5c561934e089">
-    <value>25</value>
-  </metadata>
+  <assembly alias="System.Drawing" name="System.Drawing, Version=4.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a" />
+  <data name="panel6.BackgroundImage" type="System.Drawing.Bitmap, System.Drawing" mimetype="application/x-microsoft.net.object.bytearray.base64">
+    <value>
+        iVBORw0KGgoAAAANSUhEUgAAABgAAAAYCAYAAADgdz34AAAABGdBTUEAALGPC/xhBQAAANhJREFUSEvt
+        lD0OgkAQhanUeA1NjHuK5aeh4AgWNnojKwu9FnoOoxU+zRsGYTeEiMGCL5lk573Zt7sUBCP/Q5IkNo7j
+        oo96ZTFWcQ1+U4xVxIii6EKpM9iftx5QqR2tVnCpbX0/LUUMfL91ZfCRpumUIw2MMRPM3GU+DMOVrDmi
+        1A2sT6KhzpRLoB3FxwsOlBs5JS4jy7I5tPKG1tolwhbSY32DNuP4G/HYKl4DQN+LL4XwDe0PxGereI0K
+        8K+onK0Tb47X6Mh4QCvDH9BXMVb5+e96ZCCC4Am1zSNU1agiIgAAAABJRU5ErkJggg==
+</value>
+  </data>
 </root>

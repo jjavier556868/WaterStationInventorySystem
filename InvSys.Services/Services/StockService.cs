@@ -63,13 +63,12 @@ namespace InvSys.Services.Services
             return stocks.Select(s =>
             {
                 int sold = soldByProduct.TryGetValue(s.ProductId, out int q) ? q : 0;
-                int available = Math.Max(0, s.Quantity - sold);
                 return new StockDTO
                 {
                     Id = s.Id,
                     ProductId = s.ProductId,
                     ProductName = s.Product.Name,
-                    Quantity = available,
+                    Quantity = Math.Max(0, s.Quantity - sold),
                     CreatedDate = s.CreatedDate,
                     UpdatedDate = s.UpdatedDate
                 };

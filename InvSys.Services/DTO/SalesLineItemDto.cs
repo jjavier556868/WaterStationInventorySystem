@@ -11,5 +11,8 @@
         public decimal Subtotal { get; set; }
         public decimal PurchaseTotal { get; set; }
         public string PaymentMethod { get; set; }
+        public string? ReferenceNumber { get; set; }
+        public string CashierName { get; set; } = string.Empty;
+        public string CashierRole { get; set; } = string.Empty;
     }
 }

@@ -1,0 +1,192 @@
+﻿using InvSys.Services.Services;
+using System;
+using System.Drawing;
+using System.Windows.Forms;
+
+namespace InvSys.App.CRUDForms
+{
+    public class UpdateAccountDialog : Form
+    {
+        private readonly int _accountId;
+        private readonly string _currentPasswordHash;
+
+        private Label lblTitle, lblSub, lblDivider2;
+        private Panel divider;
+        private TextBox txtUsername, txtEmail, txtOldPassword, txtNewPassword;
+        private Label lblUsername, lblEmail, lblOldPassword, lblNewPassword, lblPasswordNote;
+        private Button btnConfirm, btnCancel;
+
+        public string NewUsername => txtUsername.Text.Trim();
+        public string NewEmail => txtEmail.Text.Trim();
+        public string NewPassword { get; private set; }
+
+        public UpdateAccountDialog(int accountId, string currentUsername, string currentEmail, string currentPasswordHash)
+        {
+            _accountId = accountId;
+            _currentPasswordHash = currentPasswordHash;
+
+            Text = "Update Account";
+            Size = new Size(460, 520);
+            StartPosition = FormStartPosition.CenterParent;
+            FormBorderStyle = FormBorderStyle.FixedDialog;
+            MaximizeBox = false;
+            MinimizeBox = false;
+            BackColor = Color.White;
+            Font = new Font("Segoe UI", 10f);
+
+            lblTitle = new Label
+            {
+                Text = "Update Account",
+                Font = new Font("Segoe UI", 13f, FontStyle.Bold),
+                ForeColor = Color.FromArgb(49, 52, 113),
+                AutoSize = true,
+                Location = new Point(20, 18)
+            };
+
+            lblSub = new Label
+            {
+                Text = currentUsername,
+                Font = new Font("Segoe UI", 10f, FontStyle.Italic),
+                ForeColor = Color.FromArgb(90, 90, 90),
+                AutoSize = true,
+                Location = new Point(22, 50)
+            };
+
+            divider = new Panel
+            {
+                BackColor = Color.FromArgb(49, 52, 113),
+                Size = new Size(416, 2),
+                Location = new Point(20, 75)
+            };
+
+            // Username
+            lblUsername = MakeLabel("Username", 90);
+            txtUsername = MakeTextBox(currentUsername, 114);
+
+            // Email
+            lblEmail = MakeLabel("Email", 162);
+            txtEmail = MakeTextBox(currentEmail, 186);
+
+            // Divider 2
+            lblDivider2 = new Label
+            {
+                Text = "Change Password  (leave blank to keep current)",
+                Font = new Font("Segoe UI", 9f, FontStyle.Italic),
+                ForeColor = Color.FromArgb(120, 120, 120),
+                AutoSize = true,
+                Location = new Point(22, 240)
+            };
+
+            // Old Password
+            lblOldPassword = MakeLabel("Current Password", 264);
+            txtOldPassword = MakeTextBox("", 288);
+            txtOldPassword.UseSystemPasswordChar = true;
+
+            // New Password
+            lblNewPassword = MakeLabel("New Password", 336);
+            txtNewPassword = MakeTextBox("", 360);
+            txtNewPassword.UseSystemPasswordChar = true;
+
+            lblPasswordNote = new Label
+            {
+                Text = "You must enter the current password to set a new one.",
+                Font = new Font("Segoe UI", 8.5f, FontStyle.Italic),
+                ForeColor = Color.FromArgb(150, 100, 0),
+                AutoSize = true,
+                Location = new Point(22, 408)
+            };
+
+            btnConfirm = new Button
+            {
+                Text = "Save Changes",
+                Location = new Point(20, 432),
+                Size = new Size(195, 38),
+                BackColor = Color.FromArgb(49, 52, 113),
+                ForeColor = Color.White,
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10f, FontStyle.Bold),
+                Cursor = Cursors.Hand,
+                DialogResult = DialogResult.OK
+            };
+            btnConfirm.FlatAppearance.BorderSize = 0;
+            btnConfirm.Click += BtnConfirm_Click;
+
+            btnCancel = new Button
+            {
+                Text = "Cancel",
+                Location = new Point(225, 432),
+                Size = new Size(195, 38),
+                BackColor = Color.FromArgb(220, 225, 245),
+                ForeColor = Color.FromArgb(49, 52, 113),
+                FlatStyle = FlatStyle.Flat,
+                Font = new Font("Segoe UI", 10f),
+                Cursor = Cursors.Hand,
+                DialogResult = DialogResult.Cancel
+            };
+            btnCancel.FlatAppearance.BorderSize = 0;
+
+            Controls.AddRange(new Control[]
+            {
+                lblTitle, lblSub, divider,
+                lblUsername, txtUsername,
+                lblEmail, txtEmail,
+                lblDivider2,
+                lblOldPassword, txtOldPassword,
+                lblNewPassword, txtNewPassword,
+                lblPasswordNote,
+                btnConfirm, btnCancel
+            });
+
+            AcceptButton = btnConfirm;
+            CancelButton = btnCancel;
+        }
+
+        private void BtnConfirm_Click(object sender, EventArgs e)
+        {
+            if (string.IsNullOrWhiteSpace(txtUsername.Text))
+            {
+                DialogResult = DialogResult.None;
+                MessageBox.Show("Username cannot be empty.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+            if (string.IsNullOrWhiteSpace(txtEmail.Text))
+            {
+                DialogResult = DialogResult.None;
+                MessageBox.Show("Email cannot be empty.", "Invalid Input",
+                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            bool wantsNewPassword = !string.IsNullOrWhiteSpace(txtNewPassword.Text);
+
+            if (wantsNewPassword)
+            {
+    
+                NewPassword = txtNewPassword.Text.Trim();
+            }
+            else
+            {
+                NewPassword = null;
+            }
+        }
+
+        private Label MakeLabel(string text, int y) => new Label
+        {
+            Text = text,
+            Font = new Font("Segoe UI", 10f),
+            ForeColor = Color.FromArgb(49, 52, 113),
+            AutoSize = true,
+            Location = new Point(22, y)
+        };
+
+        private TextBox MakeTextBox(string text, int y) => new TextBox
+        {
+            Text = text,
+            Location = new Point(22, y),
+            Size = new Size(416, 28),
+            Font = new Font("Segoe UI", 10.5f),
+            BorderStyle = BorderStyle.FixedSingle
+        };
+    }
+}
