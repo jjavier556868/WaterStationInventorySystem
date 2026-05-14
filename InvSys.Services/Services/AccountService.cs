@@ -69,13 +69,11 @@ namespace InvSys.Services.Services
             var u = await _context.UserAccounts.FirstOrDefaultAsync(x => x.Id == id);
             if (u == null) throw new Exception("Account not found.");
 
-            // Check username uniqueness (excluding self)
             bool usernameTaken = await _context.UserAccounts
                 .AnyAsync(x => x.Username == username && x.Id != id);
             if (usernameTaken)
                 throw new Exception($"Username '{username}' is already taken.");
 
-            // Check email uniqueness (excluding self)
             bool emailTaken = await _context.UserAccounts
                 .AnyAsync(x => x.Email == email && x.Id != id);
             if (emailTaken)
