@@ -21,7 +21,7 @@ namespace InvSys.App.CRUDForms
             this.StartPosition = FormStartPosition.CenterParent;
             this.MaximizeBox = false;
             this.MinimizeBox = false;
-
+            //label
             lblPrompt = new Label
             {
                 Text = "Enter your password to confirm this action:",
