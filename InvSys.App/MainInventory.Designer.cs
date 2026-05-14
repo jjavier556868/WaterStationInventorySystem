@@ -59,6 +59,7 @@
             panel27 = new Panel();
             chartMostSold = new System.Windows.Forms.DataVisualization.Charting.Chart();
             panel29 = new Panel();
+            btnExportSales = new Button();
             comboBoxSales = new ComboBox();
             label8 = new Label();
             panel26 = new Panel();
@@ -669,6 +670,7 @@
             // panel29
             // 
             panel29.BackColor = Color.CadetBlue;
+            panel29.Controls.Add(btnExportSales);
             panel29.Controls.Add(comboBoxSales);
             panel29.Controls.Add(label8);
             panel29.Dock = DockStyle.Top;
@@ -677,13 +679,31 @@
             panel29.Size = new Size(426, 45);
             panel29.TabIndex = 2;
             // 
+            // btnExportSales
+            // 
+            btnExportSales.Anchor = AnchorStyles.Right;
+            btnExportSales.BackColor = Color.MidnightBlue;
+            btnExportSales.FlatStyle = FlatStyle.Flat;
+            btnExportSales.Font = new Font("Yu Gothic UI", 11.25F);
+            btnExportSales.ForeColor = SystemColors.ButtonHighlight;
+            btnExportSales.Image = Properties.Resources.export_notes_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24;
+            btnExportSales.Location = new Point(294, 5);
+            btnExportSales.Name = "btnExportSales";
+            btnExportSales.Size = new Size(129, 35);
+            btnExportSales.TabIndex = 5;
+            btnExportSales.Text = "Export Sales";
+            btnExportSales.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnExportSales.UseVisualStyleBackColor = false;
+            btnExportSales.Click += btnExportSales_Click_1;
+            // 
             // comboBoxSales
             // 
             comboBoxSales.Anchor = AnchorStyles.Right;
+            comboBoxSales.DropDownStyle = ComboBoxStyle.DropDownList;
             comboBoxSales.FormattingEnabled = true;
-            comboBoxSales.Location = new Point(183, 10);
+            comboBoxSales.Location = new Point(135, 10);
             comboBoxSales.Name = "comboBoxSales";
-            comboBoxSales.Size = new Size(230, 23);
+            comboBoxSales.Size = new Size(153, 23);
             comboBoxSales.TabIndex = 1;
             // 
             // label8
@@ -2589,7 +2609,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 14, 18, 21, 29, 694);
+            clock1.CustomTime = new DateTime(2026, 5, 14, 18, 42, 34, 887);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2931,5 +2951,6 @@
         private Button btnDeleteAccount;
         private Button btnUpdateAccount;
         private ComboBox comboBoxSales;
+        private Button btnExportSales;
     }
 }

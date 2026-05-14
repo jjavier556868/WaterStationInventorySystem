@@ -64,7 +64,7 @@ namespace InvSys.Services.Services
             };
         }
 
-        public async Task UpdateAccountAsync(int id, string username, string email, string newPlaintextPassword = null)
+        public async Task UpdateAccountAsync(int id, string username, string email, string newPlaintextPassword = null, string role = null, bool? isActive = null)
         {
             var u = await _context.UserAccounts.FirstOrDefaultAsync(x => x.Id == id);
             if (u == null) throw new Exception("Account not found.");
@@ -84,6 +84,12 @@ namespace InvSys.Services.Services
 
             if (!string.IsNullOrWhiteSpace(newPlaintextPassword))
                 u.PasswordHash = HashPassword(newPlaintextPassword);
+
+            if (role != null)
+                u.Role = role == "Admin" ? UserRole.Admin : UserRole.User;
+
+            if (isActive.HasValue)
+                u.IsActive = isActive.Value;
 
             await _context.SaveChangesAsync();
         }

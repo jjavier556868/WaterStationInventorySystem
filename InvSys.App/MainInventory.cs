@@ -220,8 +220,8 @@ namespace InvSys.App
         // ── Grid initialization ──────────────────────────────────────────
         private void InitializeDataGrids()
         {
-                var allGrids = new[]
-                {
+            var allGrids = new[]
+            {
                     UserAccount, ProductTable, ProductListToStockTable, StockTable,
                     SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable,
                     accountsListTable, MostSoldProductsTable, ProductTableLowStock
@@ -232,10 +232,10 @@ namespace InvSys.App
                 "Today", "This Week", "This Month",
                 "3 Months", "6 Months", "12 Months", "All Time"
             });
-                        comboBoxSales.SelectedIndex = 2; // defaults to This Month
-                        comboBoxSales.SelectedIndexChanged += async (s, e) =>
-                        {
-                            await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
+            comboBoxSales.SelectedIndex = 2; // defaults to This Month
+            comboBoxSales.SelectedIndexChanged += async (s, e) =>
+            {
+                await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
             };
 
             foreach (var grid in allGrids)
@@ -1470,7 +1470,8 @@ namespace InvSys.App
                 }
 
                 using var dialog = new CRUDForms.UpdateAccountDialog(
-                    account.Id, account.Username, account.Email, account.PasswordHash);
+                account.Id, account.Username, account.Email,
+                account.PasswordHash, account.Role, account.IsActive);
 
                 if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
@@ -1478,7 +1479,9 @@ namespace InvSys.App
                     account.Id,
                     dialog.NewUsername,
                     dialog.NewEmail,
-                    dialog.NewPassword);
+                    dialog.NewPassword,
+                    dialog.SelectedRole,
+                    dialog.IsActive);
 
                 MessageBox.Show("Account updated successfully.", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
@@ -1626,5 +1629,79 @@ namespace InvSys.App
             return BCrypt.Net.BCrypt.Verify(plaintext, hash);
         }
 
+
+        private async void btnExportSales_Click_1(object sender, EventArgs e)
+        {
+            try
+            {
+                using var service = new PurchaseService();
+                var all = await service.GetAllSalesAsync();
+
+                // Apply same filter as the table
+                var now = DateTime.Now;
+                string filter = comboBoxSales.SelectedItem?.ToString() ?? "All Time";
+
+                var data = filter switch
+                {
+                    "Today" => all.Where(s => s.PurchasedOn.Date == now.Date).ToList(),
+                    "This Week" => all.Where(s => s.PurchasedOn >= now.Date.AddDays(-(int)now.DayOfWeek) && s.PurchasedOn <= now).ToList(),
+                    "This Month" => all.Where(s => s.PurchasedOn.Month == now.Month && s.PurchasedOn.Year == now.Year).ToList(),
+                    "3 Months" => all.Where(s => s.PurchasedOn >= now.AddMonths(-3)).ToList(),
+                    "6 Months" => all.Where(s => s.PurchasedOn >= now.AddMonths(-6)).ToList(),
+                    "12 Months" => all.Where(s => s.PurchasedOn >= now.AddMonths(-12)).ToList(),
+                    _ => all
+                };
+
+                if (data.Count == 0)
+                {
+                    MessageBox.Show("No sales data to export for the selected period.", "Nothing to Export",
+                        MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                using var saveDialog = new SaveFileDialog
+                {
+                    Title = "Export Sales",
+                    Filter = "CSV File (*.csv)|*.csv",
+                    FileName = $"Sales_{filter.Replace(" ", "")}_{now:yyyyMMdd}"
+                };
+
+                if (saveDialog.ShowDialog() != DialogResult.OK) return;
+
+                var sb = new System.Text.StringBuilder();
+                sb.AppendLine("Purchase #,Date,Product,Qty,Unit Price,Subtotal,Total,Payment,Reference No.,Cashier,Role");
+
+                foreach (var row in data)
+                {
+                    string refNo = row.PaymentMethod == "Cash" ? "" : (row.ReferenceNumber ?? "");
+                    sb.AppendLine(
+                        $"{row.PurchaseId}," +
+                        $"{row.PurchasedOn:MM/dd/yyyy hh:mm tt}," +
+                        $"\"{row.ProductName}\"," +
+                        $"{row.Quantity}," +
+                        $"{row.UnitPrice:N2}," +
+                        $"{row.Subtotal:N2}," +
+                        $"{row.PurchaseTotal:N2}," +
+                        $"{row.PaymentMethod}," +
+                        $"{refNo}," +
+                        $"\"{row.CashierName}\"," +
+                        $"{row.CashierRole}");
+                }
+
+                await System.IO.File.WriteAllTextAsync(saveDialog.FileName, sb.ToString());
+
+                var open = MessageBox.Show(
+                    $"Exported {data.Count} record(s) to:\n\n{saveDialog.FileName}\n\nOpen it now?",
+                    "Export Successful", MessageBoxButtons.YesNo, MessageBoxIcon.Information);
+
+                if (open == DialogResult.Yes)
+                    Process.Start(new ProcessStartInfo(saveDialog.FileName) { UseShellExecute = true });
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Export failed:\n{ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
+        }
     }
 }
