@@ -43,6 +43,7 @@ namespace InvSys.App
             _currentUsername = username;
             _currentUserRole = userRole;
             lblWelcome.Text = $"Welcome, {username}!";
+            lblAccountRole.Text = userRole == UserRole.Admin ? "Admin" : "User";
             UpdateUIForRole();
             this.Load += async (s, e) => await RefreshAllTablesAsync();
         }
@@ -143,7 +144,7 @@ namespace InvSys.App
             ConfigureGrid(ProductTable,
                 new GridTextColumn { MappingName = "Id", HeaderText = "ID" },
                 new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "Description", HeaderText = "Description" },
                 new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
@@ -157,7 +158,7 @@ namespace InvSys.App
 
             ConfigureGrid(ProductListToStockTable,
                 new GridTextColumn { MappingName = "Name", HeaderText = "Product Name" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "Description", HeaderText = "Description" },
                 new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
@@ -171,42 +172,42 @@ namespace InvSys.App
                 new GridTextColumn { MappingName = "PurchasedOn", HeaderText = "Date", Format = "MM/dd/yyyy hh:mm tt" },
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
                 new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty" },
-                new GridTextColumn { MappingName = "UnitPrice", HeaderText = "Unit Price", Format = "C2" },
-                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" },
-                new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "C2" },
+                new GridTextColumn { MappingName = "UnitPrice", HeaderText = "Unit Price", Format = "₱#,##0.00" },
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "₱#,##0.00" },
+                new GridTextColumn { MappingName = "PurchaseTotal", HeaderText = "Total", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "PaymentMethod", HeaderText = "Payment" },
                 new GridTextColumn { MappingName = "CashierName", HeaderText = "Cashier" },
                 new GridTextColumn { MappingName = "CashierRole", HeaderText = "Role" });
 
             ConfigureGrid(StockViewTable,
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty Available" });
 
             ConfigureGrid(ProductsToPurchaseTable,
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" },
-                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "₱#,##0.00" });
 
             ConfigureGrid(PurchaseTable,
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product Name" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Unit Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "Quantity", HeaderText = "Qty to Buy" },
-                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "C2" });
+                new GridTextColumn { MappingName = "Subtotal", HeaderText = "Subtotal", Format = "₱#,##0.00" });
 
             ConfigureGrid(ProductTableLowStock,
                 new GridTextColumn { MappingName = "ProductId", HeaderText = "ID" },
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
                 new GridTextColumn { MappingName = "AvailableQty", HeaderText = "Stock Left" },
-                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "C2" },
+                new GridTextColumn { MappingName = "Price", HeaderText = "Price", Format = "₱#,##0.00" },
                 new GridTextColumn { MappingName = "SupplierName", HeaderText = "Supplier" });
 
             ConfigureGrid(MostSoldProductsTable,
                 new GridTextColumn { MappingName = "Rank", HeaderText = "#" },
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
                 new GridTextColumn { MappingName = "TotalSold", HeaderText = "Qty Sold" },
-                new GridTextColumn { MappingName = "Revenue", HeaderText = "Revenue", Format = "C2" });
+                new GridTextColumn { MappingName = "Revenue", HeaderText = "Revenue", Format = "₱#,##0.00" });
         }
 
         private static void ConfigureGrid(SfDataGrid grid, params GridColumn[] columns)
@@ -236,6 +237,18 @@ namespace InvSys.App
             comboBoxSales.SelectedIndexChanged += async (s, e) =>
             {
                 await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
+            };
+
+            comboBoxTotalSales.Items.AddRange(new object[]
+{
+    "Today", "This Week", "This Month",
+    "3 Months", "6 Months", "12 Months", "All Time"
+});
+            comboBoxTotalSales.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxTotalSales.SelectedIndex = 2;
+            comboBoxTotalSales.SelectedIndexChanged += async (s, e) =>
+            {
+                await RefreshMonthlySalesAsync(comboBoxTotalSales.SelectedItem?.ToString() ?? "This Month");
             };
 
             foreach (var grid in allGrids)
@@ -354,7 +367,7 @@ namespace InvSys.App
             bool isAdmin = _currentUserRole == UserRole.Admin;
             btnAccounts.Enabled = isAdmin;
             btnAccounts.Visible = isAdmin;
-            btnYourAccount.Visible = isAdmin;
+            btnYourAccount.Visible = !isAdmin;
         }
 
         private bool IsAdmin()
@@ -419,6 +432,7 @@ namespace InvSys.App
             await RefreshSalesChartAsync();
             await RefreshMostSoldProductsTableAsync();
             await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
+            await RefreshMonthlySalesAsync(comboBoxTotalSales.SelectedItem?.ToString() ?? "This Month");
         }
 
         public async Task RefreshAccountsTableAsync()
@@ -525,13 +539,25 @@ namespace InvSys.App
             txtTotalProducts.Text = all.Count.ToString();
         }
 
-        private async Task RefreshMonthlySalesAsync()
+        private async Task RefreshMonthlySalesAsync(string filter = "This Month")
         {
             var now = DateTime.Now;
             using var context = new InvSys.Infrastructure.InventoryDbContext();
-            var sales = await context.Sales
-                .Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year)
-                .ToListAsync();
+
+            var query = context.Sales.AsQueryable();
+
+            query = filter switch
+            {
+                "Today" => query.Where(s => s.CreatedDate.Date == now.Date),
+                "This Week" => query.Where(s => s.CreatedDate >= now.Date.AddDays(-(int)now.DayOfWeek) && s.CreatedDate <= now),
+                "This Month" => query.Where(s => s.CreatedDate.Month == now.Month && s.CreatedDate.Year == now.Year),
+                "3 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-3)),
+                "6 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-6)),
+                "12 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-12)),
+                _ => query
+            };
+
+            var sales = await query.ToListAsync();
             txtMonthlySales.Text = $"₱{sales.Sum(s => s.Subtotal):N2}";
         }
 
@@ -618,7 +644,7 @@ namespace InvSys.App
                 "3 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-3)),
                 "6 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-6)),
                 "12 Months" => query.Where(s => s.CreatedDate >= now.AddMonths(-12)),
-                _ => query // All Time
+                _ => query
             };
 
             var salesData = await query.ToListAsync();
@@ -642,24 +668,62 @@ namespace InvSys.App
                 return;
             }
 
-            // Determine X axis grouping based on filter
-            DateTime minDate = salesData.Min(s => s.CreatedDate).Date;
-            DateTime maxDate = salesData.Max(s => s.CreatedDate).Date;
+            // ── Axis range: always span the full filter period ───────────────
+            DateTime minDate, maxDate;
+            switch (filter)
+            {
+                case "Today":
+                    minDate = now.Date;
+                    maxDate = now.Date;
+                    break;
+                case "This Week":
+                    minDate = now.Date.AddDays(-(int)now.DayOfWeek);   // Sunday
+                    maxDate = minDate.AddDays(6);                       // Saturday
+                    break;
+                case "This Month":
+                    minDate = new DateTime(now.Year, now.Month, 1);
+                    maxDate = new DateTime(now.Year, now.Month,
+                                  DateTime.DaysInMonth(now.Year, now.Month));
+                    break;
+                case "3 Months":
+                    minDate = now.AddMonths(-3).Date;
+                    maxDate = now.Date;
+                    break;
+                case "6 Months":
+                    minDate = now.AddMonths(-6).Date;
+                    maxDate = now.Date;
+                    break;
+                case "12 Months":
+                    minDate = now.AddMonths(-12).Date;
+                    maxDate = now.Date;
+                    break;
+                default: // All Time
+                    minDate = salesData.Min(s => s.CreatedDate).Date;
+                    maxDate = salesData.Max(s => s.CreatedDate).Date;
+                    break;
+            }
 
             chartMostSold.ChartAreas[0].AxisX.Minimum = minDate.ToOADate();
-            chartMostSold.ChartAreas[0].AxisX.Maximum = maxDate.ToOADate();
-            chartMostSold.ChartAreas[0].AxisX.LabelStyle.Format = filter == "Today" ? "hh tt" : "MM/dd";
+            chartMostSold.ChartAreas[0].AxisX.Maximum = filter == "Today"
+                ? now.Date.AddHours(23).ToOADate()
+                : maxDate.ToOADate();
+
             chartMostSold.ChartAreas[0].AxisX.IntervalType = filter == "Today"
-                ? DateTimeIntervalType.Hours : DateTimeIntervalType.Days;
-            chartMostSold.ChartAreas[0].AxisX.Interval = filter switch
-            {
-                "Today" => 2,
-                "This Week" => 1,
-                "12 Months" => 30,
-                "6 Months" => 15,
-                "3 Months" => 7,
-                _ => 1
-            };
+                ? DateTimeIntervalType.Hours
+                : DateTimeIntervalType.Days;
+
+            // Label format and tick interval per filter
+            (chartMostSold.ChartAreas[0].AxisX.LabelStyle.Format,
+             chartMostSold.ChartAreas[0].AxisX.Interval) = filter switch
+             {
+                 "Today" => ("h tt", 2),    // 12 AM  2 AM  4 AM ...
+                 "This Week" => ("ddd", 1),    // Sun  Mon  Tue  Wed  Thu  Fri  Sat
+                 "This Month" => ("d", 2),    // 1  3  5  7 ... last day
+                 "3 Months" => ("MM/dd", 7),
+                 "6 Months" => ("MM/dd", 14),
+                 "12 Months" => ("MMM", 30),   // Jan  Feb  Mar ...
+                 _ => ("MM/dd", 7)     // All Time
+             };
 
             var colors = new[]
             {
@@ -1668,24 +1732,31 @@ namespace InvSys.App
 
                 if (saveDialog.ShowDialog() != DialogResult.OK) return;
 
+                static string CsvField(object value)
+                {
+                    var s = value?.ToString() ?? "";
+                    return $"\"{s.Replace("\"", "\"\"")}\"";
+                }
+
                 var sb = new System.Text.StringBuilder();
                 sb.AppendLine("Purchase #,Date,Product,Qty,Unit Price,Subtotal,Total,Payment,Reference No.,Cashier,Role");
 
                 foreach (var row in data)
                 {
                     string refNo = row.PaymentMethod == "Cash" ? "" : (row.ReferenceNumber ?? "");
-                    sb.AppendLine(
-                        $"{row.PurchaseId}," +
-                        $"{row.PurchasedOn:MM/dd/yyyy hh:mm tt}," +
-                        $"\"{row.ProductName}\"," +
-                        $"{row.Quantity}," +
-                        $"{row.UnitPrice:N2}," +
-                        $"{row.Subtotal:N2}," +
-                        $"{row.PurchaseTotal:N2}," +
-                        $"{row.PaymentMethod}," +
-                        $"{refNo}," +
-                        $"\"{row.CashierName}\"," +
-                        $"{row.CashierRole}");
+                    sb.AppendLine(string.Join(",",
+                        CsvField(row.PurchaseId),
+                        CsvField(row.PurchasedOn.ToString("MM/dd/yyyy hh:mm tt")),
+                        CsvField(row.ProductName),
+                        CsvField(row.Quantity),
+                        CsvField(row.UnitPrice.ToString("F2")),
+                        CsvField(row.Subtotal.ToString("F2")),
+                        CsvField(row.PurchaseTotal.ToString("F2")),
+                        CsvField(row.PaymentMethod),
+                        CsvField(refNo),
+                        CsvField(row.CashierName),
+                        CsvField(row.CashierRole)
+                    ));
                 }
 
                 await System.IO.File.WriteAllTextAsync(saveDialog.FileName, sb.ToString());

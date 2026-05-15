@@ -6,6 +6,7 @@ namespace InvSys.App
         static void Main()
         {
             ApplicationConfiguration.Initialize();
+            DbSeeder.SeedAsync().GetAwaiter().GetResult();
             Application.Run(new LoginForm());
         }
     }

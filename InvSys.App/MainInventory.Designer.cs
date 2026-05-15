@@ -73,6 +73,7 @@
             panel23 = new Panel();
             txtMonthlySales = new Label();
             panel24 = new Panel();
+            comboBoxTotalSales = new ComboBox();
             label6 = new Label();
             panel16 = new Panel();
             txtTotalProducts = new Label();
@@ -214,6 +215,7 @@
             panel11 = new Panel();
             clock1 = new Syncfusion.Windows.Forms.Tools.Clock();
             gridLayout1 = new Syncfusion.Windows.Forms.Tools.GridLayout(components);
+            lblAccountRole = new Label();
             panel1.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel1).BeginInit();
             gradientPanel1.SuspendLayout();
@@ -547,7 +549,7 @@
             lblWelcome.BackColor = Color.Transparent;
             lblWelcome.Font = new Font("Segoe UI Light", 21.75F, FontStyle.Regular, GraphicsUnit.Point, 0);
             lblWelcome.ForeColor = Color.White;
-            lblWelcome.Location = new Point(51, 24);
+            lblWelcome.Location = new Point(51, 10);
             lblWelcome.Name = "lblWelcome";
             lblWelcome.Size = new Size(208, 40);
             lblWelcome.TabIndex = 15;
@@ -760,7 +762,7 @@
             // 
             // panel30
             // 
-            panel30.BackColor = Color.Firebrick;
+            panel30.BackColor = Color.MediumPurple;
             panel30.Controls.Add(label9);
             panel30.Dock = DockStyle.Top;
             panel30.Location = new Point(0, 0);
@@ -848,12 +850,23 @@
             // panel24
             // 
             panel24.BackColor = Color.CornflowerBlue;
+            panel24.Controls.Add(comboBoxTotalSales);
             panel24.Controls.Add(label6);
             panel24.Dock = DockStyle.Top;
             panel24.Location = new Point(0, 0);
             panel24.Name = "panel24";
             panel24.Size = new Size(420, 45);
             panel24.TabIndex = 1;
+            // 
+            // comboBoxTotalSales
+            // 
+            comboBoxTotalSales.Anchor = AnchorStyles.Right;
+            comboBoxTotalSales.DropDownStyle = ComboBoxStyle.DropDownList;
+            comboBoxTotalSales.FormattingEnabled = true;
+            comboBoxTotalSales.Location = new Point(235, 12);
+            comboBoxTotalSales.Name = "comboBoxTotalSales";
+            comboBoxTotalSales.Size = new Size(171, 23);
+            comboBoxTotalSales.TabIndex = 2;
             // 
             // label6
             // 
@@ -862,9 +875,9 @@
             label6.ForeColor = SystemColors.ButtonFace;
             label6.Location = new Point(10, 10);
             label6.Name = "label6";
-            label6.Size = new Size(211, 25);
+            label6.Size = new Size(122, 25);
             label6.TabIndex = 0;
-            label6.Text = "TOTAL SALES MONTHLY";
+            label6.Text = "TOTAL SALES";
             // 
             // panel16
             // 
@@ -1693,7 +1706,7 @@
             PurchaseControl.Controls.Add(tabPage8);
             PurchaseControl.Controls.Add(tabPage9);
             PurchaseControl.Dock = DockStyle.Fill;
-            PurchaseControl.ItemSize = new Size(55, 50);
+            PurchaseControl.ItemSize = new Size(50, 50);
             PurchaseControl.Location = new Point(0, 49);
             PurchaseControl.Multiline = true;
             PurchaseControl.Name = "PurchaseControl";
@@ -2098,7 +2111,7 @@
             txtManagePurchaseSearch.MaxLength = 0;
             txtManagePurchaseSearch.MinimumSize = new Size(200, 0);
             txtManagePurchaseSearch.Name = "txtManagePurchaseSearch";
-            txtManagePurchaseSearch.Size = new Size(356, 23);
+            txtManagePurchaseSearch.Size = new Size(322, 23);
             txtManagePurchaseSearch.TabIndex = 6;
             txtManagePurchaseSearch.TextChanged += txtManagePurchaseSearch_TextChanged;
             // 
@@ -2579,6 +2592,7 @@
             // gradientPanel2
             // 
             gradientPanel2.BackgroundColor = new Syncfusion.Drawing.BrushInfo(Syncfusion.Drawing.GradientStyle.Horizontal, Color.RoyalBlue, Color.SkyBlue);
+            gradientPanel2.Controls.Add(lblAccountRole);
             gradientPanel2.Controls.Add(panel11);
             gradientPanel2.Controls.Add(clock1);
             gradientPanel2.Controls.Add(lblWelcome);
@@ -2593,7 +2607,7 @@
             panel11.BackColor = Color.Transparent;
             panel11.BackgroundImage = Properties.Resources.account_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
             panel11.BackgroundImageLayout = ImageLayout.Center;
-            panel11.Location = new Point(11, 34);
+            panel11.Location = new Point(11, 23);
             panel11.Name = "panel11";
             panel11.Size = new Size(34, 27);
             panel11.TabIndex = 17;
@@ -2609,7 +2623,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 14, 18, 42, 34, 887);
+            clock1.CustomTime = new DateTime(2026, 5, 15, 12, 14, 34, 818);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2632,6 +2646,18 @@
             // 
             gridLayout1.Columns = 0;
             gridLayout1.Rows = 1;
+            // 
+            // lblAccountRole
+            // 
+            lblAccountRole.AutoSize = true;
+            lblAccountRole.BackColor = Color.Transparent;
+            lblAccountRole.Font = new Font("Yu Gothic UI", 15.75F, FontStyle.Bold | FontStyle.Italic, GraphicsUnit.Point, 0);
+            lblAccountRole.ForeColor = Color.White;
+            lblAccountRole.Location = new Point(51, 50);
+            lblAccountRole.Name = "lblAccountRole";
+            lblAccountRole.Size = new Size(76, 30);
+            lblAccountRole.TabIndex = 18;
+            lblAccountRole.Text = "Admin";
             // 
             // MainInventory
             // 
@@ -2952,5 +2978,7 @@
         private Button btnUpdateAccount;
         private ComboBox comboBoxSales;
         private Button btnExportSales;
+        private ComboBox comboBoxTotalSales;
+        private Label lblAccountRole;
     }
 }
