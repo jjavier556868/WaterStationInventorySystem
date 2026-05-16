@@ -6,10 +6,16 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>water_drops_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24.ico</ApplicationIcon>
+    <AssemblyName>H2OrganizerApp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
     <None Remove="Resources\login_icon1.png" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <Content Include="water_drops_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24.ico" />
   </ItemGroup>
 
   <ItemGroup>
@@ -35,6 +41,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -42,6 +53,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>
