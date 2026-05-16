@@ -38,6 +38,15 @@ namespace InvSys.App
             InitializeDataGrids();
         }
 
+        protected override bool ProcessCmdKey(ref Message msg, Keys keyData)
+        {
+            if ((keyData == Keys.Up || keyData == Keys.Down) &&
+                (PanelControl.Focused || PurchaseControl.Focused))
+                return true;
+
+            return base.ProcessCmdKey(ref msg, keyData);
+        }
+
         public MainInventory(string username, UserRole userRole) : this()
         {
             _currentUsername = username;

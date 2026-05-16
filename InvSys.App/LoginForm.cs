@@ -104,10 +104,10 @@ namespace InvSys.App
 
             if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                var greeting = user.Role == UserRole.Admin
+                /*var greeting = user.Role == UserRole.Admin
                     ? $"Welcome back, Admin {user.Username}!"
                     : $"Welcome back, {user.Username}!";
-                MessageBox.Show(greeting, "Login Successful");
+                MessageBox.Show(greeting, "Login Successful");*/
 
                 var mainInv = new MainInventory(user.Username, user.Role);
                 this.Hide();

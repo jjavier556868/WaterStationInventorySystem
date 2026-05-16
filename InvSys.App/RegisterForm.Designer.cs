@@ -83,7 +83,7 @@
             panel1.Controls.Add(label2);
             panel1.CornerRadius = 30;
             panel1.ForeColor = Color.SlateBlue;
-            panel1.Location = new Point(34, 5);
+            panel1.Location = new Point(55, 8);
             panel1.Name = "panel1";
             panel1.Size = new Size(562, 520);
             panel1.TabIndex = 1;
@@ -309,16 +309,18 @@
             panel5.Dock = DockStyle.Fill;
             panel5.Location = new Point(0, 0);
             panel5.Name = "panel5";
-            panel5.Size = new Size(630, 537);
+            panel5.Size = new Size(673, 537);
             panel5.TabIndex = 2;
             // 
             // RegisterForm
             // 
             AutoScaleDimensions = new SizeF(7F, 15F);
             AutoScaleMode = AutoScaleMode.Font;
-            ClientSize = new Size(630, 537);
+            ClientSize = new Size(673, 537);
             Controls.Add(panel5);
-            MinimizeBox = false;
+            FormBorderStyle = FormBorderStyle.FixedSingle;
+            Icon = (Icon)resources.GetObject("$this.Icon");
+            MaximizeBox = false;
             Name = "RegisterForm";
             Text = "Register";
             ((System.ComponentModel.ISupportInitialize)panel1).EndInit();
