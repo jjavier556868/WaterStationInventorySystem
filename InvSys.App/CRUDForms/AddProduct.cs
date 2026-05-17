@@ -1,8 +1,7 @@
-﻿using System;
-using System.Linq;
+﻿using InvSys.Services.Services;
+using System;
+using System.Threading.Tasks;
 using System.Windows.Forms;
-using InvSys.Infrastructure;
-using InvSys.Domain.Models.InventoryItems;
 
 namespace InvSys.App.CRUDForms
 {
@@ -14,22 +13,31 @@ namespace InvSys.App.CRUDForms
         {
             InitializeComponent();
             _parentForm = parentForm;
-            LoadSuppliers();
             this.AcceptButton = btnAddProduct;
             this.CancelButton = btnCancel;
+            this.Load += async (s, e) => await LoadSuppliersAsync();
         }
 
-        private void LoadSuppliers()
+        private async Task LoadSuppliersAsync()
         {
-            using var service = new InventoryService();
-            comboBoxSupplier.DataSource = service.GetAllSuppliers();
-            comboBoxSupplier.DisplayMember = "Name";
-            comboBoxSupplier.ValueMember = "Id";
+            try
+            {
+                using var service = new SupplierService();
+                var suppliers = await service.GetAllSuppliersAsync();
+                comboBoxSupplier.DataSource = suppliers;
+                comboBoxSupplier.DisplayMember = "Name";
+                comboBoxSupplier.ValueMember = "Id";
+            }
+            catch (Exception ex)
+            {
+                MessageBox.Show($"Failed to load suppliers: {ex.Message}", "Error",
+                    MessageBoxButtons.OK, MessageBoxIcon.Error);
+            }
         }
 
-        private void btnAddProduct_Click(object sender, EventArgs e)
+        private async void btnAddProduct_Click(object sender, EventArgs e)
         {
-           
+            // Validation
             if (string.IsNullOrWhiteSpace(txtBoxProductName.Text))
             {
                 MessageBox.Show("Product Name is required!", "Validation Error",
@@ -38,7 +46,6 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            
             if (!decimal.TryParse(txtBoxPrice.Text, out decimal price) || price <= 0)
             {
                 MessageBox.Show("Valid price required (e.g. 29.99)!", "Validation Error",
@@ -47,16 +54,6 @@ namespace InvSys.App.CRUDForms
                 return;
             }
 
-            
-            if (!int.TryParse(txtBoxQuantity.Text, out int quantity) || quantity < 0)
-            {
-                MessageBox.Show("Valid quantity required (e.g. 50)!", "Validation Error",
-                    MessageBoxButtons.OK, MessageBoxIcon.Warning);
-                txtBoxQuantity.Focus();
-                return;
-            }
-
-           
             if (comboBoxSupplier.SelectedValue == null)
             {
                 MessageBox.Show("Please select a supplier!", "Validation Error",
@@ -67,25 +64,34 @@ namespace InvSys.App.CRUDForms
 
             try
             {
-                using var service = new InventoryService();
-                service.AddProduct(
+                // Disable button to prevent double-clicks
+                btnAddProduct.Enabled = false;
+
+                using var service = new ProductService();
+                await service.AddProductAsync(
                     txtBoxProductName.Text.Trim(),
+                    txtBoxDescription.Text.Trim(),
                     price,
-                    quantity,
                     (int)comboBoxSupplier.SelectedValue
                 );
 
                 MessageBox.Show("Product added successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
-                _parentForm?.RefreshProductTable();
+
+                // Refresh parent form tables
+                if (_parentForm != null)
+                {
+                    await _parentForm.RefreshProductTableAsync();
+                }
 
                 this.DialogResult = DialogResult.OK;
                 this.Close();
             }
             catch (Exception ex)
             {
-                MessageBox.Show($"Error: {ex.Message}", "Save Failed",
+                MessageBox.Show($"Error adding product: {ex.Message}", "Save Failed",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
+                btnAddProduct.Enabled = true;
             }
         }
 
@@ -93,11 +99,6 @@ namespace InvSys.App.CRUDForms
         {
             this.DialogResult = DialogResult.Cancel;
             this.Close();
-        }
-
-        private void sfComboBox1_SelectedIndexChanged(object sender, EventArgs e)
-        {
-            
         }
     }
 }

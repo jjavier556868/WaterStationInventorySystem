@@ -3,14 +3,35 @@ using Microsoft.EntityFrameworkCore.Migrations;
 
 #nullable disable
 
-namespace InvSys.Infrastructure.Migrations.InventoryDb
+namespace InvSys.Infrastructure.Migrations
 {
     /// <inheritdoc />
-    public partial class initialInventoryDB : Migration
+    public partial class initialCreate : Migration
     {
         /// <inheritdoc />
         protected override void Up(MigrationBuilder migrationBuilder)
         {
+            migrationBuilder.CreateTable(
+                name: "Purchases",
+                columns: table => new
+                {
+                    Id = table.Column<int>(type: "INTEGER", nullable: false)
+                        .Annotation("Sqlite:Autoincrement", true),
+                    TotalAmount = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
+                    PaymentMethod = table.Column<int>(type: "INTEGER", nullable: false),
+                    CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
+                    CreatedBy = table.Column<string>(type: "TEXT", nullable: false),
+                    UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    UpdatedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    DeletedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
+                    DeletedBy = table.Column<string>(type: "TEXT", nullable: true),
+                    IsActive = table.Column<bool>(type: "INTEGER", nullable: false)
+                },
+                constraints: table =>
+                {
+                    table.PrimaryKey("PK_Purchases", x => x.Id);
+                });
+
             migrationBuilder.CreateTable(
                 name: "Suppliers",
                 columns: table => new
@@ -60,19 +81,20 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                         column: x => x.SupplierId,
                         principalTable: "Suppliers",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Sale",
+                name: "Sales",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
-                    SaleDate = table.Column<DateTime>(type: "TEXT", nullable: false),
-                    QuantitySold = table.Column<int>(type: "INTEGER", nullable: false),
-                    TotalAmount = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
+                    PurchaseId = table.Column<int>(type: "INTEGER", nullable: false),
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false),
+                    Quantity = table.Column<int>(type: "INTEGER", nullable: false),
+                    UnitPrice = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
+                    Subtotal = table.Column<decimal>(type: "DECIMAL(18,2)", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -83,25 +105,29 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Sale", x => x.Id);
+                    table.PrimaryKey("PK_Sales", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Sale_Products_ProductId",
+                        name: "FK_Sales_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
+                        principalColumn: "Id",
+                        onDelete: ReferentialAction.Restrict);
+                    table.ForeignKey(
+                        name: "FK_Sales_Purchases_PurchaseId",
+                        column: x => x.PurchaseId,
+                        principalTable: "Purchases",
                         principalColumn: "Id",
                         onDelete: ReferentialAction.Cascade);
                 });
 
             migrationBuilder.CreateTable(
-                name: "Stock",
+                name: "Stocks",
                 columns: table => new
                 {
                     Id = table.Column<int>(type: "INTEGER", nullable: false)
                         .Annotation("Sqlite:Autoincrement", true),
                     ProductId = table.Column<int>(type: "INTEGER", nullable: false),
                     Quantity = table.Column<int>(type: "INTEGER", nullable: false),
-                    Transaction = table.Column<int>(type: "INTEGER", maxLength: 50, nullable: false),
-                    TransactionDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedDate = table.Column<DateTime>(type: "TEXT", nullable: false),
                     CreatedBy = table.Column<string>(type: "TEXT", nullable: false),
                     UpdatedDate = table.Column<DateTime>(type: "TEXT", nullable: true),
@@ -112,13 +138,13 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                 },
                 constraints: table =>
                 {
-                    table.PrimaryKey("PK_Stock", x => x.Id);
+                    table.PrimaryKey("PK_Stocks", x => x.Id);
                     table.ForeignKey(
-                        name: "FK_Stock_Products_ProductId",
+                        name: "FK_Stocks_Products_ProductId",
                         column: x => x.ProductId,
                         principalTable: "Products",
                         principalColumn: "Id",
-                        onDelete: ReferentialAction.Cascade);
+                        onDelete: ReferentialAction.Restrict);
                 });
 
             migrationBuilder.CreateIndex(
@@ -127,13 +153,18 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
                 column: "SupplierId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Sale_ProductId",
-                table: "Sale",
+                name: "IX_Sales_ProductId",
+                table: "Sales",
                 column: "ProductId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Stock_ProductId",
-                table: "Stock",
+                name: "IX_Sales_PurchaseId",
+                table: "Sales",
+                column: "PurchaseId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Stocks_ProductId",
+                table: "Stocks",
                 column: "ProductId");
         }
 
@@ -141,10 +172,13 @@ namespace InvSys.Infrastructure.Migrations.InventoryDb
         protected override void Down(MigrationBuilder migrationBuilder)
         {
             migrationBuilder.DropTable(
-                name: "Sale");
+                name: "Sales");
 
             migrationBuilder.DropTable(
-                name: "Stock");
+                name: "Stocks");
+
+            migrationBuilder.DropTable(
+                name: "Purchases");
 
             migrationBuilder.DropTable(
                 name: "Products");

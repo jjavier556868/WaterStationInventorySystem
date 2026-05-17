@@ -6,6 +6,8 @@
     <Nullable>enable</Nullable>
     <UseWindowsForms>true</UseWindowsForms>
     <ImplicitUsings>enable</ImplicitUsings>
+    <ApplicationIcon>water_drops_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24.ico</ApplicationIcon>
+    <AssemblyName>H2OrganizerApp</AssemblyName>
   </PropertyGroup>
 
   <ItemGroup>
@@ -13,17 +15,24 @@
   </ItemGroup>
 
   <ItemGroup>
+    <Content Include="water_drops_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24.ico" />
+  </ItemGroup>
+
+  <ItemGroup>
     <PackageReference Include="BCrypt.Net-Next" Version="4.0.3" />
     <PackageReference Include="Microsoft.EntityFrameworkCore" Version="8.0.24" />
+    <PackageReference Include="QuestPDF" Version="2026.2.3" />
     <PackageReference Include="Syncfusion.Chart.Windows" Version="32.2.4" />
     <PackageReference Include="Syncfusion.Licensing" Version="32.2.4" />
     <PackageReference Include="Syncfusion.SfDataGrid.WinForms" Version="32.2.4" />
     <PackageReference Include="Syncfusion.Tools.Windows" Version="32.2.4" />
+    <PackageReference Include="WinForms.DataVisualization" Version="1.10.0" />
   </ItemGroup>
 
   <ItemGroup>
     <ProjectReference Include="..\InvSys.Domain\InvSys.Domain.csproj" />
     <ProjectReference Include="..\InvSys.Infrastructure\InvSys.Infrastructure.csproj" />
+    <ProjectReference Include="..\InvSys.Services\InvSys.Services.csproj" />
   </ItemGroup>
 
   <ItemGroup>
@@ -32,6 +41,11 @@
       <AutoGen>True</AutoGen>
       <DependentUpon>Resources.resx</DependentUpon>
     </Compile>
+    <Compile Update="Properties\Settings.Designer.cs">
+      <DesignTimeSharedInput>True</DesignTimeSharedInput>
+      <AutoGen>True</AutoGen>
+      <DependentUpon>Settings.settings</DependentUpon>
+    </Compile>
   </ItemGroup>
 
   <ItemGroup>
@@ -39,6 +53,13 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Update="Properties\Settings.settings">
+      <Generator>SettingsSingleFileGenerator</Generator>
+      <LastGenOutput>Settings.Designer.cs</LastGenOutput>
+    </None>
   </ItemGroup>
 
 </Project>
