@@ -78,7 +78,6 @@ namespace InvSys.App.CRUDForms
                 MessageBox.Show("Product added successfully!", "Success",
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
 
-                // Refresh parent form tables
                 if (_parentForm != null)
                 {
                     await _parentForm.RefreshProductTableAsync();
