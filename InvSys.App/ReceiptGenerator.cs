@@ -54,9 +54,10 @@ namespace InvSys.App.Helpers
 
                         // ── Meta ──────────────────────────────────────────
                         col.Item().Row(row => {
-                            row.RelativeItem(2).Text("Receipt #:").Bold();
-                            row.RelativeItem(2).Text($"{data.PurchaseId}");
-                            row.RelativeItem(4).AlignRight().Text(data.PurchasedOn.ToString("MM/dd/yyyy hh:mm tt"));
+                            row.ConstantItem(62).Text("Receipt No.#:").Bold();
+                            row.RelativeItem().AlignRight().Text(
+                                $"{data.PurchaseId:D3}-{data.PurchasedOn:yyyy-MM-dd}-{data.PurchasedOn:HHmmss}"
+                            );
                         });
                         col.Item().Row(row => {
                             row.RelativeItem().Text("Date:").Bold();

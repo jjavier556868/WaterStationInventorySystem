@@ -29,6 +29,7 @@
         private void InitializeComponent()
         {
             components = new System.ComponentModel.Container();
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddProduct));
             btnCancel = new Button();
             label6 = new Label();
             btnAddProduct = new Button();
@@ -166,9 +167,10 @@
             Controls.Add(btnAddProduct);
             Controls.Add(txtBoxProductName);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             Name = "AddProduct";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "AddProduct";
+            Text = "Add Product";
             ((System.ComponentModel.ISupportInitialize)supplierBindingSource).EndInit();
             ResumeLayout(false);
             PerformLayout();

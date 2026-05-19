@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateProduct));
             txtBoxID = new TextBox();
             label5 = new Label();
             btnCancel = new Button();
@@ -181,10 +182,11 @@
             Controls.Add(label2);
             Controls.Add(txtBoxProductName);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "UpdateProduct";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "UpdateProduct";
+            Text = "Update Product";
             ResumeLayout(false);
             PerformLayout();
         }

@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(AddSupplier));
             label1 = new Label();
             txtBoxSupplier = new TextBox();
             txtBoxEmail = new TextBox();
@@ -170,10 +171,11 @@
             Controls.Add(label2);
             Controls.Add(txtBoxSupplier);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "AddSupplier";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "AddSupplier";
+            Text = "Add Supplier";
             ResumeLayout(false);
             PerformLayout();
         }

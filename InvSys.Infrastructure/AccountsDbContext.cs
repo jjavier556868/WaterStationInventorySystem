@@ -6,6 +6,7 @@ namespace InvSys.Infrastructure
     public class AccountsDbContext : DbContext
     {
         public DbSet<UserAccount> UserAccounts { get; set; }
+        public DbSet<AccountActivityLog> ActivityLogs { get; set; }
 
         public string DbPath { get; }
 

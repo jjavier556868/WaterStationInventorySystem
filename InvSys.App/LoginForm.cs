@@ -87,7 +87,7 @@ namespace InvSys.App
             MessageBox.Show("Admin created successfully!", "Success");
         }
 
-        private void btnLogin_Click(object sender, EventArgs e)
+        private async void btnLogin_Click(object sender, EventArgs e)
         {
             string loginInput = txtBoxUserEmail.Text.Trim();
             string password = txtBoxPassword.Text;
@@ -104,11 +104,20 @@ namespace InvSys.App
 
             if (user != null && BCrypt.Net.BCrypt.Verify(password, user.PasswordHash))
             {
-                /*var greeting = user.Role == UserRole.Admin
+                if (!user.IsActive)
+                {
+                    MessageBox.Show("This account has been deactivated. Contact an administrator.",
+                        "Access Denied", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    txtBoxPassword.Clear();
+                    txtBoxUserEmail.Focus();
+                    return;
+                }
+
+                var greeting = user.Role == UserRole.Admin
                     ? $"Welcome back, Admin {user.Username}!"
                     : $"Welcome back, {user.Username}!";
-                MessageBox.Show(greeting, "Login Successful");*/
-
+                MessageBox.Show(greeting, "Login Successful");
+                await LogActivityAsync(user.Username, "Login");
                 var mainInv = new MainInventory(user.Username, user.Role);
                 this.Hide();
                 mainInv.Closed += (s, args) => this.Close();
@@ -157,6 +166,18 @@ namespace InvSys.App
         {
             var registerForm = new RegisterForm();
             registerForm.ShowDialog();
+        }
+
+        public static async Task LogActivityAsync(string username, string action)
+        {
+            using var context = new AccountsDbContext();
+            context.ActivityLogs.Add(new AccountActivityLog
+            {
+                Username = username,
+                Action = action,
+                Timestamp = DateTime.Now
+            });
+            await context.SaveChangesAsync();
         }
     }
 }

@@ -207,14 +207,27 @@
             SalesTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
             panel63 = new Panel();
             panel64 = new Panel();
+            btnDeleteSalesHistory = new Button();
             label24 = new Label();
             tabPage7 = new TabPage();
             panel65 = new Panel();
+            accountsTabPanel = new TabControl();
+            tabPage10 = new TabPage();
             accountsListTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
-            panel66 = new Panel();
+            panel70 = new Panel();
+            label10 = new Label();
             btnDeleteAccount = new Button();
             btnUpdateAccount = new Button();
-            label10 = new Label();
+            tabPage11 = new TabPage();
+            ActivityLogTable = new Syncfusion.WinForms.DataGrid.SfDataGrid();
+            panel71 = new Panel();
+            btnDeleteLogHistory = new Button();
+            label14 = new Label();
+            button1 = new Button();
+            button2 = new Button();
+            panel66 = new Panel();
+            btnAccountsLogsHistory = new Button();
+            btnManageAccounts = new Button();
             panel5 = new Panel();
             gradientPanel2 = new Syncfusion.Windows.Forms.Tools.GradientPanel();
             lblAccountRole = new Label();
@@ -310,7 +323,13 @@
             panel64.SuspendLayout();
             tabPage7.SuspendLayout();
             panel65.SuspendLayout();
+            accountsTabPanel.SuspendLayout();
+            tabPage10.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)accountsListTable).BeginInit();
+            panel70.SuspendLayout();
+            tabPage11.SuspendLayout();
+            ((System.ComponentModel.ISupportInitialize)ActivityLogTable).BeginInit();
+            panel71.SuspendLayout();
             panel66.SuspendLayout();
             panel5.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).BeginInit();
@@ -1770,7 +1789,7 @@
             tabPage8.Location = new Point(4, 4);
             tabPage8.Name = "tabPage8";
             tabPage8.Padding = new Padding(3);
-            tabPage8.Size = new Size(852, 591);
+            tabPage8.Size = new Size(950, 591);
             tabPage8.TabIndex = 0;
             tabPage8.Text = "tabPage8";
             tabPage8.UseVisualStyleBackColor = true;
@@ -1784,7 +1803,7 @@
             panel43.Dock = DockStyle.Fill;
             panel43.Location = new Point(3, 3);
             panel43.Name = "panel43";
-            panel43.Size = new Size(846, 585);
+            panel43.Size = new Size(944, 585);
             panel43.TabIndex = 0;
             // 
             // panel54
@@ -1794,7 +1813,7 @@
             panel54.Dock = DockStyle.Fill;
             panel54.Location = new Point(0, 47);
             panel54.Name = "panel54";
-            panel54.Size = new Size(846, 230);
+            panel54.Size = new Size(944, 230);
             panel54.TabIndex = 0;
             // 
             // StockViewTable
@@ -1803,7 +1822,7 @@
             StockViewTable.Dock = DockStyle.Fill;
             StockViewTable.Location = new Point(0, 0);
             StockViewTable.Name = "StockViewTable";
-            StockViewTable.Size = new Size(846, 230);
+            StockViewTable.Size = new Size(944, 230);
             StockViewTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             StockViewTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             StockViewTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -1823,7 +1842,7 @@
             panel47.Dock = DockStyle.Bottom;
             panel47.Location = new Point(0, 277);
             panel47.Name = "panel47";
-            panel47.Size = new Size(846, 308);
+            panel47.Size = new Size(944, 308);
             panel47.TabIndex = 2;
             // 
             // tableLayoutPanel4
@@ -1838,7 +1857,7 @@
             tableLayoutPanel4.Name = "tableLayoutPanel4";
             tableLayoutPanel4.RowCount = 1;
             tableLayoutPanel4.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel4.Size = new Size(846, 308);
+            tableLayoutPanel4.Size = new Size(944, 308);
             tableLayoutPanel4.TabIndex = 0;
             // 
             // panel48
@@ -1847,7 +1866,7 @@
             panel48.Dock = DockStyle.Fill;
             panel48.Location = new Point(3, 3);
             panel48.Name = "panel48";
-            panel48.Size = new Size(417, 302);
+            panel48.Size = new Size(466, 302);
             panel48.TabIndex = 0;
             // 
             // panel53
@@ -1867,7 +1886,7 @@
             panel53.Dock = DockStyle.Fill;
             panel53.Location = new Point(0, 0);
             panel53.Name = "panel53";
-            panel53.Size = new Size(417, 302);
+            panel53.Size = new Size(466, 302);
             panel53.TabIndex = 7;
             // 
             // txtFromPurchaseProductName
@@ -1932,7 +1951,7 @@
             btnAddPurchase.Image = Properties.Resources.add_circle_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
             btnAddPurchase.Location = new Point(0, 254);
             btnAddPurchase.Name = "btnAddPurchase";
-            btnAddPurchase.Size = new Size(417, 48);
+            btnAddPurchase.Size = new Size(466, 48);
             btnAddPurchase.TabIndex = 15;
             btnAddPurchase.Text = "Add Purchase";
             btnAddPurchase.TextAlign = ContentAlignment.MiddleRight;
@@ -1977,7 +1996,7 @@
             panel52.Dock = DockStyle.Top;
             panel52.Location = new Point(0, 0);
             panel52.Name = "panel52";
-            panel52.Size = new Size(417, 39);
+            panel52.Size = new Size(466, 39);
             panel52.TabIndex = 1;
             // 
             // label21
@@ -1998,9 +2017,9 @@
             panel49.Controls.Add(tableLayoutPanel5);
             panel49.Controls.Add(panel55);
             panel49.Dock = DockStyle.Fill;
-            panel49.Location = new Point(426, 3);
+            panel49.Location = new Point(475, 3);
             panel49.Name = "panel49";
-            panel49.Size = new Size(417, 302);
+            panel49.Size = new Size(466, 302);
             panel49.TabIndex = 1;
             // 
             // ProductsToPurchaseTable
@@ -2009,7 +2028,7 @@
             ProductsToPurchaseTable.Dock = DockStyle.Fill;
             ProductsToPurchaseTable.Location = new Point(0, 39);
             ProductsToPurchaseTable.Name = "ProductsToPurchaseTable";
-            ProductsToPurchaseTable.Size = new Size(417, 206);
+            ProductsToPurchaseTable.Size = new Size(466, 206);
             ProductsToPurchaseTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             ProductsToPurchaseTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -2036,7 +2055,7 @@
             tableLayoutPanel5.Name = "tableLayoutPanel5";
             tableLayoutPanel5.RowCount = 1;
             tableLayoutPanel5.RowStyles.Add(new RowStyle(SizeType.Percent, 100F));
-            tableLayoutPanel5.Size = new Size(417, 57);
+            tableLayoutPanel5.Size = new Size(466, 57);
             tableLayoutPanel5.TabIndex = 19;
             // 
             // btnResetPurchase
@@ -2047,9 +2066,9 @@
             btnResetPurchase.Font = new Font("Yu Gothic UI", 11.25F);
             btnResetPurchase.ForeColor = SystemColors.ButtonHighlight;
             btnResetPurchase.Image = Properties.Resources.restart_alt_24dp_FFFFFF_FILL0_wght400_GRAD0_opsz24;
-            btnResetPurchase.Location = new Point(279, 3);
+            btnResetPurchase.Location = new Point(313, 3);
             btnResetPurchase.Name = "btnResetPurchase";
-            btnResetPurchase.Size = new Size(135, 51);
+            btnResetPurchase.Size = new Size(150, 51);
             btnResetPurchase.TabIndex = 18;
             btnResetPurchase.Text = "Reset";
             btnResetPurchase.TextAlign = ContentAlignment.MiddleRight;
@@ -2067,7 +2086,7 @@
             btnUpdatePurchase.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
             btnUpdatePurchase.Location = new Point(3, 3);
             btnUpdatePurchase.Name = "btnUpdatePurchase";
-            btnUpdatePurchase.Size = new Size(132, 51);
+            btnUpdatePurchase.Size = new Size(149, 51);
             btnUpdatePurchase.TabIndex = 16;
             btnUpdatePurchase.Text = "Update";
             btnUpdatePurchase.TextAlign = ContentAlignment.MiddleRight;
@@ -2083,9 +2102,9 @@
             btnDeletePurchase.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeletePurchase.ForeColor = SystemColors.ButtonHighlight;
             btnDeletePurchase.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnDeletePurchase.Location = new Point(141, 3);
+            btnDeletePurchase.Location = new Point(158, 3);
             btnDeletePurchase.Name = "btnDeletePurchase";
-            btnDeletePurchase.Size = new Size(132, 51);
+            btnDeletePurchase.Size = new Size(149, 51);
             btnDeletePurchase.TabIndex = 17;
             btnDeletePurchase.Text = "Delete";
             btnDeletePurchase.TextAlign = ContentAlignment.MiddleRight;
@@ -2100,7 +2119,7 @@
             panel55.Dock = DockStyle.Top;
             panel55.Location = new Point(0, 0);
             panel55.Name = "panel55";
-            panel55.Size = new Size(417, 39);
+            panel55.Size = new Size(466, 39);
             panel55.TabIndex = 18;
             // 
             // label28
@@ -2119,7 +2138,7 @@
             panel46.Dock = DockStyle.Fill;
             panel46.Location = new Point(0, 47);
             panel46.Name = "panel46";
-            panel46.Size = new Size(846, 538);
+            panel46.Size = new Size(944, 538);
             panel46.TabIndex = 1;
             // 
             // panel45
@@ -2128,7 +2147,7 @@
             panel45.Dock = DockStyle.Top;
             panel45.Location = new Point(0, 0);
             panel45.Name = "panel45";
-            panel45.Size = new Size(846, 47);
+            panel45.Size = new Size(944, 47);
             panel45.TabIndex = 0;
             // 
             // panel51
@@ -2140,7 +2159,7 @@
             panel51.Dock = DockStyle.Top;
             panel51.Location = new Point(0, 0);
             panel51.Name = "panel51";
-            panel51.Size = new Size(846, 52);
+            panel51.Size = new Size(944, 52);
             panel51.TabIndex = 1;
             // 
             // panel50
@@ -2160,7 +2179,7 @@
             txtManagePurchaseSearch.MaxLength = 0;
             txtManagePurchaseSearch.MinimumSize = new Size(200, 0);
             txtManagePurchaseSearch.Name = "txtManagePurchaseSearch";
-            txtManagePurchaseSearch.Size = new Size(322, 23);
+            txtManagePurchaseSearch.Size = new Size(420, 23);
             txtManagePurchaseSearch.TabIndex = 6;
             txtManagePurchaseSearch.TextChanged += txtManagePurchaseSearch_TextChanged;
             // 
@@ -2180,7 +2199,7 @@
             tabPage9.Location = new Point(4, 4);
             tabPage9.Name = "tabPage9";
             tabPage9.Padding = new Padding(3);
-            tabPage9.Size = new Size(950, 591);
+            tabPage9.Size = new Size(852, 591);
             tabPage9.TabIndex = 1;
             tabPage9.Text = "tabPage9";
             tabPage9.UseVisualStyleBackColor = true;
@@ -2191,7 +2210,7 @@
             panel44.Dock = DockStyle.Fill;
             panel44.Location = new Point(3, 3);
             panel44.Name = "panel44";
-            panel44.Size = new Size(944, 585);
+            panel44.Size = new Size(846, 585);
             panel44.TabIndex = 0;
             // 
             // tableLayoutPanel6
@@ -2206,7 +2225,7 @@
             tableLayoutPanel6.RowCount = 2;
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 52.48227F));
             tableLayoutPanel6.RowStyles.Add(new RowStyle(SizeType.Percent, 47.51773F));
-            tableLayoutPanel6.Size = new Size(944, 585);
+            tableLayoutPanel6.Size = new Size(846, 585);
             tableLayoutPanel6.TabIndex = 0;
             // 
             // panel56
@@ -2216,7 +2235,7 @@
             panel56.Dock = DockStyle.Fill;
             panel56.Location = new Point(3, 3);
             panel56.Name = "panel56";
-            panel56.Size = new Size(938, 301);
+            panel56.Size = new Size(840, 301);
             panel56.TabIndex = 0;
             // 
             // PurchaseTable
@@ -2225,7 +2244,7 @@
             PurchaseTable.Dock = DockStyle.Fill;
             PurchaseTable.Location = new Point(0, 41);
             PurchaseTable.Name = "PurchaseTable";
-            PurchaseTable.Size = new Size(938, 260);
+            PurchaseTable.Size = new Size(840, 260);
             PurchaseTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             PurchaseTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             PurchaseTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -2244,7 +2263,7 @@
             panel58.Dock = DockStyle.Top;
             panel58.Location = new Point(0, 0);
             panel58.Name = "panel58";
-            panel58.Size = new Size(938, 41);
+            panel58.Size = new Size(840, 41);
             panel58.TabIndex = 0;
             // 
             // label22
@@ -2252,7 +2271,7 @@
             label22.AutoSize = true;
             label22.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
             label22.ForeColor = SystemColors.ButtonHighlight;
-            label22.Location = new Point(36, 8);
+            label22.Location = new Point(18, 8);
             label22.Name = "label22";
             label22.Size = new Size(107, 25);
             label22.TabIndex = 1;
@@ -2264,7 +2283,7 @@
             panel57.Dock = DockStyle.Fill;
             panel57.Location = new Point(3, 310);
             panel57.Name = "panel57";
-            panel57.Size = new Size(938, 272);
+            panel57.Size = new Size(840, 272);
             panel57.TabIndex = 1;
             // 
             // tableLayoutPanel7
@@ -2279,7 +2298,7 @@
             tableLayoutPanel7.Name = "tableLayoutPanel7";
             tableLayoutPanel7.RowCount = 1;
             tableLayoutPanel7.RowStyles.Add(new RowStyle(SizeType.Percent, 50F));
-            tableLayoutPanel7.Size = new Size(938, 272);
+            tableLayoutPanel7.Size = new Size(840, 272);
             tableLayoutPanel7.TabIndex = 3;
             // 
             // panel59
@@ -2292,7 +2311,7 @@
             panel59.Dock = DockStyle.Fill;
             panel59.Location = new Point(3, 3);
             panel59.Name = "panel59";
-            panel59.Size = new Size(463, 266);
+            panel59.Size = new Size(414, 266);
             panel59.TabIndex = 0;
             // 
             // panel61
@@ -2302,7 +2321,7 @@
             panel61.Dock = DockStyle.Top;
             panel61.Location = new Point(0, 0);
             panel61.Name = "panel61";
-            panel61.Size = new Size(463, 41);
+            panel61.Size = new Size(414, 41);
             panel61.TabIndex = 3;
             // 
             // label23
@@ -2353,9 +2372,9 @@
             // 
             panel60.Controls.Add(tableLayoutPanel8);
             panel60.Dock = DockStyle.Fill;
-            panel60.Location = new Point(472, 3);
+            panel60.Location = new Point(423, 3);
             panel60.Name = "panel60";
-            panel60.Size = new Size(463, 266);
+            panel60.Size = new Size(414, 266);
             panel60.TabIndex = 1;
             // 
             // tableLayoutPanel8
@@ -2375,7 +2394,7 @@
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
             tableLayoutPanel8.RowStyles.Add(new RowStyle(SizeType.Percent, 33.3333321F));
-            tableLayoutPanel8.Size = new Size(463, 266);
+            tableLayoutPanel8.Size = new Size(414, 266);
             tableLayoutPanel8.TabIndex = 0;
             // 
             // btnResetTransaction
@@ -2384,9 +2403,9 @@
             btnResetTransaction.Dock = DockStyle.Fill;
             btnResetTransaction.Font = new Font("Segoe UI", 12F);
             btnResetTransaction.ForeColor = SystemColors.ButtonHighlight;
-            btnResetTransaction.Location = new Point(311, 4);
+            btnResetTransaction.Location = new Point(278, 4);
             btnResetTransaction.Name = "btnResetTransaction";
-            btnResetTransaction.Size = new Size(148, 81);
+            btnResetTransaction.Size = new Size(132, 81);
             btnResetTransaction.TabIndex = 4;
             btnResetTransaction.Text = "RESET TRANSACTION";
             btnResetTransaction.UseVisualStyleBackColor = false;
@@ -2396,9 +2415,9 @@
             // 
             btnGenerateReceipt.Dock = DockStyle.Fill;
             btnGenerateReceipt.Font = new Font("Segoe UI", 12F);
-            btnGenerateReceipt.Location = new Point(157, 4);
+            btnGenerateReceipt.Location = new Point(141, 4);
             btnGenerateReceipt.Name = "btnGenerateReceipt";
-            btnGenerateReceipt.Size = new Size(147, 81);
+            btnGenerateReceipt.Size = new Size(130, 81);
             btnGenerateReceipt.TabIndex = 3;
             btnGenerateReceipt.Text = "GENERATE RECEIPT";
             btnGenerateReceipt.UseVisualStyleBackColor = true;
@@ -2410,7 +2429,7 @@
             btnPayTotalAmount.Font = new Font("Segoe UI", 12F);
             btnPayTotalAmount.Location = new Point(4, 4);
             btnPayTotalAmount.Name = "btnPayTotalAmount";
-            btnPayTotalAmount.Size = new Size(146, 81);
+            btnPayTotalAmount.Size = new Size(130, 81);
             btnPayTotalAmount.TabIndex = 0;
             btnPayTotalAmount.Text = "PAY TOTAL AMOUNT";
             btnPayTotalAmount.UseVisualStyleBackColor = true;
@@ -2514,12 +2533,30 @@
             // panel64
             // 
             panel64.BackColor = Color.RoyalBlue;
+            panel64.Controls.Add(btnDeleteSalesHistory);
             panel64.Controls.Add(label24);
             panel64.Dock = DockStyle.Fill;
             panel64.Location = new Point(0, 0);
             panel64.Name = "panel64";
             panel64.Size = new Size(910, 58);
             panel64.TabIndex = 10;
+            // 
+            // btnDeleteSalesHistory
+            // 
+            btnDeleteSalesHistory.Anchor = AnchorStyles.Right;
+            btnDeleteSalesHistory.BackColor = Color.Firebrick;
+            btnDeleteSalesHistory.FlatStyle = FlatStyle.Flat;
+            btnDeleteSalesHistory.Font = new Font("Yu Gothic UI", 11.25F);
+            btnDeleteSalesHistory.ForeColor = SystemColors.ButtonHighlight;
+            btnDeleteSalesHistory.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnDeleteSalesHistory.Location = new Point(709, 10);
+            btnDeleteSalesHistory.Name = "btnDeleteSalesHistory";
+            btnDeleteSalesHistory.Size = new Size(185, 39);
+            btnDeleteSalesHistory.TabIndex = 9;
+            btnDeleteSalesHistory.Text = "Delete Sales History";
+            btnDeleteSalesHistory.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnDeleteSalesHistory.UseVisualStyleBackColor = false;
+            btnDeleteSalesHistory.Click += btnDeleteSalesHistory_Click;
             // 
             // label24
             // 
@@ -2545,7 +2582,7 @@
             // 
             // panel65
             // 
-            panel65.Controls.Add(accountsListTable);
+            panel65.Controls.Add(accountsTabPanel);
             panel65.Controls.Add(panel66);
             panel65.Dock = DockStyle.Fill;
             panel65.Location = new Point(3, 3);
@@ -2553,13 +2590,42 @@
             panel65.Size = new Size(910, 648);
             panel65.TabIndex = 0;
             // 
+            // accountsTabPanel
+            // 
+            accountsTabPanel.Alignment = TabAlignment.Right;
+            accountsTabPanel.CausesValidation = false;
+            accountsTabPanel.Controls.Add(tabPage10);
+            accountsTabPanel.Controls.Add(tabPage11);
+            accountsTabPanel.Dock = DockStyle.Fill;
+            accountsTabPanel.ItemSize = new Size(0, 1);
+            accountsTabPanel.Location = new Point(0, 58);
+            accountsTabPanel.Margin = new Padding(0);
+            accountsTabPanel.Multiline = true;
+            accountsTabPanel.Name = "accountsTabPanel";
+            accountsTabPanel.Padding = new Point(0, 0);
+            accountsTabPanel.SelectedIndex = 0;
+            accountsTabPanel.Size = new Size(910, 590);
+            accountsTabPanel.SizeMode = TabSizeMode.Fixed;
+            accountsTabPanel.TabIndex = 13;
+            // 
+            // tabPage10
+            // 
+            tabPage10.Controls.Add(accountsListTable);
+            tabPage10.Controls.Add(panel70);
+            tabPage10.Location = new Point(4, 4);
+            tabPage10.Name = "tabPage10";
+            tabPage10.Size = new Size(901, 582);
+            tabPage10.TabIndex = 0;
+            tabPage10.Text = "tabPage10";
+            tabPage10.UseVisualStyleBackColor = true;
+            // 
             // accountsListTable
             // 
             accountsListTable.AccessibleName = "Table";
             accountsListTable.Dock = DockStyle.Fill;
-            accountsListTable.Location = new Point(0, 58);
+            accountsListTable.Location = new Point(0, 49);
             accountsListTable.Name = "accountsListTable";
-            accountsListTable.Size = new Size(910, 590);
+            accountsListTable.Size = new Size(901, 533);
             accountsListTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
             accountsListTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
             accountsListTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
@@ -2571,17 +2637,28 @@
             accountsListTable.TabIndex = 12;
             accountsListTable.Text = "sfDataGrid1";
             // 
-            // panel66
+            // panel70
             // 
-            panel66.BackColor = Color.RoyalBlue;
-            panel66.Controls.Add(btnDeleteAccount);
-            panel66.Controls.Add(btnUpdateAccount);
-            panel66.Controls.Add(label10);
-            panel66.Dock = DockStyle.Top;
-            panel66.Location = new Point(0, 0);
-            panel66.Name = "panel66";
-            panel66.Size = new Size(910, 58);
-            panel66.TabIndex = 11;
+            panel70.BackColor = Color.CornflowerBlue;
+            panel70.Controls.Add(label10);
+            panel70.Controls.Add(btnDeleteAccount);
+            panel70.Controls.Add(btnUpdateAccount);
+            panel70.Dock = DockStyle.Top;
+            panel70.Location = new Point(0, 0);
+            panel70.Name = "panel70";
+            panel70.Size = new Size(901, 49);
+            panel70.TabIndex = 13;
+            // 
+            // label10
+            // 
+            label10.AutoSize = true;
+            label10.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label10.ForeColor = SystemColors.ButtonHighlight;
+            label10.Location = new Point(17, 12);
+            label10.Name = "label10";
+            label10.Size = new Size(197, 25);
+            label10.TabIndex = 2;
+            label10.Text = "MANAGE ACCOUNTS";
             // 
             // btnDeleteAccount
             // 
@@ -2591,9 +2668,9 @@
             btnDeleteAccount.Font = new Font("Yu Gothic UI", 11.25F);
             btnDeleteAccount.ForeColor = SystemColors.ButtonHighlight;
             btnDeleteAccount.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnDeleteAccount.Location = new Point(751, 6);
+            btnDeleteAccount.Location = new Point(742, 5);
             btnDeleteAccount.Name = "btnDeleteAccount";
-            btnDeleteAccount.Size = new Size(156, 48);
+            btnDeleteAccount.Size = new Size(156, 39);
             btnDeleteAccount.TabIndex = 7;
             btnDeleteAccount.Text = "Delete Account";
             btnDeleteAccount.TextImageRelation = TextImageRelation.TextBeforeImage;
@@ -2608,25 +2685,163 @@
             btnUpdateAccount.Font = new Font("Yu Gothic UI", 11.25F);
             btnUpdateAccount.ForeColor = SystemColors.ButtonHighlight;
             btnUpdateAccount.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
-            btnUpdateAccount.Location = new Point(552, 6);
+            btnUpdateAccount.Location = new Point(543, 5);
             btnUpdateAccount.Name = "btnUpdateAccount";
-            btnUpdateAccount.Size = new Size(193, 48);
+            btnUpdateAccount.Size = new Size(193, 39);
             btnUpdateAccount.TabIndex = 6;
             btnUpdateAccount.Text = "Update Account Info";
             btnUpdateAccount.TextImageRelation = TextImageRelation.TextBeforeImage;
             btnUpdateAccount.UseVisualStyleBackColor = false;
             btnUpdateAccount.Click += btnUpdateAccount_Click_1;
             // 
-            // label10
+            // tabPage11
             // 
-            label10.AutoSize = true;
-            label10.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
-            label10.ForeColor = SystemColors.ButtonHighlight;
-            label10.Location = new Point(18, 17);
-            label10.Name = "label10";
-            label10.Size = new Size(110, 25);
-            label10.TabIndex = 2;
-            label10.Text = "ACCOUNTS";
+            tabPage11.Controls.Add(ActivityLogTable);
+            tabPage11.Controls.Add(panel71);
+            tabPage11.Location = new Point(4, 4);
+            tabPage11.Name = "tabPage11";
+            tabPage11.Size = new Size(852, 582);
+            tabPage11.TabIndex = 1;
+            tabPage11.Text = "tabPage11";
+            tabPage11.UseVisualStyleBackColor = true;
+            // 
+            // ActivityLogTable
+            // 
+            ActivityLogTable.AccessibleName = "Table";
+            ActivityLogTable.Dock = DockStyle.Fill;
+            ActivityLogTable.Location = new Point(0, 49);
+            ActivityLogTable.Name = "ActivityLogTable";
+            ActivityLogTable.Size = new Size(852, 533);
+            ActivityLogTable.Style.BorderColor = Color.FromArgb(100, 100, 100);
+            ActivityLogTable.Style.CheckBoxStyle.CheckedBackColor = Color.FromArgb(0, 120, 215);
+            ActivityLogTable.Style.CheckBoxStyle.CheckedBorderColor = Color.FromArgb(0, 120, 215);
+            ActivityLogTable.Style.CheckBoxStyle.IndeterminateBorderColor = Color.FromArgb(0, 120, 215);
+            ActivityLogTable.Style.DragPreviewRowStyle.Font = new Font("Segoe UI", 9F);
+            ActivityLogTable.Style.DragPreviewRowStyle.RowCountIndicatorBackColor = Color.FromArgb(0, 120, 215);
+            ActivityLogTable.Style.DragPreviewRowStyle.RowCountIndicatorTextColor = Color.FromArgb(255, 255, 255);
+            ActivityLogTable.Style.HyperlinkStyle.DefaultLinkColor = Color.FromArgb(0, 120, 215);
+            ActivityLogTable.TabIndex = 15;
+            ActivityLogTable.Text = "sfDataGrid1";
+            // 
+            // panel71
+            // 
+            panel71.BackColor = Color.CornflowerBlue;
+            panel71.Controls.Add(btnDeleteLogHistory);
+            panel71.Controls.Add(label14);
+            panel71.Controls.Add(button1);
+            panel71.Controls.Add(button2);
+            panel71.Dock = DockStyle.Top;
+            panel71.Location = new Point(0, 0);
+            panel71.Name = "panel71";
+            panel71.Size = new Size(852, 49);
+            panel71.TabIndex = 14;
+            // 
+            // btnDeleteLogHistory
+            // 
+            btnDeleteLogHistory.Anchor = AnchorStyles.Right;
+            btnDeleteLogHistory.BackColor = Color.Firebrick;
+            btnDeleteLogHistory.FlatStyle = FlatStyle.Flat;
+            btnDeleteLogHistory.Font = new Font("Yu Gothic UI", 11.25F);
+            btnDeleteLogHistory.ForeColor = SystemColors.ButtonHighlight;
+            btnDeleteLogHistory.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            btnDeleteLogHistory.Location = new Point(664, 6);
+            btnDeleteLogHistory.Name = "btnDeleteLogHistory";
+            btnDeleteLogHistory.Size = new Size(185, 39);
+            btnDeleteLogHistory.TabIndex = 8;
+            btnDeleteLogHistory.Text = "Delete Log History";
+            btnDeleteLogHistory.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnDeleteLogHistory.UseVisualStyleBackColor = false;
+            btnDeleteLogHistory.Click += btnDeleteLogHistory_Click;
+            // 
+            // label14
+            // 
+            label14.AutoSize = true;
+            label14.Font = new Font("Segoe UI Semibold", 14F, FontStyle.Bold, GraphicsUnit.Point, 0);
+            label14.ForeColor = SystemColors.ButtonHighlight;
+            label14.Location = new Point(17, 12);
+            label14.Name = "label14";
+            label14.Size = new Size(231, 25);
+            label14.TabIndex = 2;
+            label14.Text = "ACCOUNTS LOG HISTORY";
+            // 
+            // button1
+            // 
+            button1.Anchor = AnchorStyles.Right;
+            button1.BackColor = Color.Firebrick;
+            button1.FlatStyle = FlatStyle.Flat;
+            button1.Font = new Font("Yu Gothic UI", 11.25F);
+            button1.ForeColor = SystemColors.ButtonHighlight;
+            button1.Image = Properties.Resources.delete_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            button1.Location = new Point(1345, -21);
+            button1.Name = "button1";
+            button1.Size = new Size(156, 39);
+            button1.TabIndex = 7;
+            button1.Text = "Delete Account";
+            button1.TextImageRelation = TextImageRelation.TextBeforeImage;
+            button1.UseVisualStyleBackColor = false;
+            // 
+            // button2
+            // 
+            button2.Anchor = AnchorStyles.Right;
+            button2.BackColor = Color.MidnightBlue;
+            button2.FlatStyle = FlatStyle.Flat;
+            button2.Font = new Font("Yu Gothic UI", 11.25F);
+            button2.ForeColor = SystemColors.ButtonHighlight;
+            button2.Image = Properties.Resources.edit_24dp_E3E3E3_FILL0_wght400_GRAD0_opsz24;
+            button2.Location = new Point(1146, -21);
+            button2.Name = "button2";
+            button2.Size = new Size(193, 39);
+            button2.TabIndex = 6;
+            button2.Text = "Update Account Info";
+            button2.TextImageRelation = TextImageRelation.TextBeforeImage;
+            button2.UseVisualStyleBackColor = false;
+            // 
+            // panel66
+            // 
+            panel66.BackColor = Color.RoyalBlue;
+            panel66.Controls.Add(btnAccountsLogsHistory);
+            panel66.Controls.Add(btnManageAccounts);
+            panel66.Dock = DockStyle.Top;
+            panel66.Location = new Point(0, 0);
+            panel66.Name = "panel66";
+            panel66.Size = new Size(910, 58);
+            panel66.TabIndex = 11;
+            // 
+            // btnAccountsLogsHistory
+            // 
+            btnAccountsLogsHistory.BackColor = Color.FromArgb(49, 52, 113);
+            btnAccountsLogsHistory.FlatAppearance.BorderColor = Color.White;
+            btnAccountsLogsHistory.FlatAppearance.BorderSize = 0;
+            btnAccountsLogsHistory.FlatStyle = FlatStyle.Flat;
+            btnAccountsLogsHistory.Font = new Font("Yu Gothic UI Semibold", 12F, FontStyle.Bold);
+            btnAccountsLogsHistory.ForeColor = SystemColors.ButtonFace;
+            btnAccountsLogsHistory.Image = Properties.Resources.history_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24;
+            btnAccountsLogsHistory.Location = new Point(267, 9);
+            btnAccountsLogsHistory.Name = "btnAccountsLogsHistory";
+            btnAccountsLogsHistory.Size = new Size(259, 40);
+            btnAccountsLogsHistory.TabIndex = 15;
+            btnAccountsLogsHistory.Text = "Accounts Log History";
+            btnAccountsLogsHistory.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnAccountsLogsHistory.UseVisualStyleBackColor = false;
+            btnAccountsLogsHistory.Click += btnAccountsLogsHistory_Click;
+            // 
+            // btnManageAccounts
+            // 
+            btnManageAccounts.BackColor = Color.FromArgb(108, 117, 219);
+            btnManageAccounts.FlatAppearance.BorderColor = Color.White;
+            btnManageAccounts.FlatAppearance.BorderSize = 0;
+            btnManageAccounts.FlatStyle = FlatStyle.Flat;
+            btnManageAccounts.Font = new Font("Yu Gothic UI Semibold", 12F, FontStyle.Bold);
+            btnManageAccounts.ForeColor = SystemColors.ButtonFace;
+            btnManageAccounts.Image = Properties.Resources.manage_accounts_24dp_F3F3F3_FILL0_wght400_GRAD0_opsz24;
+            btnManageAccounts.Location = new Point(7, 9);
+            btnManageAccounts.Name = "btnManageAccounts";
+            btnManageAccounts.Size = new Size(254, 40);
+            btnManageAccounts.TabIndex = 14;
+            btnManageAccounts.Text = "Manage Accounts";
+            btnManageAccounts.TextImageRelation = TextImageRelation.TextBeforeImage;
+            btnManageAccounts.UseVisualStyleBackColor = false;
+            btnManageAccounts.Click += btnManageAccounts_Click;
             // 
             // panel5
             // 
@@ -2684,7 +2899,7 @@
             clock1.ClockShape = Syncfusion.Windows.Forms.Tools.ClockShapes.RoundedRectangle;
             clock1.ClockType = Syncfusion.Windows.Forms.Tools.ClockTypes.Digital;
             clock1.CurrentDateTime = new DateTime(2026, 2, 17, 10, 49, 55, 547);
-            clock1.CustomTime = new DateTime(2026, 5, 16, 21, 37, 12, 111);
+            clock1.CustomTime = new DateTime(2026, 5, 19, 15, 47, 15, 712);
             clock1.DigitalRenderer = digitalClockRenderer1;
             clock1.DisplayDates = true;
             clock1.ForeColor = SystemColors.MenuHighlight;
@@ -2836,9 +3051,16 @@
             panel64.PerformLayout();
             tabPage7.ResumeLayout(false);
             panel65.ResumeLayout(false);
+            accountsTabPanel.ResumeLayout(false);
+            tabPage10.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)accountsListTable).EndInit();
+            panel70.ResumeLayout(false);
+            panel70.PerformLayout();
+            tabPage11.ResumeLayout(false);
+            ((System.ComponentModel.ISupportInitialize)ActivityLogTable).EndInit();
+            panel71.ResumeLayout(false);
+            panel71.PerformLayout();
             panel66.ResumeLayout(false);
-            panel66.PerformLayout();
             panel5.ResumeLayout(false);
             ((System.ComponentModel.ISupportInitialize)gradientPanel2).EndInit();
             gradientPanel2.ResumeLayout(false);
@@ -3018,7 +3240,6 @@
         private Label label24;
         private Panel panel65;
         private Panel panel66;
-        private Label label10;
         private Syncfusion.WinForms.DataGrid.SfDataGrid accountsListTable;
         private Syncfusion.WinForms.DataGrid.SfDataGrid MostSoldProductsTable;
         private TableLayoutPanel tableLayoutPanel9;
@@ -3034,5 +3255,19 @@
         private Panel panel68;
         private Panel panel67;
         private Panel panel22;
+        private TabControl accountsTabPanel;
+        private TabPage tabPage10;
+        private TabPage tabPage11;
+        private Panel panel70;
+        private Label label10;
+        private Button btnAccountsLogsHistory;
+        private Button btnManageAccounts;
+        private Syncfusion.WinForms.DataGrid.SfDataGrid ActivityLogTable;
+        private Panel panel71;
+        private Label label14;
+        private Button button1;
+        private Button button2;
+        private Button btnDeleteLogHistory;
+        private Button btnDeleteSalesHistory;
     }
 }

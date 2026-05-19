@@ -2,6 +2,7 @@
 using InvSys.App.Helpers;
 using InvSys.Domain.Models.Enums;
 using InvSys.Domain.Models.InventoryItems;
+using InvSys.Infrastructure;
 using InvSys.Services.DTOs;
 using InvSys.Services.Services;
 using Microsoft.EntityFrameworkCore;
@@ -217,6 +218,11 @@ namespace InvSys.App
                 new GridTextColumn { MappingName = "ProductName", HeaderText = "Product" },
                 new GridTextColumn { MappingName = "TotalSold", HeaderText = "Qty Sold" },
                 new GridTextColumn { MappingName = "Revenue", HeaderText = "Revenue", Format = "₱#,##0.00" });
+
+            ConfigureGrid(ActivityLogTable,
+                new GridTextColumn { MappingName = "Username", HeaderText = "Username" },
+                new GridTextColumn { MappingName = "Action", HeaderText = "Action" },
+                new GridTextColumn { MappingName = "Timestamp", HeaderText = "Time", Format = "MM/dd/yyyy hh:mm tt" });
         }
 
         private static void ConfigureGrid(SfDataGrid grid, params GridColumn[] columns)
@@ -234,7 +240,7 @@ namespace InvSys.App
             {
                     UserAccount, ProductTable, ProductListToStockTable, StockTable,
                     SalesTable, StockViewTable, ProductsToPurchaseTable, PurchaseTable,
-                    accountsListTable, MostSoldProductsTable, ProductTableLowStock
+                    accountsListTable, MostSoldProductsTable, ProductTableLowStock, ActivityLogTable
                 };
 
             comboBoxSales.Items.AddRange(new object[]
@@ -412,8 +418,9 @@ namespace InvSys.App
             HighlightButton((Button)sender, btnDashboard, btnStock, btnSales, btnAccounts, btnProducts, btnSupplier, btnPurchase);
         }
 
-        private void btnLogout_Click(object sender, EventArgs e)
+        private async void btnLogout_Click(object sender, EventArgs e)
         {
+            await LogActivityAsync(_currentUsername, "Logout");
             this.Hide();
             var login = new LoginForm();
             login.Closed += (s, args) => this.Close();
@@ -431,6 +438,7 @@ namespace InvSys.App
             await RefreshStockViewTableAsync();
             await RefreshDashboardAsync();
             await RefreshAccountsTableAsync();
+            await RefreshActivityLogAsync();
         }
 
         private async Task RefreshDashboardAsync()
@@ -442,6 +450,15 @@ namespace InvSys.App
             await RefreshMostSoldProductsTableAsync();
             await RefreshSalesChartAsync(comboBoxSales.SelectedItem?.ToString() ?? "This Month");
             await RefreshMonthlySalesAsync(comboBoxTotalSales.SelectedItem?.ToString() ?? "This Month");
+        }
+
+        public async Task RefreshActivityLogAsync()
+        {
+            using var context = new AccountsDbContext();
+            var logs = await context.ActivityLogs
+                .OrderByDescending(l => l.Timestamp)
+                .ToListAsync();
+            ActivityLogTable.DataSource = logs;
         }
 
         public async Task RefreshAccountsTableAsync()
@@ -826,6 +843,7 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
+
             string names = string.Join(", ", selected.Select(s => s.Name));
             if (MessageBox.Show($"Delete {selected.Count} supplier(s)?\n\n{names}", "Confirm Delete",
                 MessageBoxButtons.YesNo, MessageBoxIcon.Question) != DialogResult.Yes) return;
@@ -838,24 +856,74 @@ namespace InvSys.App
 
             if (blockedProducts.Count > 0)
             {
-                string productNames = string.Join("\n  • ", blockedProducts.Select(p => p.Name));
-                MessageBox.Show(
-                    $"Cannot delete the selected supplier(s) because the following products are still associated:\n\n  • {productNames}\n\nPlease delete those products first, or consider deactivating the supplier instead.",
-                    "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                bool allInactive = selected.All(s => !s.IsActive);
+
+                if (!allInactive)
+                {
+                    string productNames = string.Join("\n  • ", blockedProducts.Select(p => p.Name));
+                    MessageBox.Show(
+                        $"Cannot delete the selected supplier(s) because the following products are still associated:\n\n  • {productNames}\n\nPlease delete those products first, or consider deactivating the supplier instead.",
+                        "Cannot Delete", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                string productNames2 = string.Join("\n  • ", blockedProducts.Select(p => p.Name));
+                if (MessageBox.Show(
+                    $"The following products associated with this supplier will also be permanently deleted:\n\n  • {productNames2}\n\nProceed?",
+                    "Confirm Cascade Delete", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            }
+
+            // Require password to proceed
+            using var pwdDialog = new CRUDForms.ConfirmPasswordDialog();
+            if (pwdDialog.ShowDialog(this) != DialogResult.OK) return;
+
+            using var accountService = new AccountService();
+            var currentAccount = await accountService.GetAccountByUsernameAsync(_currentUsername);
+            if (currentAccount == null || !VerifyPassword(pwdDialog.EnteredPassword, currentAccount.PasswordHash))
+            {
+                MessageBox.Show("Incorrect password. Operation cancelled.",
+                    "Authentication Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
             try
             {
                 using var context = new InvSys.Infrastructure.InventoryDbContext();
+                var now = DateTime.Now;
+                var productIds = blockedProducts.Select(p => p.Id).ToList();
 
+                // 1. Soft-delete Sales referencing these products
+                var sales = await context.Sales
+                    .IgnoreQueryFilters()
+                    .Where(s => productIds.Contains(s.ProductId))
+                    .ToListAsync();
+                foreach (var sale in sales)
+                    sale.DeletedDate = now;
+
+                // 2. Soft-delete Stocks referencing these products
+                var stocks = await context.Stocks
+                    .IgnoreQueryFilters()
+                    .Where(s => productIds.Contains(s.ProductId))
+                    .ToListAsync();
+                foreach (var stock in stocks)
+                    stock.DeletedDate = now;
+
+                // 3. Soft-delete Products
+                var products = await context.Products
+                    .IgnoreQueryFilters()
+                    .Where(p => productIds.Contains(p.Id))
+                    .ToListAsync();
+                foreach (var product in products)
+                    product.DeletedDate = now;
+
+                // 4. Soft-delete Suppliers
                 foreach (var s in selected)
                 {
                     var supplier = await context.Suppliers
                         .IgnoreQueryFilters()
                         .FirstOrDefaultAsync(sup => sup.Id == s.Id);
                     if (supplier != null)
-                        context.Suppliers.Remove(supplier);
+                        supplier.DeletedDate = now;
                 }
 
                 await context.SaveChangesAsync();
@@ -864,6 +932,8 @@ namespace InvSys.App
                     MessageBoxButtons.OK, MessageBoxIcon.Information);
                 _inactiveSupplierIds = await GetInactiveSupplierIdsAsync();
                 await RefreshSupplierTableAsync();
+                await RefreshProductTableAsync();
+                await RefreshDashboardAsync();
             }
             catch (Exception ex)
             {
@@ -1200,6 +1270,13 @@ namespace InvSys.App
 
         private async void btnUpdatePurchase_Click(object sender, EventArgs e)
         {
+            if (_lastReceiptData != null)
+            {
+                MessageBox.Show("A transaction has already been completed.\n\nPlease reset the transaction first.",
+                    "Reset Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
             if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
             { MessageBox.Show("Please select an item in the cart to update.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
 
@@ -1237,6 +1314,13 @@ namespace InvSys.App
         {
             try
             {
+                if (_lastReceiptData != null)
+                {
+                    MessageBox.Show("A transaction has already been completed.\n\nPlease reset the transaction first.",
+                        "Reset Required", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
                 if (ProductsToPurchaseTable.SelectedItem is not CartItem cartItem)
                 { MessageBox.Show("Please select an item in the cart to remove.", "No Selection", MessageBoxButtons.OK, MessageBoxIcon.Warning); return; }
                 if (MessageBox.Show($"Remove '{cartItem.ProductName}' from cart?", "Confirm Remove",
@@ -1259,18 +1343,27 @@ namespace InvSys.App
 
         private async void btnResetPurchase_Click(object sender, EventArgs e)
         {
-            if (_cart.Count == 0)
-            { MessageBox.Show("The cart is already empty.", "Nothing to Reset", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
-            if (MessageBox.Show("Clear all items from the cart?", "Confirm Reset",
-                MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+            bool alreadyClear = _cart.Count == 0 &&
+                  txtAmountPaid.Text is "Amount Paid: ₱0.00" or "Amount Paid:" &&
+                  txtChange.Text is "Change: ₱0.00" or "Change:";
+
+            if (alreadyClear)
+            { MessageBox.Show("Nothing to reset.", "Already Clear", MessageBoxButtons.OK, MessageBoxIcon.Information); return; }
+            if (MessageBox.Show("Reset the entire transaction? This will clear the cart and all amounts.",
+                "Confirm Reset", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
 
             _cart.Clear();
-            txtBoxPurchaseQuantity.Clear();
+            _lastReceiptData = null;
+            btnGenerateReceipt.Enabled = false;
+            ProductsToPurchaseTable.Enabled = true;
+            txtTotalAmount.Text = "Total Amount: ₱0.00";
+            txtAmountPaid.Text = "Amount Paid: ₱0.00";
+            txtChange.Text = "Change: ₱0.00";
+
             ClearPurchaseInfoLabels();
             RefreshCartTables();
             await RefreshStockViewTableAsync();
-            await RefreshStockTableAsync();
-            RefreshTotalAmount();
+            txtBoxPurchaseQuantity.Clear();
         }
 
         // ── Purchase info labels ─────────────────────────────────────────
@@ -1417,6 +1510,7 @@ namespace InvSys.App
                 };
 
                 btnGenerateReceipt.Enabled = true;
+                ProductsToPurchaseTable.Enabled = false;
                 _cart.Clear();
                 await RefreshAllTablesAsync();
                 SyncPurchaseInfoLabelsToSelection();
@@ -1470,6 +1564,7 @@ namespace InvSys.App
             _cart.Clear();
             _lastReceiptData = null;
             btnGenerateReceipt.Enabled = false;
+            ProductsToPurchaseTable.Enabled = true;
             txtTotalAmount.Text = "Total Amount: ₱0.00";
             txtAmountPaid.Text = "Amount Paid: ₱0.00";
             txtChange.Text = "Change: ₱0.00";
@@ -1548,6 +1643,29 @@ namespace InvSys.App
 
                 if (dialog.ShowDialog(this) != DialogResult.OK) return;
 
+                if (selected.Username == _currentUsername && !dialog.IsActive)
+                {
+                    MessageBox.Show("You cannot deactivate your own account.",
+                        "Not Allowed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                    return;
+                }
+
+                if (!dialog.IsActive)
+                {
+                    using var svc = new AccountService();
+                    var allAccounts = await svc.GetAllAccountsAsync();
+                    bool isLastActiveAdmin = allAccounts
+                        .Count(a => a.IsActive && a.Role == "Admin" && a.Id != selected.Id) == 0;
+
+                    if (isLastActiveAdmin)
+                    {
+                        MessageBox.Show("Cannot deactivate this account. At least one Admin must remain active.",
+                            "Not Allowed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                        return;
+                    }
+                }
+
+
                 await service.UpdateAccountAsync(
                     account.Id,
                     dialog.NewUsername,
@@ -1582,7 +1700,7 @@ namespace InvSys.App
             if (selected.Username == _currentUsername)
             {
                 MessageBox.Show(
-                    "You cannot delete your own account from here.\n\nUse the 'Your Account' button instead.",
+                    "You cannot delete your own account.",
                     "Not Allowed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -1702,6 +1820,17 @@ namespace InvSys.App
             return BCrypt.Net.BCrypt.Verify(plaintext, hash);
         }
 
+        public static async Task LogActivityAsync(string username, string action)
+        {
+            using var context = new AccountsDbContext();
+            context.ActivityLogs.Add(new AccountActivityLog
+            {
+                Username = username,
+                Action = action,
+                Timestamp = DateTime.Now
+            });
+            await context.SaveChangesAsync();
+        }
 
         private async void btnExportSales_Click_1(object sender, EventArgs e)
         {
@@ -1782,6 +1911,90 @@ namespace InvSys.App
                 MessageBox.Show($"Export failed:\n{ex.Message}", "Error",
                     MessageBoxButtons.OK, MessageBoxIcon.Error);
             }
+        }
+
+        private void btnManageAccounts_Click(object sender, EventArgs e)
+        {
+            accountsTabPanel.SelectedIndex = 0;
+            HighlightButton((Button)sender, btnManageAccounts, btnAccountsLogsHistory);
+        }
+
+        private void btnAccountsLogsHistory_Click(object sender, EventArgs e)
+        {
+            accountsTabPanel.SelectedIndex = 1;
+            HighlightButton((Button)sender, btnManageAccounts, btnAccountsLogsHistory);
+        }
+
+        private async void btnDeleteLogHistory_Click(object sender, EventArgs e)
+        {
+            if (!IsAdmin()) return;
+
+            using var context = new AccountsDbContext();
+            if (!context.ActivityLogs.Any())
+            {
+                MessageBox.Show("Activity log is already empty.", "Nothing to Clear",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            // Require current admin's password to proceed
+            using var pwdDialog = new CRUDForms.ConfirmPasswordDialog();
+            if (pwdDialog.ShowDialog(this) != DialogResult.OK) return;
+
+            using var service = new AccountService();
+            var currentAccount = await service.GetAccountByUsernameAsync(_currentUsername);
+            if (currentAccount == null || !VerifyPassword(pwdDialog.EnteredPassword, currentAccount.PasswordHash))
+            {
+                MessageBox.Show("Incorrect password. Operation cancelled.",
+                    "Authentication Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("Clear all activity logs? This cannot be undone.",
+                "Confirm Clear", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+            context.ActivityLogs.RemoveRange(context.ActivityLogs);
+            await context.SaveChangesAsync();
+            await RefreshActivityLogAsync();
+
+            MessageBox.Show("Activity logs cleared.", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
+        }
+
+        private async void btnDeleteSalesHistory_Click(object sender, EventArgs e)
+        {
+            if (!IsAdmin()) return;
+
+            using var context = new InvSys.Infrastructure.InventoryDbContext();
+            if (!context.Sales.Any())
+            {
+                MessageBox.Show("Sales history is already empty.", "Nothing to Clear",
+                    MessageBoxButtons.OK, MessageBoxIcon.Information);
+                return;
+            }
+
+            using var pwdDialog = new CRUDForms.ConfirmPasswordDialog();
+            if (pwdDialog.ShowDialog(this) != DialogResult.OK) return;
+
+            using var service = new AccountService();
+            var currentAccount = await service.GetAccountByUsernameAsync(_currentUsername);
+            if (currentAccount == null || !VerifyPassword(pwdDialog.EnteredPassword, currentAccount.PasswordHash))
+            {
+                MessageBox.Show("Incorrect password. Operation cancelled.",
+                    "Authentication Failed", MessageBoxButtons.OK, MessageBoxIcon.Warning);
+                return;
+            }
+
+            if (MessageBox.Show("Clear all sales history? This cannot be undone.",
+                "Confirm Clear", MessageBoxButtons.YesNo, MessageBoxIcon.Warning) != DialogResult.Yes) return;
+
+            context.Sales.RemoveRange(context.Sales);
+            await context.SaveChangesAsync();
+            await RefreshSalesTableAsync();
+            await RefreshDashboardAsync();
+
+            MessageBox.Show("Sales history cleared.", "Success",
+                MessageBoxButtons.OK, MessageBoxIcon.Information);
         }
     }
 }

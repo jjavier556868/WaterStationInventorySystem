@@ -28,6 +28,7 @@
         /// </summary>
         private void InitializeComponent()
         {
+            System.ComponentModel.ComponentResourceManager resources = new System.ComponentModel.ComponentResourceManager(typeof(UpdateSupplier));
             btnCancel = new Button();
             chkBoxActive = new CheckBox();
             label6 = new Label();
@@ -192,10 +193,11 @@
             Controls.Add(label2);
             Controls.Add(txtBoxSupplier);
             Controls.Add(label1);
+            Icon = (Icon)resources.GetObject("$this.Icon");
             MaximizeBox = false;
             Name = "UpdateSupplier";
             StartPosition = FormStartPosition.CenterScreen;
-            Text = "UpdateSupplier";
+            Text = "Update Supplier";
             ResumeLayout(false);
             PerformLayout();
         }
